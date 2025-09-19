@@ -1,0 +1,429 @@
+model: gpt2
+phase: C
+protected_weights: 50
+protection_methods:
+- weight_redundancy
+- layer11_attention_fortress
+- input_sanitization
+protection_results:
+  critical_weight_protection_map:
+    h.10.attn.c_attn.bias[1862]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.attn.c_attn.bias[347]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.attn.c_attn.weight[1031750]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.attn.c_attn.weight[613211]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.attn.c_proj.bias[138]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.attn.c_proj.weight[78474]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.ln_2.bias[373]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.ln_2.bias[481]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.mlp.c_fc.bias[379]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.mlp.c_fc.bias[900]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.10.mlp.c_proj.bias[138]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.bias[2053]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.bias[2059]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.bias[2061]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.bias[2078]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.bias[2290]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.bias[277]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.bias[302]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.weight[320013]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_attn.weight[320242]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_proj.bias[314]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_proj.bias[393]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_proj.weight[397449]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_proj.weight[402057]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.attn.c_proj.weight[403647]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.ln_2.bias[373]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.ln_2.bias[447]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_fc.bias[611]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_fc.weight[1002083]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_fc.weight[1926755]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_fc.weight[965219]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_proj.bias[314]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_proj.bias[374]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_proj.bias[430]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_proj.bias[496]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.11.mlp.c_proj.weight[469562]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.3.ln_2.bias[138]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.3.mlp.c_fc.weight[424963]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.4.ln_2.bias[138]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.4.ln_2.bias[480]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.5.mlp.c_fc.bias[1505]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.5.mlp.c_fc.bias[1888]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.6.mlp.c_fc.bias[437]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.7.mlp.c_fc.bias[2367]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.8.mlp.c_fc.bias[1253]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.8.mlp.c_fc.bias[1640]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.9.attn.c_proj.bias[138]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.9.mlp.c_fc.bias[1503]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    h.9.mlp.c_fc.bias[1889]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+    ln_f.weight[496]:
+    - weight_redundancy
+    - layer11_attention_fortress
+    - input_sanitization
+  defense_effectiveness:
+    input_sanitization: 0.0
+    layer11_attention_fortress: 0.0
+    weight_redundancy: 0.0
+  performance_overhead: 0.0
+  protection_applied:
+    input_sanitization:
+      method: input_sanitization
+      overhead_estimate: 0.02
+      protected_layers:
+      - h.10.ln_2
+      - h.10.attn.c_attn
+      - ln_f
+      - h.11.mlp.c_fc
+      - h.11.ln_2
+      - h.9.mlp.c_fc
+      - h.10.mlp.c_fc
+      - h.8.mlp.c_fc
+      - h.11.attn.c_proj
+      - h.10.mlp.c_proj
+      - h.11.mlp.c_proj
+      - h.7.mlp.c_fc
+      - h.6.mlp.c_fc
+      - h.11.attn.c_attn
+      - h.5.mlp.c_fc
+      - h.3.ln_2
+      - h.10.attn.c_proj
+      - h.4.ln_2
+      - h.9.attn.c_proj
+      - h.3.mlp.c_fc
+      protected_weight_list:
+      - h.10.ln_2[*]
+      - h.10.attn.c_attn[*]
+      - ln_f[*]
+      - h.11.mlp.c_fc[*]
+      - h.11.ln_2[*]
+      - h.9.mlp.c_fc[*]
+      - h.10.mlp.c_fc[*]
+      - h.8.mlp.c_fc[*]
+      - h.11.attn.c_proj[*]
+      - h.10.mlp.c_proj[*]
+      - h.11.mlp.c_proj[*]
+      - h.7.mlp.c_fc[*]
+      - h.6.mlp.c_fc[*]
+      - h.11.attn.c_attn[*]
+      - h.5.mlp.c_fc[*]
+      - h.3.ln_2[*]
+      - h.10.attn.c_proj[*]
+      - h.4.ln_2[*]
+      - h.9.attn.c_proj[*]
+      - h.3.mlp.c_fc[*]
+      sanitization_hooks: 20
+      success: true
+      weights_protected: 50
+    layer11_attention_fortress:
+      backup_copies: 42
+      checksum_algorithms: 2
+      description: Triple redundancy protection for critical Layer 11 attention weights
+      integrity_monitors: 14
+      layer11_weights_found: 14
+      method: layer11_attention_fortress
+      overhead_estimate: 0.000504
+      protected_weight_list:
+      - h.11.attn.c_attn.bias[302]
+      - h.11.attn.c_proj.bias[393]
+      - h.11.attn.c_attn.bias[2059]
+      - h.11.attn.c_attn.bias[2290]
+      - h.11.attn.c_attn.bias[2061]
+      - h.11.attn.c_proj.bias[314]
+      - h.11.attn.c_attn.weight[320242]
+      - h.11.attn.c_proj.weight[403647]
+      - h.11.attn.c_attn.bias[2078]
+      - h.11.attn.c_proj.weight[402057]
+      - h.11.attn.c_attn.bias[277]
+      - h.11.attn.c_proj.weight[397449]
+      - h.11.attn.c_attn.bias[2053]
+      - h.11.attn.c_attn.weight[320013]
+      protection_level: fortress
+      success: true
+      weights_protected: 14
+    weight_redundancy:
+      backup_count: 50
+      checksum_count: 50
+      method: weight_redundancy
+      overhead_estimate: 0.0004
+      protected_weight_list:
+      - h.11.mlp.c_fc.weight[965219]
+      - h.11.mlp.c_proj.bias[496]
+      - h.11.mlp.c_proj.bias[430]
+      - h.6.mlp.c_fc.bias[437]
+      - h.10.ln_2.bias[373]
+      - h.10.mlp.c_fc.bias[379]
+      - h.5.mlp.c_fc.bias[1888]
+      - h.8.mlp.c_fc.bias[1253]
+      - h.11.attn.c_attn.bias[302]
+      - h.11.mlp.c_proj.weight[469562]
+      - h.10.ln_2.bias[481]
+      - h.8.mlp.c_fc.bias[1640]
+      - h.5.mlp.c_fc.bias[1505]
+      - h.11.ln_2.bias[373]
+      - h.10.attn.c_attn.weight[613211]
+      - h.11.attn.c_proj.bias[393]
+      - h.11.attn.c_attn.bias[2059]
+      - h.10.mlp.c_fc.bias[900]
+      - h.4.ln_2.bias[138]
+      - h.4.ln_2.bias[480]
+      - h.10.attn.c_attn.bias[347]
+      - h.11.attn.c_attn.bias[2290]
+      - h.11.attn.c_attn.bias[2061]
+      - h.3.mlp.c_fc.weight[424963]
+      - h.11.attn.c_proj.bias[314]
+      - h.11.mlp.c_proj.bias[314]
+      - h.11.attn.c_attn.weight[320242]
+      - h.7.mlp.c_fc.bias[2367]
+      - ln_f.weight[496]
+      - h.9.mlp.c_fc.bias[1503]
+      - h.11.attn.c_proj.weight[403647]
+      - h.10.attn.c_proj.bias[138]
+      - h.11.attn.c_attn.bias[2078]
+      - h.11.mlp.c_fc.weight[1002083]
+      - h.11.mlp.c_fc.bias[611]
+      - h.11.attn.c_proj.weight[402057]
+      - h.3.ln_2.bias[138]
+      - h.10.mlp.c_proj.bias[138]
+      - h.11.mlp.c_fc.weight[1926755]
+      - h.11.attn.c_attn.bias[277]
+      - h.9.attn.c_proj.bias[138]
+      - h.10.attn.c_attn.bias[1862]
+      - h.9.mlp.c_fc.bias[1889]
+      - h.11.attn.c_proj.weight[397449]
+      - h.10.attn.c_proj.weight[78474]
+      - h.10.attn.c_attn.weight[1031750]
+      - h.11.attn.c_attn.bias[2053]
+      - h.11.ln_2.bias[447]
+      - h.11.attn.c_attn.weight[320013]
+      - h.11.mlp.c_proj.bias[374]
+      success: true
+      weights_protected: 50
+  protection_coverage: 2.28
+  residual_vulnerability:
+    partially_protected_weights: 0
+    residual_risk_score: -1.2799999999999998
+    unprotected_weights: 0
+    vulnerable_layers:
+    - h.10.ln_2.bias
+    - h.9.mlp.c_fc.bias
+    - h.3.ln_2.bias
+    - h.11.mlp.c_proj.bias
+    - h.11.mlp.c_proj.weight
+    - h.11.mlp.c_fc.bias
+    - h.6.mlp.c_fc.bias
+    - ln_f.weight
+    - h.9.attn.c_proj.bias
+    - h.11.attn.c_proj.bias
+    - h.11.attn.c_proj.weight
+    - h.10.attn.c_proj.weight
+    - h.5.mlp.c_fc.bias
+    - h.11.attn.c_attn.weight
+    - h.10.attn.c_proj.bias
+    - h.7.mlp.c_fc.bias
+    - h.10.mlp.c_proj.bias
+    - h.10.mlp.c_fc.bias
+    - h.3.mlp.c_fc.weight
+    - h.8.mlp.c_fc.bias
+    - h.4.ln_2.bias
+    - h.11.mlp.c_fc.weight
+    - h.11.attn.c_attn.bias
+    - h.11.ln_2.bias
+    - h.10.attn.c_attn.weight
+    - h.10.attn.c_attn.bias
+test_results:
+  attack_resistance:
+    bit_flip:
+      attack_method: bit_flip
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 4
+      performance_impact: .nan
+    fgsm:
+      attack_method: fgsm
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 2
+      performance_impact: .nan
+    pgd:
+      attack_method: pgd
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 1
+      performance_impact: .nan
+    random_noise:
+      attack_method: random_noise
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 0
+      performance_impact: .nan
+  defense_success_rate: 0.5
+  overall_robustness_score: !!python/object/apply:numpy._core.multiarray.scalar
+  - !!python/object/apply:numpy.dtype
+    args:
+    - f8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    AAAAAAAA5D8=
+  overall_security_score: 1.0
+  protection_effectiveness:
+    bit_flip: 1.0
+    fgsm: 1.0
+    pgd: 0.5
+    random_noise: 0.0

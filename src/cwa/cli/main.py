@@ -471,7 +471,7 @@ def run_phase_c(
 
         # Load previous results
         with open(critical_weights_file, 'r') as f:
-            phase_a_results = yaml.safe_load(f)
+            phase_a_results = yaml.unsafe_load(f)
         critical_weights = phase_a_results["critical_weights"]
 
         with open(attack_results_file, 'r') as f:
@@ -503,8 +503,22 @@ def run_phase_c(
 
         # Test protected model
         console.print("[yellow]Testing protected model...[/yellow]")
-        protector = CriticalWeightProtector(model)
-        test_results = protector.test_protected_model(model, successful_attacks)
+
+        # If no successful attacks, create synthetic test suite
+        if len(successful_attacks) == 0:
+            console.print("[yellow]No successful attacks found, using synthetic attack suite for testing...[/yellow]")
+            synthetic_attacks = ["fgsm", "pgd", "bit_flip", "random_noise"]
+            test_results = defense_manager.test_protected_model(model, synthetic_attacks)
+        else:
+            test_results = defense_manager.test_protected_model(model, successful_attacks)
+
+        # Calculate overall security score based on protection coverage
+        protection_coverage = protection_results.get("protection_coverage", 0.0)
+        residual_risk = protection_results.get("residual_vulnerability", {}).get("residual_risk_score", 1.0)
+
+        # Security score: combination of coverage and risk reduction
+        security_score = min(1.0, protection_coverage * (1.0 - max(0.0, residual_risk)))
+        test_results["overall_security_score"] = security_score
 
         # Save results
         results_path = Path(output_dir) / "protection_results.yaml"
