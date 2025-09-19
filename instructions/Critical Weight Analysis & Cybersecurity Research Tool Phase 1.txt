@@ -1,0 +1,1591 @@
+CLAUDE CODE INSTRUCTIONS - PHASE 1: FOUNDATION BUILD
+========================================================
+
+OBJECTIVE
+---------
+Build a WORKING foundation for the Critical Weight Analysis & Cybersecurity Research Tool with HUGGING FACE LLM SUPPORT optimized for **LAMBDA LABS GPU VMs**. Focus on creating a complete project structure with basic functionality that runs successfully with Small, Medium, and Large Hugging Face language models on Lambda Labs high-performance GPU infrastructure. Advanced ML/security algorithms will be added iteratively later.
+
+DELIVERABLE: A functional CLI tool optimized for Lambda Labs GPUs that can load Hugging Face LLMs (GPT-2, LLaMA, Mistral, etc.), run basic analysis with GPU acceleration, and generate reports with optimized memory management for Lambda Labs VM configurations.
+
+PHASE 1: PROJECT SETUP (Python 3.12+ with uv)
+==============================================
+
+1. Initialize Project Structure
+------------------------------
+Create this EXACT directory structure:
+
+```
+critical-weight-analysis-v2/
+├── pyproject.toml
+├── README.md
+├── .gitignore
+├── configs/
+│   ├── models/
+│   │   ├── small_models/
+│   │   │   ├── gpt2.yaml
+│   │   │   ├── distilgpt2.yaml
+│   │   │   └── phi2.yaml
+│   │   ├── medium_models/
+│   │   │   ├── gpt2_medium.yaml
+│   │   │   ├── mistral_7b.yaml
+│   │   │   └── llama2_7b.yaml
+│   │   └── large_models/
+│   │       ├── llama2_13b.yaml
+│   │       ├── mistral_8x7b.yaml
+│   │       └── llama3_70b.yaml
+│   ├── experiments/
+│   │   ├── small_model_analysis.yaml
+│   │   ├── medium_model_analysis.yaml
+│   │   └── large_model_analysis.yaml
+│   └── security/
+│       └── default_security.yaml
+├── src/
+│   ├── cwa/
+│   │   ├── __init__.py
+│   │   ├── core/
+│   │   │   ├── __init__.py
+│   │   │   ├── interfaces.py
+│   │   │   ├── models.py
+│   │   │   ├── data.py
+│   │   │   └── config.py
+│   │   ├── sensitivity/
+│   │   │   ├── __init__.py
+│   │   │   ├── basic_sensitivity.py
+│   │   │   └── registry.py
+│   │   ├── perturbation/
+│   │   │   ├── __init__.py
+│   │   │   ├── basic_methods.py
+│   │   │   └── registry.py
+│   │   ├── security/
+│   │   │   ├── __init__.py
+│   │   │   ├── basic_attacks.py
+│   │   │   └── basic_defenses.py
+│   │   ├── evaluation/
+│   │   │   ├── __init__.py
+│   │   │   └── basic_metrics.py
+│   │   ├── utils/
+│   │   │   ├── __init__.py
+│   │   │   ├── logging.py
+│   │   │   └── plotting.py
+│   │   └── cli/
+│   │       ├── __init__.py
+│   │       └── main.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_basic_functionality.py
+│   └── fixtures/
+│       └── sample_config.yaml
+└── examples/
+    └── basic_usage.py
+```
+
+2. Setup uv Environment
+----------------------
+```bash
+# Install uv if not already installed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create project
+mkdir critical-weight-analysis-v2
+cd critical-weight-analysis-v2
+uv init --python 3.12
+
+# Add core dependencies for Hugging Face LLM support
+uv add torch>=2.1.0
+uv add transformers>=4.35.0
+uv add accelerate>=0.24.0  # For large model loading
+uv add bitsandbytes>=0.41.0  # For quantization (optional)
+uv add numpy>=1.26.0
+uv add pandas>=2.1.0
+uv add matplotlib>=3.8.0
+uv add pydantic>=2.5.0
+uv add typer>=0.9.0
+uv add rich>=13.7.0
+uv add pyyaml>=6.0.1
+uv add tqdm>=4.66.0
+uv add psutil>=5.9.0  # For memory monitoring
+uv add sentencepiece>=0.1.99  # For some tokenizers
+
+# Add dev dependencies
+uv add --dev pytest>=7.4.0
+uv add --dev black>=23.11.0
+uv add --dev ruff>=0.1.6
+```
+
+3. Create pyproject.toml
+------------------------
+```toml
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "critical-weight-analysis"
+version = "1.0.0"
+description = "Critical Weight Analysis & Cybersecurity for Transformer Models - Lambda Labs GPU Optimized"
+requires-python = ">=3.12"
+dependencies = [
+    # NOTE: PyTorch installed separately with CUDA 12.6 support
+    # torch>=2.1.0 - Use: uv pip install torch --index-url https://download.pytorch.org/whl/cu126
+    "transformers>=4.35.0",
+    "accelerate>=0.24.0",
+    "numpy>=1.26.0",
+    "pandas>=2.1.0", 
+    "matplotlib>=3.8.0",
+    "pydantic>=2.5.0",
+    "typer>=0.9.0",
+    "rich>=13.7.0",
+    "pyyaml>=6.0.1",
+    "tqdm>=4.66.0",
+    "psutil>=5.9.0",
+    "sentencepiece>=0.1.99",
+    "nvidia-ml-py>=12.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "black>=23.11.0",
+    "ruff>=0.1.6",
+]
+quantization = [
+    "bitsandbytes>=0.41.0",
+]
+lambda-optimized = [
+    "flash-attn>=2.0.0",  # For Lambda Labs GPU optimization
+    "triton>=2.1.0",      # GPU kernel optimization
+]
+
+[project.scripts]
+cwa = "cwa.cli.main:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+```
+
+PHASE 2: CORE INTERFACES (FOUNDATION ONLY)
+==========================================
+
+4. Create Core Interfaces (src/cwa/core/interfaces.py)
+-----------------------------------------------------
+```python
+"""Core interfaces for Critical Weight Analysis tool."""
+from abc import ABC, abstractmethod
+from typing import Dict, List, Any, Optional, Protocol
+from dataclasses import dataclass
+from pathlib import Path
+import torch
+
+@dataclass
+class SensitivityResult:
+    """Results from sensitivity analysis."""
+    values: Dict[str, torch.Tensor]
+    metadata: Dict[str, Any]
+    metric_name: str
+    top_k_weights: List[tuple]  # (layer_name, param_idx, score)
+
+@dataclass
+class PerturbationResult:
+    """Results from perturbation experiment."""
+    baseline_metrics: Dict[str, float]
+    perturbed_metrics: Dict[str, float]
+    delta_metrics: Dict[str, float]
+    perturbation_stats: Dict[str, Any]
+
+@dataclass
+class SecurityResult:
+    """Basic security analysis results."""
+    vulnerability_score: float
+    critical_weights: List[tuple]
+    recommendations: List[str]
+
+class SensitivityMetric(Protocol):
+    """Protocol for sensitivity metrics."""
+    
+    def compute(
+        self, 
+        model: torch.nn.Module,
+        data_loader: Any,
+        **kwargs
+    ) -> SensitivityResult:
+        """Compute sensitivity scores."""
+        ...
+
+class PerturbationMethod(Protocol):
+    """Protocol for perturbation methods."""
+    
+    def apply(
+        self,
+        model: torch.nn.Module,
+        target_weights: List[tuple],
+        **kwargs
+    ) -> None:
+        """Apply perturbation to model weights."""
+        ...
+```
+
+5. Create Configuration System (src/cwa/core/config.py)
+-----------------------------------------------------
+```python
+"""Configuration management using Pydantic."""
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, Field
+from pathlib import Path
+
+class ModelConfig(BaseModel):
+    """Hugging Face LLM model configuration optimized for Lambda Labs GPUs."""
+    name: str = "microsoft/DialoGPT-small"  # Default to small model for testing
+    model_size: str = "small"  # small, medium, large
+    device: str = "cuda"  # Lambda Labs: Default to CUDA (GPU-first)
+    torch_dtype: str = "float16"  # Lambda Labs: Default to FP16 for GPU efficiency
+    max_length: int = 512
+    quantization: Optional[str] = None  # None, "8bit", "4bit" 
+    device_map: Optional[str] = "auto"  # Lambda Labs: Auto device mapping
+    max_memory: Optional[Dict[str, str]] = None  # e.g., {"0": "20GiB", "cpu": "50GiB"}
+    low_cpu_mem_usage: bool = True
+    trust_remote_code: bool = False
+    
+    # Lambda Labs GPU optimizations
+    use_flash_attention_2: bool = True  # Enable Flash Attention on supported models
+    torch_compile: bool = False  # PyTorch 2.0 compilation (can add later)
+    
+    # Hugging Face specific options
+    use_auth_token: Optional[str] = None
+    revision: Optional[str] = None
+    cache_dir: Optional[str] = "/tmp/hf_cache"  # Lambda Labs: Use faster local storage
+    
+class SensitivityConfig(BaseModel):
+    """Sensitivity analysis configuration."""
+    metric: str = "basic_gradient"
+    top_k: int = 100
+    mode: str = "global"  # global or per_layer
+    
+class PerturbationConfig(BaseModel):
+    """Perturbation configuration."""
+    methods: List[str] = ["zero", "noise"]
+    scales: Dict[str, float] = {"noise": 0.1}
+    
+class SecurityConfig(BaseModel):
+    """Basic security configuration."""
+    enabled: bool = True
+    vulnerability_threshold: float = 0.5
+    
+class ExperimentConfig(BaseModel):
+    """Main experiment configuration."""
+    name: str
+    model: ModelConfig = Field(default_factory=ModelConfig)
+    sensitivity: SensitivityConfig = Field(default_factory=SensitivityConfig)
+    perturbation: PerturbationConfig = Field(default_factory=PerturbationConfig)
+    security: SecurityConfig = Field(default_factory=SecurityConfig)
+    data_samples: int = 100
+    random_seed: int = 42
+    output_dir: str = "outputs"
+    
+    @classmethod
+    def from_yaml(cls, path: Path) -> "ExperimentConfig":
+        """Load configuration from YAML file."""
+        import yaml
+        with open(path) as f:
+            data = yaml.safe_load(f)
+        return cls(**data)
+```
+
+6. Create Model Management (src/cwa/core/models.py)
+-------------------------------------------------
+```python
+"""Lambda Labs optimized Hugging Face LLM model management utilities."""
+import torch
+from transformers import (
+    AutoModel, AutoTokenizer, AutoModelForCausalLM, 
+    BitsAndBytesConfig, pipeline
+)
+from accelerate import init_empty_weights, load_checkpoint_and_dispatch
+from typing import Dict, Any, Optional, Union
+import logging
+import psutil
+from pathlib import Path
+
+# Lambda Labs specific imports
+try:
+    import nvidia_ml_py as nvml
+    NVML_AVAILABLE = True
+except ImportError:
+    NVML_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
+
+class LambdaLabsLLMManager:
+    """Manages Hugging Face LLM loading optimized for Lambda Labs GPU VMs."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.model_name = config.get("name", "microsoft/DialoGPT-small")
+        self.model_size = config.get("model_size", "small")
+        self.device = config.get("device", "cuda")
+        self.torch_dtype = config.get("torch_dtype", "float16")
+        self.quantization = config.get("quantization")
+        self.device_map = config.get("device_map", "auto")
+        self.max_memory = config.get("max_memory")
+        self.low_cpu_mem_usage = config.get("low_cpu_mem_usage", True)
+        self.trust_remote_code = config.get("trust_remote_code", False)
+        self.max_length = config.get("max_length", 512)
+        self.use_flash_attention_2 = config.get("use_flash_attention_2", True)
+        self.cache_dir = config.get("cache_dir", "/tmp/hf_cache")
+        
+        self.model = None
+        self.tokenizer = None
+        self.model_info = {}
+        
+        # Initialize NVIDIA monitoring for Lambda Labs
+        if NVML_AVAILABLE:
+            try:
+                nvml.nvmlInit()
+                self.nvml_enabled = True
+                logger.info("NVIDIA monitoring enabled for Lambda Labs")
+            except:
+                self.nvml_enabled = False
+                logger.warning("NVIDIA monitoring not available")
+        else:
+            self.nvml_enabled = False
+            
+    def _detect_lambda_gpu_config(self) -> Dict[str, Any]:
+        """Detect Lambda Labs GPU configuration and optimize accordingly."""
+        gpu_info = {"gpu_count": 0, "total_gpu_memory": 0, "gpu_names": []}
+        
+        if torch.cuda.is_available():
+            gpu_info["gpu_count"] = torch.cuda.device_count()
+            
+            if self.nvml_enabled:
+                try:
+                    for i in range(gpu_info["gpu_count"]):
+                        handle = nvml.nvmlDeviceGetHandleByIndex(i)
+                        name = nvml.nvmlDeviceGetName(handle).decode('utf-8')
+                        memory_info = nvml.nvmlDeviceGetMemoryInfo(handle)
+                        gpu_info["gpu_names"].append(name)
+                        gpu_info["total_gpu_memory"] += memory_info.total / (1024**3)  # GB
+                        
+                        logger.info(f"Detected Lambda Labs GPU {i}: {name} with {memory_info.total / (1024**3):.1f} GB")
+                        
+                except Exception as e:
+                    logger.warning(f"Failed to get detailed GPU info: {e}")
+            
+            # Lambda Labs optimization based on detected hardware
+            if gpu_info["gpu_count"] >= 2:
+                # Multi-GPU setup - use device map auto
+                self.device_map = "auto"
+                logger.info("Multi-GPU Lambda setup detected - using auto device mapping")
+            
+            # Memory optimization for Lambda Labs VMs
+            if gpu_info["total_gpu_memory"] > 70:  # A100 80GB or similar
+                self.max_memory = {"0": "70GiB", "cpu": "100GiB"}
+                logger.info("High-memory Lambda GPU detected - optimizing for large models")
+            elif gpu_info["total_gpu_memory"] > 40:  # A100 40GB or similar  
+                self.max_memory = {"0": "35GiB", "cpu": "50GiB"}
+                logger.info("Lambda A100 40GB detected - optimizing memory allocation")
+            elif gpu_info["total_gpu_memory"] > 20:  # RTX 4090 or similar
+                self.max_memory = {"0": "20GiB", "cpu": "30GiB"}
+                logger.info("Lambda RTX GPU detected - conservative memory allocation")
+                
+        return gpu_info
+        
+    def _get_quantization_config(self) -> Optional[BitsAndBytesConfig]:
+        """Get quantization configuration optimized for Lambda Labs GPUs."""
+        if self.quantization == "8bit":
+            return BitsAndBytesConfig(
+                load_in_8bit=True,
+                llm_int8_enable_fp32_cpu_offload=True,
+                llm_int8_threshold=6.0  # Optimized for Lambda GPUs
+            )
+        elif self.quantization == "4bit":
+            return BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_storage=torch.uint8  # Lambda Labs optimization
+            )
+        return None
+        
+    def _determine_device_strategy(self) -> Dict[str, Any]:
+        """Determine optimal device strategy for Lambda Labs GPU VMs."""
+        # Detect Lambda Labs GPU configuration first
+        gpu_config = self._detect_lambda_gpu_config()
+        
+        load_kwargs = {
+            "low_cpu_mem_usage": self.low_cpu_mem_usage,
+            "trust_remote_code": self.trust_remote_code,
+            "cache_dir": self.cache_dir
+        }
+        
+        # Lambda Labs: Default to float16 for GPU efficiency
+        if self.torch_dtype == "auto":
+            load_kwargs["torch_dtype"] = torch.float16  # Lambda default
+        else:
+            dtype_map = {
+                "float16": torch.float16,
+                "float32": torch.float32,
+                "bfloat16": torch.bfloat16
+            }
+            load_kwargs["torch_dtype"] = dtype_map.get(self.torch_dtype, torch.float16)
+        
+        # Lambda Labs: Always use device mapping for optimal GPU utilization
+        load_kwargs["device_map"] = self.device_map
+        if self.max_memory:
+            load_kwargs["max_memory"] = self.max_memory
+            
+        # Add quantization for medium/large models on Lambda Labs
+        quantization_config = self._get_quantization_config()
+        if quantization_config:
+            load_kwargs["quantization_config"] = quantization_config
+            
+        # Lambda Labs: Enable Flash Attention 2 for supported models
+        if self.use_flash_attention_2:
+            load_kwargs["use_flash_attention_2"] = True
+            
+        return load_kwargs
+        
+    def _log_lambda_memory_usage(self, stage: str):
+        """Log memory usage with Lambda Labs specific details."""
+        if torch.cuda.is_available():
+            for i in range(torch.cuda.device_count()):
+                allocated = torch.cuda.memory_allocated(i) / 1024**3  # GB
+                reserved = torch.cuda.memory_reserved(i) / 1024**3    # GB
+                logger.info(f"{stage} - Lambda GPU {i}: Allocated {allocated:.2f}GB, Reserved {reserved:.2f}GB")
+        
+        cpu_memory = psutil.virtual_memory()
+        logger.info(f"{stage} - Lambda VM CPU Memory: {cpu_memory.percent:.1f}% used ({cpu_memory.used / 1024**3:.1f}GB / {cpu_memory.total / 1024**3:.1f}GB)")
+        
+    def load_model(self) -> torch.nn.Module:
+        """Load Hugging Face LLM optimized for Lambda Labs GPU VMs."""
+        try:
+            logger.info(f"Loading model on Lambda Labs: {self.model_name} (Size: {self.model_size})")
+            self._log_lambda_memory_usage("Before loading")
+            
+            # Verify GPU availability on Lambda Labs
+            if not torch.cuda.is_available():
+                logger.error("CUDA not available - Lambda Labs GPU not detected!")
+                raise RuntimeError("Lambda Labs GPU environment required but CUDA not available")
+                
+            logger.info(f"Lambda Labs GPU detected: {torch.cuda.get_device_name()}")
+            
+            # Load tokenizer first (lightweight)
+            logger.info("Loading tokenizer...")
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name,
+                trust_remote_code=self.trust_remote_code,
+                cache_dir=self.cache_dir
+            )
+            
+            # Add special tokens if missing
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = "[PAD]"
+                
+            # Determine Lambda Labs optimized loading strategy
+            load_kwargs = self._determine_device_strategy()
+            
+            logger.info(f"Loading model with Lambda Labs optimization: {load_kwargs}")
+            
+            # Try to load as causal LM first (most LLMs), fallback to base model
+            try:
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_name,
+                    **load_kwargs
+                )
+                self.model_info["model_type"] = "CausalLM"
+            except Exception as e:
+                logger.warning(f"Failed to load as CausalLM, trying base model: {e}")
+                # Remove Flash Attention for base models
+                if "use_flash_attention_2" in load_kwargs:
+                    load_kwargs.pop("use_flash_attention_2")
+                self.model = AutoModel.from_pretrained(
+                    self.model_name,
+                    **load_kwargs
+                )
+                self.model_info["model_type"] = "BaseModel"
+            
+            # Set to evaluation mode
+            self.model.eval()
+            
+            # Lambda Labs: Optimize for inference
+            if hasattr(self.model, 'gradient_checkpointing_disable'):
+                self.model.gradient_checkpointing_disable()
+                
+            self._log_lambda_memory_usage("After loading")
+            
+            # Gather model information
+            self._collect_model_info()
+            
+            logger.info(f"Lambda Labs model loaded successfully: {self.get_model_info()}")
+            return self.model
+            
+        except Exception as e:
+            logger.error(f"Failed to load model on Lambda Labs {self.model_name}: {e}")
+            raise
+            
+    def _collect_model_info(self):
+        """Collect comprehensive model information."""
+        if self.model is None:
+            return
+            
+        # Basic parameter counts
+        total_params = sum(p.numel() for p in self.model.parameters())
+        trainable_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+        
+        self.model_info.update({
+            "model_name": self.model_name,
+            "model_size_category": self.model_size,
+            "total_parameters": total_params,
+            "trainable_parameters": trainable_params,
+            "parameters_in_millions": round(total_params / 1_000_000, 2),
+            "architecture": self.model.config.model_type if hasattr(self.model, 'config') else 'unknown',
+            "hidden_size": getattr(self.model.config, 'hidden_size', 'unknown'),
+            "num_layers": getattr(self.model.config, 'num_hidden_layers', 'unknown'),
+            "vocab_size": getattr(self.model.config, 'vocab_size', len(self.tokenizer) if self.tokenizer else 'unknown'),
+            "max_position_embeddings": getattr(self.model.config, 'max_position_embeddings', 'unknown'),
+            "device_placement": str(next(self.model.parameters()).device) if self.model.parameters() else 'unknown',
+            "dtype": str(next(self.model.parameters()).dtype) if self.model.parameters() else 'unknown',
+            "quantized": self.quantization is not None,
+        })
+        
+    def get_model_info(self) -> Dict[str, Any]:
+        """Get comprehensive model information."""
+        return self.model_info.copy()
+        
+    def get_named_parameters(self) -> Dict[str, torch.Tensor]:
+        """Get named parameters for analysis."""
+        if self.model is None:
+            raise RuntimeError("Model not loaded")
+        return dict(self.model.named_parameters())
+        
+    def estimate_memory_usage(self) -> Dict[str, float]:
+        """Estimate memory usage for the model."""
+        if self.model is None:
+            return {"error": "Model not loaded"}
+            
+        model_size_bytes = sum(p.numel() * p.element_size() for p in self.model.parameters())
+        model_size_gb = model_size_bytes / (1024**3)
+        
+        return {
+            "model_size_gb": model_size_gb,
+            "estimated_inference_gb": model_size_gb * 1.2,  # Rough estimate
+            "current_gpu_usage_gb": torch.cuda.memory_allocated() / (1024**3) if torch.cuda.is_available() else 0
+        }
+
+# Keep backwards compatibility
+HuggingFaceLLMManager = LambdaLabsLLMManager
+ModelManager = LambdaLabsLLMManager
+```
+
+7. Create Data Handling (src/cwa/core/data.py)
+---------------------------------------------
+```python
+"""Basic data handling utilities."""
+import torch
+from torch.utils.data import DataLoader, Dataset
+from typing import List, Any
+import logging
+
+logger = logging.getLogger(__name__)
+
+class SimpleTextDataset(Dataset):
+    """Simple text dataset for basic testing."""
+    
+    def __init__(self, texts: List[str], tokenizer: Any, max_length: int = 512):
+        self.texts = texts
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+        
+    def __len__(self):
+        return len(self.texts)
+        
+    def __getitem__(self, idx):
+        text = self.texts[idx]
+        encoding = self.tokenizer(
+            text,
+            truncation=True,
+            padding=True,
+            max_length=self.max_length,
+            return_tensors="pt"
+        )
+        return {
+            "input_ids": encoding["input_ids"].squeeze(),
+            "attention_mask": encoding["attention_mask"].squeeze(),
+            "text": text
+        }
+
+def create_sample_data(num_samples: int = 10) -> List[str]:
+    """Create sample text data for testing."""
+    sample_texts = [
+        "The quick brown fox jumps over the lazy dog.",
+        "Machine learning models require careful analysis.",
+        "Critical weights can significantly impact model performance.",
+        "Security analysis is important for robust AI systems.",
+        "Transformer models have revolutionized natural language processing.",
+        "Adversarial attacks pose threats to deep learning models.",
+        "Fault tolerance is crucial for deployment in harsh environments.",
+        "Weight sensitivity analysis helps understand model behavior.",
+        "Defense mechanisms can protect against various attacks.",
+        "Research in AI security continues to advance rapidly."
+    ]
+    
+    # Repeat and slice to get desired number of samples
+    samples = (sample_texts * ((num_samples // len(sample_texts)) + 1))[:num_samples]
+    logger.info(f"Created {len(samples)} sample texts for analysis")
+    return samples
+
+def create_data_loader(
+    texts: List[str], 
+    tokenizer: Any, 
+    batch_size: int = 2,
+    max_length: int = 512
+) -> DataLoader:
+    """Create data loader for analysis."""
+    dataset = SimpleTextDataset(texts, tokenizer, max_length)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=False)
+```
+
+PHASE 3: BASIC IMPLEMENTATIONS (WORKING BUT SIMPLE)
+===================================================
+
+8. Create Basic Sensitivity Analysis (src/cwa/sensitivity/basic_sensitivity.py)
+------------------------------------------------------------------------------
+```python
+"""Basic sensitivity analysis implementations."""
+import torch
+import torch.nn.functional as F
+from typing import Dict, List, Any
+from ..core.interfaces import SensitivityResult
+import logging
+
+logger = logging.getLogger(__name__)
+
+def compute_basic_gradient_sensitivity(
+    model: torch.nn.Module,
+    data_loader: Any,
+    top_k: int = 100,
+    **kwargs
+) -> SensitivityResult:
+    """
+    Compute basic gradient-based sensitivity.
+    This is a simplified version for the foundation build.
+    """
+    model.eval()
+    all_gradients = {}
+    
+    logger.info("Computing basic gradient sensitivity...")
+    
+    # Initialize gradient storage
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            all_gradients[name] = torch.zeros_like(param)
+    
+    num_batches = 0
+    for batch in data_loader:
+        try:
+            # Simple forward pass
+            model.zero_grad()
+            
+            if hasattr(model, 'transformer'):  # GPT-style model
+                outputs = model(**{k: v for k, v in batch.items() if k in ['input_ids', 'attention_mask']})
+                # Use a simple loss (mean of hidden states)
+                if hasattr(outputs, 'last_hidden_state'):
+                    loss = outputs.last_hidden_state.mean()
+                else:
+                    loss = outputs[0].mean()
+            else:
+                # Fallback for other model types
+                loss = model(**batch).mean()
+            
+            loss.backward()
+            
+            # Accumulate gradients
+            for name, param in model.named_parameters():
+                if param.requires_grad and param.grad is not None:
+                    all_gradients[name] += param.grad.abs()
+                    
+            num_batches += 1
+            
+            if num_batches >= 10:  # Limit for foundation build
+                break
+                
+        except Exception as e:
+            logger.warning(f"Skipping batch due to error: {e}")
+            continue
+    
+    if num_batches == 0:
+        logger.error("No successful batches processed")
+        return SensitivityResult(
+            values={},
+            metadata={"error": "No successful batches"},
+            metric_name="basic_gradient",
+            top_k_weights=[]
+        )
+    
+    # Average gradients
+    for name in all_gradients:
+        all_gradients[name] /= num_batches
+    
+    # Get top-k weights
+    all_scores = []
+    for name, grads in all_gradients.items():
+        flat_grads = grads.flatten()
+        for i, score in enumerate(flat_grads):
+            all_scores.append((name, i, score.item()))
+    
+    # Sort by score and take top-k
+    all_scores.sort(key=lambda x: x[2], reverse=True)
+    top_k_weights = all_scores[:top_k]
+    
+    logger.info(f"Completed gradient sensitivity analysis. Top score: {top_k_weights[0][2]:.6f}")
+    
+    return SensitivityResult(
+        values=all_gradients,
+        metadata={"num_batches": num_batches, "method": "basic_gradient"},
+        metric_name="basic_gradient",
+        top_k_weights=top_k_weights
+    )
+```
+
+9. Create Registry System (src/cwa/sensitivity/registry.py)
+---------------------------------------------------------
+```python
+"""Registry for sensitivity metrics."""
+from typing import Dict, Callable, Any
+from ..core.interfaces import SensitivityMetric
+
+_sensitivity_registry: Dict[str, Callable] = {}
+
+def register_sensitivity_metric(name: str):
+    """Decorator to register sensitivity metrics."""
+    def decorator(func: Callable):
+        _sensitivity_registry[name] = func
+        return func
+    return decorator
+
+def get_sensitivity_metric(name: str) -> Callable:
+    """Get sensitivity metric by name."""
+    if name not in _sensitivity_registry:
+        raise ValueError(f"Unknown sensitivity metric: {name}")
+    return _sensitivity_registry[name]
+
+def list_sensitivity_metrics() -> list[str]:
+    """List all available sensitivity metrics."""
+    return list(_sensitivity_registry.keys())
+
+# Register the basic metric
+from .basic_sensitivity import compute_basic_gradient_sensitivity
+register_sensitivity_metric("basic_gradient")(compute_basic_gradient_sensitivity)
+```
+
+10. Create Basic Perturbation Methods (src/cwa/perturbation/basic_methods.py)
+----------------------------------------------------------------------------
+```python
+"""Basic perturbation methods."""
+import torch
+from typing import List, Dict, Any
+import logging
+
+logger = logging.getLogger(__name__)
+
+def apply_zero_perturbation(
+    model: torch.nn.Module,
+    target_weights: List[tuple],
+    **kwargs
+) -> None:
+    """Set target weights to zero."""
+    logger.info(f"Applying zero perturbation to {len(target_weights)} weights")
+    
+    named_params = dict(model.named_parameters())
+    
+    for layer_name, param_idx, _ in target_weights:
+        if layer_name in named_params:
+            param = named_params[layer_name]
+            flat_param = param.data.flatten()
+            if param_idx < len(flat_param):
+                flat_param[param_idx] = 0.0
+                
+def apply_noise_perturbation(
+    model: torch.nn.Module,
+    target_weights: List[tuple],
+    scale: float = 0.1,
+    **kwargs
+) -> None:
+    """Add Gaussian noise to target weights."""
+    logger.info(f"Applying noise perturbation (scale={scale}) to {len(target_weights)} weights")
+    
+    named_params = dict(model.named_parameters())
+    
+    for layer_name, param_idx, _ in target_weights:
+        if layer_name in named_params:
+            param = named_params[layer_name]
+            flat_param = param.data.flatten()
+            if param_idx < len(flat_param):
+                noise = torch.randn(1) * scale
+                flat_param[param_idx] += noise.item()
+```
+
+11. Create Basic CLI (src/cwa/cli/main.py)
+-----------------------------------------
+```python
+"""Command line interface for Critical Weight Analysis tool."""
+import typer
+from rich.console import Console
+from rich.table import Table
+from pathlib import Path
+import yaml
+import logging
+from typing import Optional
+
+from ..core.config import ExperimentConfig
+from ..core.models import LambdaLabsLLMManager
+from ..core.data import create_sample_data, create_data_loader
+from ..sensitivity.registry import get_sensitivity_metric, list_sensitivity_metrics
+from ..utils.logging import setup_logging
+
+app = typer.Typer(help="Critical Weight Analysis & Cybersecurity Tool - Foundation")
+console = Console()
+
+@app.command()
+def run(
+    config_path: str,
+    output_dir: Optional[str] = None
+):
+    """Run a basic CWA experiment."""
+    try:
+        # Load configuration
+        config = ExperimentConfig.from_yaml(Path(config_path))
+        if output_dir:
+            config.output_dir = output_dir
+            
+        console.print(f"[bold green]Starting experiment: {config.name}[/bold green]")
+        
+        # Setup logging
+        setup_logging(Path(config.output_dir))
+        
+        # Create output directory
+        Path(config.output_dir).mkdir(parents=True, exist_ok=True)
+        
+        # Load model with Lambda Labs optimization
+        console.print("[yellow]Loading Hugging Face LLM on Lambda Labs GPU...[/yellow]")
+        model_manager = LambdaLabsLLMManager(config.model.dict())
+        model = model_manager.load_model()
+        
+        # Display Lambda Labs specific memory usage
+        memory_info = model_manager.estimate_memory_usage()
+        console.print(f"[blue]Lambda Labs GPU Memory Usage: {memory_info.get('model_size_gb', 0):.2f} GB[/blue]")
+        
+        # Create sample data
+        console.print("[yellow]Creating sample data...[/yellow]")
+        sample_texts = create_sample_data(config.data_samples)
+        data_loader = create_data_loader(sample_texts, model_manager.tokenizer)
+        
+        # Run sensitivity analysis
+        console.print("[yellow]Running sensitivity analysis...[/yellow]")
+        sensitivity_func = get_sensitivity_metric(config.sensitivity.metric)
+        results = sensitivity_func(
+            model=model,
+            data_loader=data_loader,
+            top_k=config.sensitivity.top_k
+        )
+        
+        # Save results
+        results_path = Path(config.output_dir) / "results.yaml"
+        with open(results_path, 'w') as f:
+            yaml.dump({
+                "experiment": config.name,
+                "model_info": model_manager.get_model_info(),
+                "sensitivity_results": {
+                    "metric": results.metric_name,
+                    "top_weights": results.top_k_weights[:10],  # Save top 10
+                    "metadata": results.metadata
+                }
+            }, f)
+            
+        console.print(f"[bold green]✅ Experiment completed! Results saved to {results_path}[/bold green]")
+        
+        # Display summary
+        _display_results_summary(results, model_manager.get_model_info())
+        
+    except Exception as e:
+        console.print(f"[bold red]❌ Experiment failed: {e}[/bold red]")
+        raise
+
+@app.command()
+def create_config(
+    name: str,
+    model: str = "microsoft/DialoGPT-small",
+    model_size: str = "small",
+    metric: str = "basic_gradient",
+    device: str = "cuda",  # Lambda Labs default
+    quantization: Optional[str] = None,
+    output_path: str = "config.yaml"
+):
+    """Create a new experiment configuration optimized for Lambda Labs GPU VMs."""
+    config = ExperimentConfig(
+        name=name,
+        model={
+            "name": model, 
+            "model_size": model_size,
+            "device": device,
+            "torch_dtype": "float16",  # Lambda Labs default
+            "quantization": quantization,
+            "device_map": "auto",
+            "cache_dir": "/tmp/hf_cache"
+        },
+        sensitivity={"metric": metric}
+    )
+    
+    with open(output_path, 'w') as f:
+        yaml.dump(config.dict(), f, default_flow_style=False)
+        
+    console.print(f"[green]✅ Lambda Labs configuration saved to {output_path}[/green]")
+    console.print(f"[blue]Model: {model} (Size: {model_size}, Device: {device}, FP16 optimized)[/blue]")
+
+@app.command()
+def list_models():
+    """List recommended Hugging Face LLM models by size category."""
+    
+    models_by_size = {
+        "small": [
+            ("microsoft/DialoGPT-small", "124M parameters - Good for testing"),
+            ("gpt2", "124M parameters - Classic GPT-2"),
+            ("distilgpt2", "82M parameters - Distilled GPT-2"),
+            ("microsoft/phi-2", "2.7B parameters - Microsoft Phi-2")
+        ],
+        "medium": [
+            ("gpt2-medium", "355M parameters - GPT-2 Medium"),
+            ("microsoft/phi-3-mini-4k-instruct", "3.8B parameters - Phi-3 Mini"),
+            ("mistralai/Mistral-7B-v0.1", "7B parameters - Mistral 7B"),
+            ("meta-llama/Llama-2-7b-hf", "7B parameters - LLaMA 2 7B")
+        ],
+        "large": [
+            ("meta-llama/Llama-2-13b-hf", "13B parameters - LLaMA 2 13B"),
+            ("mistralai/Mixtral-8x7B-v0.1", "46.7B parameters - Mixtral 8x7B"),
+            ("meta-llama/Llama-2-70b-hf", "70B parameters - LLaMA 2 70B"),
+            ("microsoft/phi-3-medium-4k-instruct", "14B parameters - Phi-3 Medium")
+        ]
+    }
+    
+    for size, models in models_by_size.items():
+        table = Table(title=f"{size.title()} Models")
+        table.add_column("Model Name", style="cyan")
+        table.add_column("Description", style="green")
+        
+        for model_name, description in models:
+            table.add_row(model_name, description)
+        
+        console.print(table)
+        console.print()  # Add spacing
+
+@app.command()
+def model_info(model_name: str):
+    """Get detailed information about a specific Hugging Face model for Lambda Labs."""
+    try:
+        console.print(f"[yellow]Loading model info for Lambda Labs: {model_name}[/yellow]")
+        
+        # Create a minimal config to get model info
+        config = {"name": model_name, "model_size": "unknown", "device": "cuda"}
+        manager = LambdaLabsLLMManager(config)
+        
+        # Load just the tokenizer and config (lightweight)
+        from transformers import AutoConfig, AutoTokenizer
+        
+        model_config = AutoConfig.from_pretrained(model_name, cache_dir="/tmp/hf_cache")
+        tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir="/tmp/hf_cache")
+        
+        # Estimate parameters from config
+        vocab_size = getattr(model_config, 'vocab_size', 'unknown')
+        hidden_size = getattr(model_config, 'hidden_size', 'unknown')
+        num_layers = getattr(model_config, 'num_hidden_layers', 'unknown')
+        
+        table = Table(title=f"Lambda Labs Model Information: {model_name}")
+        table.add_column("Property", style="cyan")
+        table.add_column("Value", style="green")
+        
+        table.add_row("Architecture", getattr(model_config, 'model_type', 'unknown'))
+        table.add_row("Vocabulary Size", str(vocab_size))
+        table.add_row("Hidden Size", str(hidden_size))
+        table.add_row("Number of Layers", str(num_layers))
+        table.add_row("Max Position", str(getattr(model_config, 'max_position_embeddings', 'unknown')))
+        table.add_row("Lambda GPU Recommended", "✓ CUDA FP16" if torch.cuda.is_available() else "⚠️  CPU Fallback")
+        
+        console.print(table)
+        
+    except Exception as e:
+        console.print(f"[red]❌ Failed to get Lambda Labs model info: {e}[/red]")
+
+@app.command()
+def list_metrics():
+    """List available sensitivity metrics."""
+    metrics = list_sensitivity_metrics()
+    
+    table = Table(title="Available Sensitivity Metrics")
+    table.add_column("Metric Name", style="cyan")
+    table.add_column("Description", style="green")
+    
+    for metric in metrics:
+        # Add basic descriptions
+        descriptions = {
+            "basic_gradient": "Basic gradient-based sensitivity analysis"
+        }
+        table.add_row(metric, descriptions.get(metric, "No description available"))
+    
+    console.print(table)
+    """List available sensitivity metrics."""
+    metrics = list_sensitivity_metrics()
+    
+    table = Table(title="Available Sensitivity Metrics")
+    table.add_column("Metric Name", style="cyan")
+    table.add_column("Description", style="green")
+    
+    for metric in metrics:
+        # Add basic descriptions
+        descriptions = {
+            "basic_gradient": "Basic gradient-based sensitivity analysis"
+        }
+        table.add_row(metric, descriptions.get(metric, "No description available"))
+    
+    console.print(table)
+
+@app.command()
+def info():
+    """Show Lambda Labs system information."""
+    import torch
+    
+    table = Table(title="Lambda Labs System Information")
+    table.add_column("Component", style="cyan")
+    table.add_column("Status/Version", style="green")
+    
+    table.add_row("Python", "3.12+")
+    table.add_row("PyTorch", torch.__version__)
+    table.add_row("CUDA Available", "✓ Ready" if torch.cuda.is_available() else "❌ Not Available")
+    
+    if torch.cuda.is_available():
+        table.add_row("CUDA Version", torch.version.cuda)
+        table.add_row("GPU Count", str(torch.cuda.device_count()))
+        for i in range(torch.cuda.device_count()):
+            gpu_name = torch.cuda.get_device_name(i)
+            gpu_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3)
+            table.add_row(f"Lambda GPU {i}", f"{gpu_name} ({gpu_memory:.1f}GB)")
+    
+    table.add_row("Available Metrics", str(len(list_sensitivity_metrics())))
+    table.add_row("Cache Directory", "/tmp/hf_cache")
+    table.add_row("Optimized For", "Lambda Labs GPU VMs")
+    
+    console.print(table)
+
+def _display_results_summary(results, model_info):
+    """Display results summary."""
+    table = Table(title="Experiment Results Summary")
+    table.add_column("Metric", style="cyan")
+    table.add_column("Value", style="green")
+    
+    table.add_row("Model", model_info.get("model_name", "Unknown"))
+    table.add_row("Total Parameters", f"{model_info.get('total_parameters', 0):,}")
+    table.add_row("Sensitivity Metric", results.metric_name)
+    table.add_row("Top Weights Found", str(len(results.top_k_weights)))
+    
+    if results.top_k_weights:
+        table.add_row("Highest Score", f"{results.top_k_weights[0][2]:.6f}")
+        table.add_row("Most Critical Layer", results.top_k_weights[0][0])
+    
+    console.print(table)
+
+if __name__ == "__main__":
+    app()
+```
+
+PHASE 4: UTILITIES AND SUPPORT
+==============================
+
+12. Create Logging Utilities (src/cwa/utils/logging.py)
+------------------------------------------------------
+```python
+"""Logging utilities."""
+import logging
+from pathlib import Path
+from rich.logging import RichHandler
+
+def setup_logging(output_dir: Path, level: int = logging.INFO):
+    """Setup logging with both file and console output."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Create logger
+    logger = logging.getLogger()
+    logger.setLevel(level)
+    
+    # Clear existing handlers
+    logger.handlers.clear()
+    
+    # File handler
+    file_handler = logging.FileHandler(output_dir / "experiment.log")
+    file_formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    file_handler.setFormatter(file_formatter)
+    logger.addHandler(file_handler)
+    
+    # Rich console handler
+    console_handler = RichHandler(show_path=False)
+    console_handler.setFormatter(logging.Formatter('%(message)s'))
+    logger.addHandler(console_handler)
+    
+    return logger
+```
+
+13. Create Lambda Labs Optimized Configuration Templates
+--------------------------------------------------------------
+
+configs/models/small_models/gpt2.yaml:
+```yaml
+name: "gpt2"
+model_size: "small"
+device: "cuda"  # Lambda Labs default
+torch_dtype: "float16"  # GPU optimized
+max_length: 512
+quantization: null
+device_map: "auto"
+low_cpu_mem_usage: true
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+```
+
+configs/models/small_models/distilgpt2.yaml:
+```yaml
+name: "distilgpt2"
+model_size: "small"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 512
+quantization: null
+device_map: "auto"
+low_cpu_mem_usage: true
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+```
+
+configs/models/medium_models/mistral_7b.yaml:
+```yaml
+name: "mistralai/Mistral-7B-v0.1"
+model_size: "medium"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 2048
+quantization: "8bit"  # Recommended for Lambda GPU efficiency
+device_map: "auto"
+max_memory:
+  "0": "35GiB"  # Lambda Labs A100 40GB optimized
+  "cpu": "50GiB"
+low_cpu_mem_usage: true
+trust_remote_code: false
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+```
+
+configs/models/medium_models/llama2_7b.yaml:
+```yaml
+name: "meta-llama/Llama-2-7b-hf"
+model_size: "medium"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 2048
+quantization: "8bit"
+device_map: "auto"
+max_memory:
+  "0": "35GiB"
+  "cpu": "50GiB"
+low_cpu_mem_usage: true
+trust_remote_code: false
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+```
+
+configs/models/large_models/llama2_13b.yaml:
+```yaml
+name: "meta-llama/Llama-2-13b-hf"
+model_size: "large"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 2048
+quantization: "4bit"  # 4-bit for large models on Lambda GPUs
+device_map: "auto"
+max_memory:
+  "0": "70GiB"  # Lambda Labs A100 80GB optimized
+  "cpu": "100GiB"
+low_cpu_mem_usage: true
+trust_remote_code: false
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+```
+
+configs/experiments/small_model_analysis.yaml:
+```yaml
+name: "lambda_small_model_analysis"
+model:
+  name: "microsoft/DialoGPT-small"
+  model_size: "small"
+  device: "cuda"
+  torch_dtype: "float16"
+  device_map: "auto"
+  cache_dir: "/tmp/hf_cache"
+sensitivity:
+  metric: "basic_gradient"
+  top_k: 100
+data_samples: 50
+random_seed: 42
+output_dir: "outputs/lambda_small_analysis"
+```
+
+configs/experiments/medium_model_analysis.yaml:
+```yaml
+name: "lambda_medium_model_analysis"
+model:
+  name: "mistralai/Mistral-7B-v0.1"
+  model_size: "medium"
+  device: "cuda"
+  torch_dtype: "float16"
+  quantization: "8bit"
+  device_map: "auto"
+  max_memory:
+    "0": "35GiB"
+    "cpu": "50GiB"
+  cache_dir: "/tmp/hf_cache"
+  use_flash_attention_2: true
+sensitivity:
+  metric: "basic_gradient"
+  top_k: 200
+data_samples: 100
+random_seed: 42
+output_dir: "outputs/lambda_medium_analysis"
+```
+
+configs/experiments/large_model_analysis.yaml:
+```yaml
+name: "lambda_large_model_analysis"
+model:
+  name: "meta-llama/Llama-2-13b-hf"
+  model_size: "large"
+  device: "cuda"
+  torch_dtype: "float16"
+  quantization: "4bit"
+  device_map: "auto"
+  max_memory:
+    "0": "70GiB"
+    "cpu": "100GiB"
+  cache_dir: "/tmp/hf_cache"
+  use_flash_attention_2: true
+sensitivity:
+  metric: "basic_gradient"
+  top_k: 500
+data_samples: 200
+random_seed: 42
+output_dir: "outputs/lambda_large_analysis"
+```
+
+14. Create Basic Tests (tests/test_basic_functionality.py)
+--------------------------------------------------------
+```python
+"""Basic functionality tests."""
+import pytest
+import torch
+from pathlib import Path
+import tempfile
+
+from cwa.core.config import ExperimentConfig, ModelConfig
+from cwa.core.models import ModelManager
+from cwa.core.data import create_sample_data
+
+def test_config_loading():
+    """Test configuration loading."""
+    config = ExperimentConfig(name="test")
+    assert config.name == "test"
+    assert config.model.name == "gpt2"  # default
+
+def test_lambda_model_loading():
+    """Test Lambda Labs optimized model loading."""
+    # Use a very small model for testing on Lambda GPUs
+    config = {
+        "name": "microsoft/DialoGPT-small",
+        "model_size": "small", 
+        "device": "cuda",
+        "torch_dtype": "float16",
+        "cache_dir": "/tmp/hf_cache"
+    }
+    manager = LambdaLabsLLMManager(config)
+    
+    # Only test if CUDA is available (Lambda Labs requirement)
+    if torch.cuda.is_available():
+        model = manager.load_model()
+        assert model is not None
+        
+        info = manager.get_model_info()
+        assert "total_parameters" in info
+        assert info["total_parameters"] > 0
+        assert info["model_size_category"] == "small"
+
+def test_lambda_gpu_detection():
+    """Test Lambda Labs GPU detection."""
+    config = {
+        "name": "microsoft/DialoGPT-small",
+        "model_size": "small",
+        "device": "cuda"
+    }
+    manager = LambdaLabsLLMManager(config)
+    
+    if torch.cuda.is_available():
+        gpu_config = manager._detect_lambda_gpu_config()
+        assert "gpu_count" in gpu_config
+        assert gpu_config["gpu_count"] > 0
+
+def test_lambda_quantization_config():
+    """Test Lambda Labs quantization configuration."""
+    config = {
+        "name": "microsoft/DialoGPT-small",
+        "model_size": "small",
+        "quantization": "8bit",
+        "device": "cuda"
+    }
+    manager = LambdaLabsLLMManager(config)
+    quant_config = manager._get_quantization_config()
+    assert quant_config is not None
+    assert hasattr(quant_config, 'load_in_8bit')
+
+def test_sample_data_creation():
+    """Test sample data creation."""
+    texts = create_sample_data(5)
+    assert len(texts) == 5
+    assert all(isinstance(text, str) for text in texts)
+
+def test_basic_experiment():
+    """Test running a basic experiment."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        config = ExperimentConfig(
+            name="test_experiment",
+            model=ModelConfig(name="distilbert-base-uncased"),
+            data_samples=3,
+            output_dir=temp_dir
+        )
+        
+        # This would be the main experiment logic
+        # For now, just test that we can create the config
+        assert config.name == "test_experiment"
+        assert Path(temp_dir).exists()
+```
+
+15. Create README.md
+------------------
+```markdown
+# Critical Weight Analysis Tool - Lambda Labs GPU Edition
+
+A research toolkit for analyzing critical weights in **Hugging Face Large Language Models** with integrated cybersecurity analysis capabilities, **optimized specifically for Lambda Labs GPU VMs**. Supports Small (124M-3B), Medium (7B-13B), and Large (70B+) models with intelligent GPU memory management.
+
+## 🚀 Lambda Labs Optimization Features
+
+- **CUDA 12.6 PyTorch** installation optimized for Lambda GPUs
+- **Automatic GPU detection** and memory allocation for Lambda VM configurations  
+- **Flash Attention 2** support for maximum Lambda GPU efficiency
+- **Multi-GPU device mapping** for Lambda's high-end setups (A100, H100)
+- **Intelligent quantization** (8-bit/4-bit) based on Lambda GPU memory
+- **/tmp/hf_cache** for fast local storage on Lambda instances
+
+## Installation on Lambda Labs
+
+```bash
+# Clone the repository on your Lambda Labs VM
+git clone <repo-url> critical-weight-analysis-v2
+cd critical-weight-analysis-v2
+
+# Install with uv and Lambda Labs CUDA 12.6 support
+uv sync
+
+# IMPORTANT: Install PyTorch with Lambda Labs CUDA 12.6
+uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+
+# Install the tool
+uv pip install -e .
+
+# Optional: Add Lambda Labs optimizations
+uv add flash-attn  # For maximum GPU efficiency
+```
+
+## Lambda Labs Quick Start
+
+```bash
+# Verify Lambda Labs GPU setup
+cwa info  # Should show your Lambda GPU details
+
+# List models optimized for Lambda Labs
+cwa list-models
+
+# Create Lambda-optimized configurations
+cwa create-config --name lambda_test --model gpt2 --model-size small --device cuda
+cwa create-config --name lambda_7b --model "mistralai/Mistral-7B-v0.1" --model-size medium --quantization 8bit
+
+# Run analysis on Lambda Labs GPUs
+cwa run lambda_test_config.yaml
+```
+
+## Lambda Labs VM Recommendations by Model Size
+
+### Small Models (Perfect for Lambda GPU instances)
+- **Models**: GPT-2 (124M), DialoGPT-small (124M), Phi-2 (2.7B)
+- **Lambda Instance**: Any GPU instance (even RTX 4090)
+- **Settings**: FP16, no quantization needed
+- **Memory**: < 2GB GPU memory
+
+### Medium Models (Ideal for Lambda A100 40GB)
+- **Models**: Mistral-7B, LLaMA-2-7B, Phi-3-Mini
+- **Lambda Instance**: A100 40GB recommended
+- **Settings**: FP16 + 8-bit quantization
+- **Memory**: ~20GB GPU memory
+
+### Large Models (Requires Lambda A100 80GB or Multi-GPU)
+- **Models**: LLaMA-2-13B, Mixtral-8x7B, LLaMA-2-70B
+- **Lambda Instance**: A100 80GB or multi-GPU setup
+- **Settings**: FP16 + 4-bit quantization + device mapping
+- **Memory**: 40-70GB GPU memory
+
+## Example Lambda Labs Workflows
+
+### Single Lambda A100 40GB
+```bash
+# Medium model with 8-bit quantization
+cwa create-config --name a100_mistral \
+    --model "mistralai/Mistral-7B-v0.1" \
+    --model-size medium \
+    --quantization 8bit \
+    --device cuda
+
+cwa run a100_mistral_config.yaml
+```
+
+### Multi-GPU Lambda Setup (A100 80GB x2)
+```bash
+# Large model with device mapping
+cwa create-config --name multi_gpu_llama \
+    --model "meta-llama/Llama-2-13b-hf" \
+    --model-size large \
+    --quantization 4bit \
+    --device cuda
+
+cwa run multi_gpu_llama_config.yaml
+```
+
+## Lambda Labs Performance Features
+
+- **Automatic memory optimization** based on detected Lambda GPU types
+- **NVIDIA monitoring** with real-time GPU utilization
+- **Flash Attention 2** for 2-4x speedup on supported models  
+- **Mixed precision** training (FP16/BF16) for Lambda GPU efficiency
+- **Device mapping** for multi-GPU Lambda instances
+- **Local caching** optimized for Lambda VM storage
+
+## Development
+
+```bash
+# Run tests
+pytest tests/
+
+# Format code
+black src/
+ruff check src/
+```
+
+## Next Steps
+
+This is the foundation build. Future iterations will add:
+- Advanced security analysis
+- Sophisticated attack simulations
+- Defense mechanisms
+- Performance optimizations
+
+## Research Applications
+
+- Identifying critical model parameters
+- Security vulnerability assessment  
+- Fault tolerance analysis
+- Robustness evaluation
+```
+
+TESTING & VALIDATION
+====================
+
+After Claude Code builds this, test on Lambda Labs VM with:
+
+1. **Lambda Labs Installation Test**:
+   ```bash
+   # Install PyTorch with CUDA 12.6 support
+   uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+   
+   # Install the tool
+   uv sync
+   uv pip install -e .
+   
+   # Verify Lambda Labs setup
+   cwa info  # Should show Lambda GPU details and CUDA 12.6
+   ```
+
+2. **Lambda GPU Detection Test**:
+   ```bash
+   cwa info  # Should show Lambda GPU info (A100, H100, etc.)
+   nvidia-smi  # Verify GPU availability
+   python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPUs: {torch.cuda.device_count()}')"
+   ```
+
+3. **Small Model Test** (Fast on any Lambda GPU):
+   ```bash
+   cwa create-config --name lambda_test --model "microsoft/DialoGPT-small" --model-size small --device cuda
+   cwa run lambda_test_config.yaml
+   ```
+
+4. **Medium Model Test** (If Lambda A100 available):
+   ```bash
+   cwa create-config --name lambda_7b --model "mistralai/Mistral-7B-v0.1" --model-size medium --quantization 8bit --device cuda
+   cwa run lambda_7b_config.yaml
+   ```
+
+5. **Lambda Labs Memory Test**:
+   ```bash
+   # Should show Lambda GPU memory optimization
+   cwa model-info "mistralai/Mistral-7B-v0.1"
+   ```
+
+6. **Run Test Suite on Lambda**:
+   ```bash
+   pytest tests/ -v  # Should pass all Lambda-specific tests
+   ```
+
+SUCCESS CRITERIA FOR LAMBDA LABS GPU FOUNDATION BUILD
+====================================================
+
+✅ **The system should:**
+- Install successfully with Lambda Labs CUDA 12.6 PyTorch
+- Detect and display Lambda GPU information (A100, H100, etc.)
+- Load small models on CUDA with FP16 optimization
+- Load medium models with 8-bit quantization on Lambda A100
+- Show Lambda-specific memory allocation and optimization
+- Support Flash Attention 2 for Lambda GPU acceleration
+- Handle multi-GPU setups common in Lambda Labs
+- Use /tmp/hf_cache for fast local storage
+
+✅ **Expected deliverables:**
+- Working CLI optimized for Lambda Labs GPU VMs
+- Automatic Lambda GPU detection and memory management
+- Model loading with Lambda-specific optimizations (FP16, quantization)
+- Configuration templates optimized for Lambda VM instances
+- GPU memory monitoring with Lambda-specific details
+
+✅ **Lambda Labs specific success criteria:**
+- **Small models**: Load in <15 seconds on Lambda GPU, FP16 optimized
+- **Medium models**: Load 7B models with 8-bit quantization on A100 40GB
+- **Large models**: Support device mapping for multi-GPU Lambda setups
+- **GPU utilization**: >90% GPU utilization during analysis
+- **Memory efficiency**: Optimal memory allocation for Lambda GPU types
+
+✅ **Performance benchmarks on Lambda Labs:**
+- GPT-2 (124M): <10 seconds to load + analyze on any Lambda GPU
+- Mistral-7B: <60 seconds to load + analyze on A100 40GB
+- LLaMA-13B: <120 seconds to load on A100 80GB with 4-bit quantization
+
+This foundation provides robust Lambda Labs GPU support for the full spectrum of Hugging Face LLMs, optimized specifically for Lambda's high-performance computing environment while maintaining flexibility for advanced cybersecurity research features.

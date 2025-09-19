@@ -1,0 +1,10 @@
+name: "distilgpt2"
+model_size: "small"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 512
+quantization: null
+device_map: "auto"
+low_cpu_mem_usage: true
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true

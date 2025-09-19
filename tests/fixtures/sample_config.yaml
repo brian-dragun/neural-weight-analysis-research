@@ -1,0 +1,14 @@
+name: "test_experiment"
+model:
+  name: "microsoft/DialoGPT-small"
+  model_size: "small"
+  device: "cuda"
+  torch_dtype: "float16"
+  device_map: "auto"
+  cache_dir: "/tmp/hf_cache"
+sensitivity:
+  metric: "basic_gradient"
+  top_k: 10
+data_samples: 5
+random_seed: 42
+output_dir: "test_outputs"

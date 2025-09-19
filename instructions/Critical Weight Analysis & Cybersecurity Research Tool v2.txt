@@ -1,0 +1,1482 @@
+CLAUDE CODE INSTRUCTIONS: Critical Weight Analysis & Cybersecurity Research Tool v2
+==================================================================================
+
+OVERVIEW
+--------
+Build a production-ready research toolkit for comprehensive cybersecurity analysis of transformer models through a three-phase research pipeline, **optimized specifically for Lambda Labs GPU VMs with Hugging Face LLM support**:
+
+**PHASE A: CRITICAL WEIGHT DISCOVERY** - Identify "super weights" that are most vulnerable to attacks
+**PHASE B: ATTACK SIMULATION** - Test targeted attacks on identified critical weights with results analysis  
+**PHASE C: PROTECTION & DEFENSE** - Implement and test defense mechanisms for critical weights
+
+The system provides end-to-end workflow from vulnerability discovery → attack simulation → defense implementation with comprehensive results tracking. Uses Python 3.12+ with uv package manager and is optimized for Lambda Labs GPU infrastructure with CUDA 12.6 support.
+
+**LAMBDA LABS & HUGGING FACE LLM SUPPORT:**
+- Supports Small (124M-3B), Medium (7B-13B), and Large (70B+) Hugging Face models
+- Optimized for Lambda Labs GPU VMs (A100, H100, RTX series)
+- CUDA 12.6 PyTorch with Lambda Labs specific memory management
+- Intelligent quantization and device mapping for Lambda GPU configurations
+
+COMPLETE RESEARCH WORKFLOW IMPLEMENTATION
+========================================
+
+The system implements a three-phase cybersecurity research pipeline:
+
+**PHASE A: CRITICAL WEIGHT DISCOVERY & VULNERABILITY ANALYSIS**
+```python
+# In src/cwa/sensitivity/security_analyzer.py
+class SecurityWeightAnalyzer:
+    def discover_critical_weights(
+        self, 
+        model: torch.nn.Module,
+        vulnerability_threshold: float = 0.8
+    ) -> Dict[str, Any]:
+        """
+        Phase A: Identify super weights most vulnerable to attacks
+        Returns: {
+            'critical_weights': List[Tuple[str, int, int]],  # layer, param_idx, vulnerability_score
+            'vulnerability_map': Dict[str, float],           # per-layer vulnerability
+            'attack_surface': Dict[str, Any]                 # potential attack vectors
+        }
+        """
+        pass
+
+    def rank_attack_criticality(self, sensitivity_results: SensitivityResult) -> Dict[str, float]:
+        """Rank weights by their potential impact if compromised."""
+        pass
+```
+
+**PHASE B: TARGETED ATTACK SIMULATION ON CRITICAL WEIGHTS** 
+```python  
+# In src/cwa/security/targeted_attacks.py
+class TargetedAttackSimulator:
+    def simulate_attacks_on_critical_weights(
+        self,
+        model: torch.nn.Module, 
+        critical_weights: List[Tuple[str, int, int]],
+        attack_methods: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Phase B: Test attacks specifically on identified critical weights
+        Returns: {
+            'attack_results': Dict[str, AttackResult],       # per-attack-method results
+            'performance_degradation': Dict[str, float],     # task performance loss
+            'critical_failures': List[str],                  # weights causing total failure
+            'recovery_metrics': Dict[str, float]             # time/resources to recover
+        }
+        """
+        pass
+
+    def measure_attack_impact(self, original_model: torch.nn.Module, attacked_model: torch.nn.Module) -> Dict[str, float]:
+        """Measure specific impact of attacks on critical weights."""
+        pass
+```
+
+**PHASE C: PROTECTION & DEFENSE OF CRITICAL WEIGHTS**
+```python
+# In src/cwa/security/weight_protection.py  
+class CriticalWeightProtector:
+    def implement_protection_mechanisms(
+        self,
+        model: torch.nn.Module,
+        critical_weights: List[Tuple[str, int, int]],
+        protection_methods: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Phase C: Protect identified critical weights and test effectiveness
+        Returns: {
+            'protection_applied': Dict[str, Any],            # what protections were added
+            'defense_effectiveness': Dict[str, float],       # how well defenses work
+            'performance_overhead': float,                   # computational cost
+            'residual_vulnerability': Dict[str, float]       # remaining attack surface
+        }
+        """
+        pass
+
+    def test_protected_model(self, protected_model: torch.nn.Module, attack_suite: List[str]) -> Dict[str, Any]:
+        """Test protected model against same attacks that succeeded before protection."""
+        pass
+```
+
+**INTEGRATED WORKFLOW ORCHESTRATOR**
+```python
+# In src/cwa/core/research_pipeline.py
+class CyberSecurityResearchPipeline:
+    def run_complete_analysis(
+        self,
+        model_name: str,
+        config: ExperimentConfig
+    ) -> Dict[str, Any]:
+        """
+        Complete A→B→C research workflow:
+        1. Discover critical weights (Phase A)
+        2. Simulate targeted attacks (Phase B)  
+        3. Implement protections and re-test (Phase C)
+        """
+        results = {
+            'phase_a_discovery': {},
+            'phase_b_attacks': {},
+            'phase_c_protection': {},
+            'comparative_analysis': {}
+        }
+        
+        # Phase A: Discover critical weights
+        analyzer = SecurityWeightAnalyzer()
+        critical_weights = analyzer.discover_critical_weights(model, config.vulnerability_threshold)
+        results['phase_a_discovery'] = critical_weights
+        
+        # Phase B: Attack the critical weights  
+        attacker = TargetedAttackSimulator()
+        attack_results = attacker.simulate_attacks_on_critical_weights(
+            model, critical_weights['critical_weights'], config.attack_methods
+        )
+        results['phase_b_attacks'] = attack_results
+        
+        # Phase C: Protect and re-test
+        protector = CriticalWeightProtector() 
+        protection_results = protector.implement_protection_mechanisms(
+            model, critical_weights['critical_weights'], config.defense_methods
+        )
+        results['phase_c_protection'] = protection_results
+        
+        # Comparative analysis
+        results['comparative_analysis'] = self.compare_before_after_protection(
+            attack_results, protection_results
+        )
+        
+        return results
+```
+
+**ENHANCED CLI COMMANDS FOR COMPLETE WORKFLOW**
+```python
+@app.command()
+def run_complete_security_analysis(
+    model_name: str,
+    config_path: str = None,
+    output_dir: str = "complete_security_analysis"
+):
+    """
+    Run complete A→B→C security research pipeline on Lambda Labs GPU:
+    1. Discover critical weights  
+    2. Attack those weights
+    3. Protect and re-test
+    """
+    pass
+
+@app.command() 
+def discover_critical_weights(
+    model_name: str,
+    vulnerability_threshold: float = 0.8,
+    output_dir: str = "critical_weights_discovery"
+):
+    """Phase A: Discover and rank critical weights by vulnerability."""
+    pass
+
+@app.command()
+def attack_critical_weights(
+    model_name: str,
+    critical_weights_file: str,
+    attack_methods: List[str] = ["fgsm", "pgd", "fault_injection"], 
+    output_dir: str = "attack_simulation"
+):
+    """Phase B: Simulate targeted attacks on discovered critical weights."""
+    pass
+
+@app.command()
+def protect_and_test(
+    model_name: str,
+    critical_weights_file: str,
+    protection_methods: List[str] = ["redundancy", "checksums", "adversarial_training"],
+    output_dir: str = "protection_testing" 
+):
+    """Phase C: Implement protections and test effectiveness."""
+    pass
+```
+
+PHASE 1: LAMBDA LABS PROJECT SETUP (Python 3.12+ with uv)
+==========================================================
+
+1. Initialize Lambda Labs Optimized Project Structure
+----------------------------------------------------
+Create this exact directory structure:
+
+```
+critical-weight-analysis-v2/
+├── pyproject.toml
+├── uv.lock
+├── README.md
+├── .gitignore
+├── configs/
+│   ├── models/
+│   │   ├── small_models/
+│   │   │   ├── gpt2.yaml
+│   │   │   ├── distilgpt2.yaml
+│   │   │   └── phi2.yaml
+│   │   ├── medium_models/
+│   │   │   ├── gpt2_medium.yaml
+│   │   │   ├── mistral_7b.yaml
+│   │   │   └── llama2_7b.yaml
+│   │   └── large_models/
+│   │       ├── llama2_13b.yaml
+│   │       ├── mistral_8x7b.yaml
+│   │       └── llama3_70b.yaml
+│   ├── experiments/
+│   │   ├── small_model_analysis.yaml
+│   │   ├── medium_model_analysis.yaml
+│   │   ├── large_model_analysis.yaml
+│   │   └── complete_security_pipeline.yaml
+│   └── security/
+│       └── lambda_security.yaml
+├── src/
+│   ├── cwa/
+│   │   ├── __init__.py
+│   │   ├── core/
+│   │   │   ├── __init__.py
+│   │   │   ├── interfaces.py
+│   │   │   ├── models.py
+│   │   │   ├── data.py
+│   │   │   ├── config.py
+│   │   │   └── research_pipeline.py
+│   │   ├── sensitivity/
+│   │   │   ├── __init__.py
+│   │   │   ├── grad_x_weight.py
+│   │   │   ├── hessian_diag.py
+│   │   │   ├── security_analyzer.py
+│   │   │   └── registry.py
+│   │   ├── perturbation/
+│   │   │   ├── __init__.py
+│   │   │   ├── methods.py
+│   │   │   └── registry.py
+│   │   ├── security/
+│   │   │   ├── __init__.py
+│   │   │   ├── adversarial.py
+│   │   │   ├── fault_injection.py
+│   │   │   ├── attack_detection.py
+│   │   │   ├── defense_mechanisms.py
+│   │   │   ├── targeted_attacks.py
+│   │   │   └── weight_protection.py
+│   │   ├── evaluation/
+│   │   │   ├── __init__.py
+│   │   │   ├── metrics.py
+│   │   │   ├── tasks.py
+│   │   │   └── security_metrics.py
+│   │   ├── utils/
+│   │   │   ├── __init__.py
+│   │   │   ├── logging.py
+│   │   │   ├── plotting.py
+│   │   │   └── crypto_utils.py
+│   │   └── cli/
+│   │       ├── __init__.py
+│   │       └── main.py
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   ├── security/
+│   └── fixtures/
+├── examples/
+│   ├── notebooks/
+│   ├── scripts/
+│   └── security_demos/
+└── docs/
+    ├── api/
+    ├── tutorials/
+    └── security/
+```
+
+2. Create Lambda Labs Optimized pyproject.toml (Python 3.12+ with uv)
+---------------------------------------------------------------------
+```toml
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "critical-weight-analysis"
+version = "2.0.0"
+description = "Critical Weight Analysis & Cybersecurity for Transformer Models - Lambda Labs GPU Optimized"
+requires-python = ">=3.12"
+dependencies = [
+    # NOTE: PyTorch installed separately with Lambda Labs CUDA 12.6 support
+    # torch>=2.1.0 - Use: uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+    "transformers>=4.35.0",
+    "accelerate>=0.24.0",
+    "numpy>=1.26.0",
+    "pandas>=2.1.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "scikit-learn>=1.3.0",
+    "pydantic>=2.5.0",
+    "typer>=0.9.0",
+    "rich>=13.7.0",
+    "pyyaml>=6.0.1",
+    "tqdm>=4.66.0",
+    "cryptography>=41.0.0",
+    "adversarial-robustness-toolbox>=1.17.0",
+    "foolbox>=3.3.3",
+    "textattack>=0.3.10",
+    "scipy>=1.11.0",
+    "psutil>=5.9.0",
+    "wandb>=0.16.0",
+    "sentencepiece>=0.1.99",
+    "nvidia-ml-py>=12.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+    "black>=23.11.0",
+    "isort>=5.12.0",
+    "mypy>=1.7.0",
+    "ruff>=0.1.6",
+    "pre-commit>=3.5.0",
+]
+
+security = [
+    "bandit>=1.7.5",
+    "safety>=2.3.5",
+    "semgrep>=1.45.0",
+]
+
+quantization = [
+    "bitsandbytes>=0.41.0",
+]
+
+lambda-optimized = [
+    "flash-attn>=2.0.0",  # For Lambda Labs GPU optimization
+    "triton>=2.1.0",      # GPU kernel optimization
+]
+
+[project.scripts]
+cwa = "cwa.cli.main:app"
+
+[tool.uv]
+dev-dependencies = [
+    "jupyter>=1.0.0",
+    "ipywidgets>=8.1.0",
+    "plotly>=5.17.0",
+]
+```
+
+3. Setup uv Environment for Lambda Labs GPU VMs
+----------------------------------------------
+```bash
+# Install uv if not already installed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create project
+mkdir critical-weight-analysis-v2
+cd critical-weight-analysis-v2
+uv init --python 3.12
+
+# LAMBDA LABS SPECIFIC: Install PyTorch with CUDA 12.6 support
+uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+
+# Add Hugging Face and cybersecurity dependencies
+uv add transformers>=4.35.0
+uv add accelerate>=0.24.0  # Essential for large model loading on Lambda GPUs
+uv add bitsandbytes>=0.41.0  # For quantization on Lambda GPUs
+uv add numpy>=1.26.0
+uv add pandas>=2.1.0
+uv add matplotlib>=3.8.0
+uv add seaborn>=0.13.0
+uv add scikit-learn>=1.3.0
+uv add pydantic>=2.5.0
+uv add typer>=0.9.0
+uv add rich>=13.7.0
+uv add pyyaml>=6.0.1
+uv add tqdm>=4.66.0
+uv add cryptography>=41.0.0
+uv add adversarial-robustness-toolbox>=1.17.0
+uv add foolbox>=3.3.3
+uv add textattack>=0.3.10
+uv add scipy>=1.11.0
+uv add psutil>=5.9.0
+uv add wandb>=0.16.0
+uv add sentencepiece>=0.1.99
+uv add nvidia-ml-py>=12.0.0  # For NVIDIA GPU monitoring on Lambda
+
+# Add dev dependencies  
+uv add --dev pytest>=7.4.0
+uv add --dev pytest-cov>=4.1.0
+uv add --dev pytest-xdist>=3.3.0
+uv add --dev black>=23.11.0
+uv add --dev isort>=5.12.0
+uv add --dev mypy>=1.7.0
+uv add --dev ruff>=0.1.6
+uv add --dev pre-commit>=3.5.0
+uv add --dev bandit>=1.7.5
+uv add --dev safety>=2.3.5
+uv add --dev semgrep>=1.45.0
+uv add --dev jupyter>=1.0.0
+uv add --dev ipywidgets>=8.1.0
+uv add --dev plotly>=5.17.0
+
+# Install in development mode
+uv pip install -e .
+```
+
+PHASE 2: LAMBDA LABS CORE ABSTRACTIONS & SECURITY INTERFACES
+============================================================
+
+4. Create Enhanced Core Interfaces (src/cwa/core/interfaces.py)
+-------------------------------------------------------------
+```python
+"""Core interfaces for Critical Weight Analysis tool with Lambda Labs optimization."""
+from abc import ABC, abstractmethod
+from typing import Dict, List, Any, Optional, Protocol
+from dataclasses import dataclass
+from pathlib import Path
+import torch
+
+@dataclass
+class SensitivityResult:
+    """Results from sensitivity analysis."""
+    values: Dict[str, torch.Tensor]
+    metadata: Dict[str, Any]
+    metric_name: str
+    top_k_weights: List[tuple]  # (layer_name, param_idx, score)
+
+@dataclass
+class PerturbationResult:
+    """Results from perturbation experiment."""
+    baseline_metrics: Dict[str, float]
+    perturbed_metrics: Dict[str, float]
+    delta_metrics: Dict[str, float]
+    perturbation_stats: Dict[str, Any]
+
+@dataclass
+class SecurityAnalysisResult:
+    """Security evaluation results for cybersecurity research."""
+    attack_success_rate: float
+    robustness_score: float
+    critical_vulnerabilities: List[Dict[str, Any]]
+    defense_effectiveness: Dict[str, float]
+    fault_tolerance_metrics: Dict[str, float]
+
+@dataclass  
+class FaultInjectionResult:
+    """Fault injection experiment results."""
+    injected_faults: List[Dict[str, Any]]
+    performance_degradation: float
+    recovery_time: Optional[float]
+    critical_failures: List[str]
+
+class SensitivityMetric(Protocol):
+    """Protocol for sensitivity metrics."""
+    
+    def compute(
+        self, 
+        model: torch.nn.Module,
+        data_loader: Any,
+        **kwargs
+    ) -> SensitivityResult:
+        """Compute sensitivity scores."""
+        ...
+
+class PerturbationMethod(Protocol):
+    """Protocol for perturbation methods."""
+    
+    def apply(
+        self,
+        model: torch.nn.Module,
+        target_weights: List[tuple],
+        **kwargs
+    ) -> None:
+        """Apply perturbation to model weights."""
+        ...
+
+class SecurityAttack(Protocol):
+    """Protocol for adversarial attack methods."""
+    
+    def execute(
+        self,
+        model: torch.nn.Module,
+        input_data: Any,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Execute adversarial attack."""
+        ...
+
+class DefenseMechanism(Protocol):
+    """Protocol for security defense strategies."""
+    
+    def apply(
+        self,
+        model: torch.nn.Module,
+        **kwargs
+    ) -> torch.nn.Module:
+        """Apply defense mechanism to model."""
+        ...
+```
+
+5. Create Lambda Labs Enhanced Configuration System (src/cwa/core/config.py)
+---------------------------------------------------------------------------
+```python
+"""Configuration management using Pydantic with Lambda Labs optimization."""
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, Field
+from pathlib import Path
+
+class ModelConfig(BaseModel):
+    """Hugging Face LLM model configuration optimized for Lambda Labs GPUs."""
+    name: str = "microsoft/DialoGPT-small"  # Default to small model for testing
+    model_size: str = "small"  # small, medium, large
+    device: str = "cuda"  # Lambda Labs: Default to CUDA (GPU-first)
+    torch_dtype: str = "float16"  # Lambda Labs: Default to FP16 for GPU efficiency
+    max_length: int = 512
+    quantization: Optional[str] = None  # None, "8bit", "4bit" 
+    device_map: Optional[str] = "auto"  # Lambda Labs: Auto device mapping
+    max_memory: Optional[Dict[str, str]] = None  # e.g., {"0": "20GiB", "cpu": "50GiB"}
+    low_cpu_mem_usage: bool = True
+    trust_remote_code: bool = False
+    
+    # Lambda Labs GPU optimizations
+    use_flash_attention_2: bool = True  # Enable Flash Attention on supported models
+    torch_compile: bool = False  # PyTorch 2.0 compilation (can add later)
+    
+    # Hugging Face specific options
+    use_auth_token: Optional[str] = None
+    revision: Optional[str] = None
+    cache_dir: Optional[str] = "/tmp/hf_cache"  # Lambda Labs: Use faster local storage
+    
+    # Security options
+    security_mode: bool = True
+    integrity_checking: bool = True
+    fault_tolerance: bool = True
+    
+class SensitivityConfig(BaseModel):
+    """Sensitivity analysis configuration."""
+    metric: str = "basic_gradient"
+    top_k: int = 100
+    mode: str = "global"  # global, per_layer, security_critical
+    include_vulnerability_analysis: bool = True
+    
+class PerturbationConfig(BaseModel):
+    """Perturbation configuration."""
+    methods: List[str] = ["zero", "sign_flip", "fault_injection"]
+    scales: Dict[str, float] = {"noise": 0.1}
+    security_aware: bool = True
+    
+class SecurityConfig(BaseModel):
+    """Security configuration for cybersecurity research."""
+    attack_methods: List[str] = ["fgsm", "pgd", "textfooler"]
+    defense_mechanisms: List[str] = ["adversarial_training", "input_sanitization"]
+    fault_injection_enabled: bool = True
+    vulnerability_scanning: bool = True
+    threat_model: str = "white_box"  # white_box, black_box, gray_box
+
+class FaultInjectionConfig(BaseModel):
+    """Fault injection configuration."""
+    fault_types: List[str] = ["bit_flip", "stuck_at_zero", "stuck_at_one", "random_noise"]
+    injection_rate: float = 0.001
+    target_layers: Optional[List[str]] = None
+    temporal_faults: bool = True
+    permanent_faults: bool = True
+    
+class ExperimentConfig(BaseModel):
+    """Main experiment configuration."""
+    name: str
+    model: ModelConfig = Field(default_factory=ModelConfig)
+    sensitivity: SensitivityConfig = Field(default_factory=SensitivityConfig)
+    perturbation: PerturbationConfig = Field(default_factory=PerturbationConfig)
+    security: SecurityConfig = Field(default_factory=SecurityConfig)
+    fault_injection: FaultInjectionConfig = Field(default_factory=FaultInjectionConfig)
+    data_samples: int = 100
+    random_seed: int = 42
+    output_dir: str = "outputs"
+    
+    # Research pipeline configuration
+    vulnerability_threshold: float = 0.8
+    attack_methods: List[str] = ["fgsm", "pgd", "fault_injection"]
+    defense_methods: List[str] = ["weight_redundancy", "error_correction"]
+    
+    @classmethod
+    def from_yaml(cls, path: Path) -> "ExperimentConfig":
+        """Load configuration from YAML file."""
+        import yaml
+        with open(path) as f:
+            data = yaml.safe_load(f)
+        return cls(**data)
+```
+
+6. Create Lambda Labs LLM Management (src/cwa/core/models.py)
+-----------------------------------------------------------
+```python
+"""Lambda Labs optimized Hugging Face LLM model management utilities."""
+import torch
+from transformers import (
+    AutoModel, AutoTokenizer, AutoModelForCausalLM, 
+    BitsAndBytesConfig, pipeline
+)
+from accelerate import init_empty_weights, load_checkpoint_and_dispatch
+from typing import Dict, Any, Optional, Union
+import logging
+import psutil
+from pathlib import Path
+
+# Lambda Labs specific imports
+try:
+    import nvidia_ml_py as nvml
+    NVML_AVAILABLE = True
+except ImportError:
+    NVML_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
+
+class LambdaLabsLLMManager:
+    """Manages Hugging Face LLM loading optimized for Lambda Labs GPU VMs."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.model_name = config.get("name", "microsoft/DialoGPT-small")
+        self.model_size = config.get("model_size", "small")
+        self.device = config.get("device", "cuda")
+        self.torch_dtype = config.get("torch_dtype", "float16")
+        self.quantization = config.get("quantization")
+        self.device_map = config.get("device_map", "auto")
+        self.max_memory = config.get("max_memory")
+        self.low_cpu_mem_usage = config.get("low_cpu_mem_usage", True)
+        self.trust_remote_code = config.get("trust_remote_code", False)
+        self.max_length = config.get("max_length", 512)
+        self.use_flash_attention_2 = config.get("use_flash_attention_2", True)
+        self.cache_dir = config.get("cache_dir", "/tmp/hf_cache")
+        
+        self.model = None
+        self.tokenizer = None
+        self.model_info = {}
+        
+        # Initialize NVIDIA monitoring for Lambda Labs
+        if NVML_AVAILABLE:
+            try:
+                nvml.nvmlInit()
+                self.nvml_enabled = True
+                logger.info("NVIDIA monitoring enabled for Lambda Labs")
+            except:
+                self.nvml_enabled = False
+                logger.warning("NVIDIA monitoring not available")
+        else:
+            self.nvml_enabled = False
+            
+    def _detect_lambda_gpu_config(self) -> Dict[str, Any]:
+        """Detect Lambda Labs GPU configuration and optimize accordingly."""
+        gpu_info = {"gpu_count": 0, "total_gpu_memory": 0, "gpu_names": []}
+        
+        if torch.cuda.is_available():
+            gpu_info["gpu_count"] = torch.cuda.device_count()
+            
+            if self.nvml_enabled:
+                try:
+                    for i in range(gpu_info["gpu_count"]):
+                        handle = nvml.nvmlDeviceGetHandleByIndex(i)
+                        name = nvml.nvmlDeviceGetName(handle).decode('utf-8')
+                        memory_info = nvml.nvmlDeviceGetMemoryInfo(handle)
+                        gpu_info["gpu_names"].append(name)
+                        gpu_info["total_gpu_memory"] += memory_info.total / (1024**3)  # GB
+                        
+                        logger.info(f"Detected Lambda Labs GPU {i}: {name} with {memory_info.total / (1024**3):.1f} GB")
+                        
+                except Exception as e:
+                    logger.warning(f"Failed to get detailed GPU info: {e}")
+            
+            # Lambda Labs optimization based on detected hardware
+            if gpu_info["gpu_count"] >= 2:
+                # Multi-GPU setup - use device map auto
+                self.device_map = "auto"
+                logger.info("Multi-GPU Lambda setup detected - using auto device mapping")
+            
+            # Memory optimization for Lambda Labs VMs
+            if gpu_info["total_gpu_memory"] > 70:  # A100 80GB or similar
+                self.max_memory = {"0": "70GiB", "cpu": "100GiB"}
+                logger.info("High-memory Lambda GPU detected - optimizing for large models")
+            elif gpu_info["total_gpu_memory"] > 40:  # A100 40GB or similar  
+                self.max_memory = {"0": "35GiB", "cpu": "50GiB"}
+                logger.info("Lambda A100 40GB detected - optimizing memory allocation")
+            elif gpu_info["total_gpu_memory"] > 20:  # RTX 4090 or similar
+                self.max_memory = {"0": "20GiB", "cpu": "30GiB"}
+                logger.info("Lambda RTX GPU detected - conservative memory allocation")
+                
+        return gpu_info
+    
+    def _get_quantization_config(self) -> Optional[BitsAndBytesConfig]:
+        """Get quantization configuration optimized for Lambda Labs GPUs."""
+        if self.quantization == "8bit":
+            return BitsAndBytesConfig(
+                load_in_8bit=True,
+                llm_int8_enable_fp32_cpu_offload=True,
+                llm_int8_threshold=6.0  # Optimized for Lambda GPUs
+            )
+        elif self.quantization == "4bit":
+            return BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_storage=torch.uint8  # Lambda Labs optimization
+            )
+        return None
+        
+    def load_model(self) -> torch.nn.Module:
+        """Load Hugging Face LLM optimized for Lambda Labs GPU VMs."""
+        try:
+            logger.info(f"Loading model on Lambda Labs: {self.model_name} (Size: {self.model_size})")
+            
+            # Verify GPU availability on Lambda Labs
+            if not torch.cuda.is_available():
+                logger.error("CUDA not available - Lambda Labs GPU not detected!")
+                raise RuntimeError("Lambda Labs GPU environment required but CUDA not available")
+                
+            logger.info(f"Lambda Labs GPU detected: {torch.cuda.get_device_name()}")
+            
+            # Detect Lambda Labs GPU configuration first
+            gpu_config = self._detect_lambda_gpu_config()
+            
+            # Load tokenizer first (lightweight)
+            logger.info("Loading tokenizer...")
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name,
+                trust_remote_code=self.trust_remote_code,
+                cache_dir=self.cache_dir
+            )
+            
+            # Add special tokens if missing
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = "[PAD]"
+                
+            # Determine Lambda Labs optimized loading strategy
+            load_kwargs = {
+                "low_cpu_mem_usage": self.low_cpu_mem_usage,
+                "trust_remote_code": self.trust_remote_code,
+                "cache_dir": self.cache_dir,
+                "torch_dtype": torch.float16,  # Lambda default
+                "device_map": self.device_map
+            }
+            
+            if self.max_memory:
+                load_kwargs["max_memory"] = self.max_memory
+                
+            # Add quantization for medium/large models on Lambda Labs
+            quantization_config = self._get_quantization_config()
+            if quantization_config:
+                load_kwargs["quantization_config"] = quantization_config
+                
+            # Lambda Labs: Enable Flash Attention 2 for supported models
+            if self.use_flash_attention_2:
+                load_kwargs["use_flash_attention_2"] = True
+            
+            logger.info(f"Loading model with Lambda Labs optimization: {load_kwargs}")
+            
+            # Try to load as causal LM first (most LLMs), fallback to base model
+            try:
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_name,
+                    **load_kwargs
+                )
+                self.model_info["model_type"] = "CausalLM"
+            except Exception as e:
+                logger.warning(f"Failed to load as CausalLM, trying base model: {e}")
+                # Remove Flash Attention for base models
+                if "use_flash_attention_2" in load_kwargs:
+                    load_kwargs.pop("use_flash_attention_2")
+                self.model = AutoModel.from_pretrained(
+                    self.model_name,
+                    **load_kwargs
+                )
+                self.model_info["model_type"] = "BaseModel"
+            
+            # Set to evaluation mode
+            self.model.eval()
+            
+            # Lambda Labs: Optimize for inference
+            if hasattr(self.model, 'gradient_checkpointing_disable'):
+                self.model.gradient_checkpointing_disable()
+            
+            # Gather model information
+            self._collect_model_info()
+            
+            logger.info(f"Lambda Labs model loaded successfully: {self.get_model_info()}")
+            return self.model
+            
+        except Exception as e:
+            logger.error(f"Failed to load model on Lambda Labs {self.model_name}: {e}")
+            raise
+            
+    def _collect_model_info(self):
+        """Collect comprehensive model information."""
+        if self.model is None:
+            return
+            
+        # Basic parameter counts
+        total_params = sum(p.numel() for p in self.model.parameters())
+        trainable_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+        
+        self.model_info.update({
+            "model_name": self.model_name,
+            "model_size_category": self.model_size,
+            "total_parameters": total_params,
+            "trainable_parameters": trainable_params,
+            "parameters_in_millions": round(total_params / 1_000_000, 2),
+            "architecture": self.model.config.model_type if hasattr(self.model, 'config') else 'unknown',
+            "hidden_size": getattr(self.model.config, 'hidden_size', 'unknown'),
+            "num_layers": getattr(self.model.config, 'num_hidden_layers', 'unknown'),
+            "vocab_size": getattr(self.model.config, 'vocab_size', len(self.tokenizer) if self.tokenizer else 'unknown'),
+            "max_position_embeddings": getattr(self.model.config, 'max_position_embeddings', 'unknown'),
+            "device_placement": str(next(self.model.parameters()).device) if self.model.parameters() else 'unknown',
+            "dtype": str(next(self.model.parameters()).dtype) if self.model.parameters() else 'unknown',
+            "quantized": self.quantization is not None,
+            "lambda_optimized": True,
+        })
+        
+    def get_model_info(self) -> Dict[str, Any]:
+        """Get comprehensive model information."""
+        return self.model_info.copy()
+        
+    def get_named_parameters(self) -> Dict[str, torch.Tensor]:
+        """Get named parameters for analysis."""
+        if self.model is None:
+            raise RuntimeError("Model not loaded")
+        return dict(self.model.named_parameters())
+        
+    def estimate_memory_usage(self) -> Dict[str, float]:
+        """Estimate memory usage for the model."""
+        if self.model is None:
+            return {"error": "Model not loaded"}
+            
+        model_size_bytes = sum(p.numel() * p.element_size() for p in self.model.parameters())
+        model_size_gb = model_size_bytes / (1024**3)
+        
+        return {
+            "model_size_gb": model_size_gb,
+            "estimated_inference_gb": model_size_gb * 1.2,  # Rough estimate
+            "current_gpu_usage_gb": torch.cuda.memory_allocated() / (1024**3) if torch.cuda.is_available() else 0
+        }
+
+# Keep backwards compatibility
+HuggingFaceLLMManager = LambdaLabsLLMManager
+ModelManager = LambdaLabsLLMManager
+```
+
+7. Create Data Handling (src/cwa/core/data.py)
+---------------------------------------------
+Build utilities for:
+- Loading calibration datasets (WikiText, C4, etc.)
+- Text preprocessing and tokenization
+- Batch processing with memory management
+- Sample selection strategies
+- Adversarial example generation and management
+- Secure data validation and sanitization
+
+PHASE 3: CYBERSECURITY & FAULT TOLERANCE COMPONENTS
+===================================================
+
+8. Build Adversarial Attack System (src/cwa/security/adversarial.py)
+-------------------------------------------------------------------
+Implement adversarial attack methods:
+
+```python
+@register_security_attack("fgsm")
+def fast_gradient_sign_method(
+    model: torch.nn.Module,
+    input_text: str,
+    target_class: Optional[int] = None,
+    epsilon: float = 0.1,
+    **kwargs
+) -> Dict[str, Any]:
+    # FGSM implementation for text models
+    pass
+
+@register_security_attack("pgd")
+def projected_gradient_descent(
+    model: torch.nn.Module,
+    input_text: str,
+    epsilon: float = 0.1,
+    alpha: float = 0.01,
+    num_steps: int = 10,
+    **kwargs
+) -> Dict[str, Any]:
+    # PGD implementation
+    pass
+
+@register_security_attack("textfooler")  
+def textfooler_attack(
+    model: torch.nn.Module,
+    input_text: str,
+    **kwargs
+) -> Dict[str, Any]:
+    # TextFooler semantic attack implementation
+    pass
+```
+
+9. Build Fault Injection System (src/cwa/security/fault_injection.py)
+--------------------------------------------------------------------
+Create fault injection mechanisms:
+
+```python
+class FaultInjector:
+    def __init__(self, fault_config: FaultInjectionConfig):
+        self.config = fault_config
+        self.active_faults: List[Dict] = []
+    
+    def inject_bit_flip_faults(self, model: torch.nn.Module, target_weights: List[str]):
+        """Simulate bit-flip errors in model weights."""
+        pass
+    
+    def inject_stuck_at_faults(self, model: torch.nn.Module, fault_type: str):
+        """Simulate stuck-at-zero/one faults."""
+        pass
+    
+    def inject_transient_faults(self, model: torch.nn.Module, duration: float):
+        """Inject temporary faults that recover over time."""
+        pass
+    
+    def simulate_radiation_effects(self, model: torch.nn.Module, intensity: float):
+        """Simulate cosmic radiation effects on model parameters."""
+        pass
+```
+
+10. Build Attack Detection System (src/cwa/security/attack_detection.py)
+-----------------------------------------------------------------------
+Implement attack detection mechanisms:
+
+```python
+class AttackDetector:
+    def detect_adversarial_inputs(self, input_embeddings: torch.Tensor) -> bool:
+        """Detect if input contains adversarial perturbations."""
+        pass
+    
+    def detect_model_tampering(self, model: torch.nn.Module) -> Dict[str, Any]:
+        """Detect if model weights have been maliciously modified."""
+        pass
+    
+    def monitor_inference_anomalies(self, outputs: torch.Tensor) -> Dict[str, float]:
+        """Monitor for unusual inference patterns indicating attacks."""
+        pass
+```
+
+11. Build Defense Mechanisms (src/cwa/security/defense_mechanisms.py)
+-------------------------------------------------------------------
+Create defense strategies:
+
+```python
+class DefenseManager:
+    def apply_adversarial_training(self, model: torch.nn.Module, attack_method: str):
+        """Apply adversarial training to improve robustness."""
+        pass
+    
+    def implement_input_sanitization(self, input_text: str) -> str:
+        """Sanitize inputs to remove potential adversarial content."""
+        pass
+    
+    def enable_fault_tolerance(self, model: torch.nn.Module, redundancy_factor: int):
+        """Add redundancy and error correction to critical weights."""
+        pass
+    
+    def implement_weight_protection(self, model: torch.nn.Module, critical_weights: List[str]):
+        """Protect critical weights with checksums and backup copies."""
+        pass
+```
+
+PHASE 4: ENHANCED SENSITIVITY ANALYSIS
+======================================
+
+12. Build Security-Aware Sensitivity Metrics (src/cwa/sensitivity/)
+------------------------------------------------------------------
+
+registry.py: Create a decorator-based registry system for sensitivity metrics
+
+grad_x_weight.py: Implement gradient × weight sensitivity with security analysis:
+```python
+@register_sensitivity_metric("grad_x_weight")
+def compute_grad_x_weight_sensitivity(
+    model: torch.nn.Module,
+    tokenizer: Any,
+    calibration_data: List[str],
+    include_security_analysis: bool = True,
+    **kwargs
+) -> SensitivityResult:
+    # Implementation with security vulnerability scoring
+    pass
+
+@register_sensitivity_metric("security_gradient")
+def compute_security_gradient_sensitivity(
+    model: torch.nn.Module,
+    tokenizer: Any,
+    calibration_data: List[str],
+    adversarial_examples: List[str],
+    **kwargs
+) -> SensitivityResult:
+    # Gradient-based sensitivity using adversarial examples
+    pass
+```
+
+hessian_diag.py: Implement Hessian diagonal with fault tolerance analysis:
+```python
+@register_sensitivity_metric("hessian_diag")
+def compute_hessian_diag_sensitivity(...) -> SensitivityResult:
+    # Use efficient Hessian diagonal computation with fault impact analysis
+    pass
+
+@register_sensitivity_metric("fault_hessian")
+def compute_fault_aware_hessian_sensitivity(...) -> SensitivityResult:
+    # Hessian computation considering fault injection scenarios
+    pass
+```
+
+13. Build Security-Enhanced Analysis Pipeline (src/cwa/sensitivity/analyzer.py)
+------------------------------------------------------------------------------
+Create SensitivityAnalyzer class that:
+- Orchestrates sensitivity computation across layers
+- Handles memory management for large models
+- Provides top-k weight selection with security risk scoring
+- Supports different aggregation modes (global, per-layer, security-critical)
+- Integrates vulnerability assessment during sensitivity analysis
+
+PHASE 5: ENHANCED PERTURBATION & SECURITY TESTING
+=================================================
+
+14. Implement Security-Aware Perturbation Methods (src/cwa/perturbation/methods.py)
+----------------------------------------------------------------------------------
+Create these perturbation strategies:
+- ZeroPerturbation: set weights to zero (hardware failure simulation)
+- SignFlipPerturbation: flip weight signs (cosmic radiation simulation)
+- GaussianNoisePerturbation: add Gaussian noise (thermal noise simulation)
+- AdversarialPerturbation: targeted adversarial weight modifications
+- FaultInjectionPerturbation: hardware fault simulation
+- CyberAttackPerturbation: malicious weight tampering simulation
+- Control methods: random-k, bottom-k, security-random selections
+
+```python
+@register_perturbation_method("fault_injection")
+def apply_fault_injection_perturbation(
+    model: torch.nn.Module,
+    target_weights: Dict[str, List[tuple]],
+    fault_type: str = "bit_flip",
+    fault_rate: float = 0.001,
+    **kwargs
+) -> None:
+    # Simulate hardware faults in critical weights
+    pass
+
+@register_perturbation_method("adversarial_weight")
+def apply_adversarial_weight_perturbation(
+    model: torch.nn.Module,
+    target_weights: Dict[str, List[tuple]],
+    attack_objective: str = "maximize_error",
+    **kwargs
+) -> None:
+    # Apply adversarial perturbations to weights
+    pass
+```
+
+PHASE 6: ENHANCED COMMAND LINE INTERFACE
+========================================
+
+15. Build Lambda Labs Security-Enhanced CLI (src/cwa/cli/main.py)
+----------------------------------------------------------------
+```python
+"""Command line interface optimized for Lambda Labs GPU VMs."""
+import typer
+from rich.console import Console
+from rich.table import Table
+from pathlib import Path
+import yaml
+import logging
+from typing import Optional, List
+
+from ..core.config import ExperimentConfig
+from ..core.models import LambdaLabsLLMManager
+from ..core.data import create_sample_data, create_data_loader
+from ..sensitivity.registry import get_sensitivity_metric, list_sensitivity_metrics
+from ..utils.logging import setup_logging
+
+app = typer.Typer(help="Critical Weight Analysis & Cybersecurity Tool - Lambda Labs Optimized")
+console = Console()
+
+@app.command()
+def run_complete_security_analysis(
+    model_name: str,
+    config_path: str = None,
+    output_dir: str = "complete_security_analysis"
+):
+    """
+    Run complete A→B→C security research pipeline on Lambda Labs GPU:
+    1. Discover critical weights  
+    2. Attack those weights
+    3. Protect and re-test
+    """
+    try:
+        if config_path:
+            config = ExperimentConfig.from_yaml(Path(config_path))
+        else:
+            config = ExperimentConfig(
+                name=f"complete_analysis_{model_name.replace('/', '_')}",
+                model={"name": model_name, "device": "cuda", "torch_dtype": "float16"}
+            )
+            
+        config.output_dir = output_dir
+        
+        console.print(f"[bold green]Starting Lambda Labs complete security analysis: {config.name}[/bold green]")
+        
+        # Setup logging
+        setup_logging(Path(config.output_dir))
+        
+        # Create output directory
+        Path(config.output_dir).mkdir(parents=True, exist_ok=True)
+        
+        # Load model with Lambda Labs optimization
+        console.print("[yellow]Loading model on Lambda Labs GPU...[/yellow]")
+        model_manager = LambdaLabsLLMManager(config.model.dict())
+        model = model_manager.load_model()
+        
+        # Display Lambda Labs specific memory usage
+        memory_info = model_manager.estimate_memory_usage()
+        console.print(f"[blue]Lambda Labs GPU Memory Usage: {memory_info.get('model_size_gb', 0):.2f} GB[/blue]")
+        
+        # TODO: Implement complete pipeline here
+        console.print("[green]✅ Complete security analysis completed![/green]")
+        
+    except Exception as e:
+        console.print(f"[bold red]❌ Analysis failed: {e}[/bold red]")
+        raise
+
+@app.command()
+def run(
+    config_path: str,
+    output_dir: Optional[str] = None,
+    security_mode: bool = True
+):
+    """Run a complete CWA experiment with Lambda Labs security analysis."""
+    # Implementation here
+    pass
+
+@app.command()
+def create_config(
+    name: str,
+    model: str = "microsoft/DialoGPT-small",
+    model_size: str = "small",
+    metric: str = "basic_gradient",
+    device: str = "cuda",  # Lambda Labs default
+    quantization: Optional[str] = None,
+    security_enabled: bool = True,
+    output_path: str = "config.yaml"
+):
+    """Create a new experiment configuration optimized for Lambda Labs GPU VMs."""
+    config = ExperimentConfig(
+        name=name,
+        model={
+            "name": model, 
+            "model_size": model_size,
+            "device": device,
+            "torch_dtype": "float16",  # Lambda Labs default
+            "quantization": quantization,
+            "device_map": "auto",
+            "cache_dir": "/tmp/hf_cache",
+            "security_mode": security_enabled
+        },
+        sensitivity={"metric": metric, "include_vulnerability_analysis": security_enabled},
+        security={"enabled": security_enabled}
+    )
+    
+    with open(output_path, 'w') as f:
+        yaml.dump(config.dict(), f, default_flow_style=False)
+        
+    console.print(f"[green]✅ Lambda Labs configuration saved to {output_path}[/green]")
+    console.print(f"[blue]Model: {model} (Size: {model_size}, Security: {security_enabled})[/blue]")
+
+@app.command()
+def list_models():
+    """List recommended Hugging Face LLM models by size category for Lambda Labs."""
+    
+    models_by_size = {
+        "small": [
+            ("microsoft/DialoGPT-small", "124M parameters - Good for testing on any Lambda GPU"),
+            ("gpt2", "124M parameters - Classic GPT-2"),
+            ("distilgpt2", "82M parameters - Distilled GPT-2"),
+            ("microsoft/phi-2", "2.7B parameters - Microsoft Phi-2")
+        ],
+        "medium": [
+            ("gpt2-medium", "355M parameters - GPT-2 Medium"),
+            ("microsoft/phi-3-mini-4k-instruct", "3.8B parameters - Phi-3 Mini"),
+            ("mistralai/Mistral-7B-v0.1", "7B parameters - Ideal for Lambda A100 40GB"),
+            ("meta-llama/Llama-2-7b-hf", "7B parameters - LLaMA 2 7B with 8-bit quantization")
+        ],
+        "large": [
+            ("meta-llama/Llama-2-13b-hf", "13B parameters - Requires Lambda A100 80GB"),
+            ("mistralai/Mixtral-8x7B-v0.1", "46.7B parameters - Multi-GPU Lambda setup"),
+            ("meta-llama/Llama-2-70b-hf", "70B parameters - Lambda multi-GPU required"),
+            ("microsoft/phi-3-medium-4k-instruct", "14B parameters - Phi-3 Medium")
+        ]
+    }
+    
+    for size, models in models_by_size.items():
+        table = Table(title=f"Lambda Labs {size.title()} Models")
+        table.add_column("Model Name", style="cyan")
+        table.add_column("Description & Lambda Recommendation", style="green")
+        
+        for model_name, description in models:
+            table.add_row(model_name, description)
+        
+        console.print(table)
+        console.print()  # Add spacing
+
+@app.command()
+def security_audit(
+    model_path: str, 
+    output_dir: str = "security_audit"
+):
+    """Run comprehensive security audit of a model on Lambda Labs."""
+    console.print(f"[yellow]Running Lambda Labs security audit for: {model_path}[/yellow]")
+    # Implementation here
+    pass
+
+@app.command()
+def info():
+    """Show Lambda Labs system information."""
+    import torch
+    
+    table = Table(title="Lambda Labs System Information")
+    table.add_column("Component", style="cyan")
+    table.add_column("Status/Version", style="green")
+    
+    table.add_row("Python", "3.12+")
+    table.add_row("PyTorch", torch.__version__)
+    table.add_row("CUDA Available", "✓ Ready" if torch.cuda.is_available() else "❌ Not Available")
+    
+    if torch.cuda.is_available():
+        table.add_row("CUDA Version", torch.version.cuda)
+        table.add_row("GPU Count", str(torch.cuda.device_count()))
+        for i in range(torch.cuda.device_count()):
+            gpu_name = torch.cuda.get_device_name(i)
+            gpu_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3)
+            table.add_row(f"Lambda GPU {i}", f"{gpu_name} ({gpu_memory:.1f}GB)")
+    
+    table.add_row("Available Metrics", str(len(list_sensitivity_metrics())))
+    table.add_row("Cache Directory", "/tmp/hf_cache")
+    table.add_row("Optimized For", "Lambda Labs GPU VMs")
+    
+    console.print(table)
+
+if __name__ == "__main__":
+    app()
+```
+
+PHASE 7: LAMBDA LABS CONFIGURATION TEMPLATES
+============================================
+
+16. Create Lambda Labs Optimized Configuration Templates
+-------------------------------------------------------
+
+configs/models/small_models/gpt2.yaml:
+```yaml
+name: "gpt2"
+model_size: "small"
+device: "cuda"  # Lambda Labs default
+torch_dtype: "float16"  # GPU optimized
+max_length: 512
+quantization: null
+device_map: "auto"
+low_cpu_mem_usage: true
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+security_mode: true
+integrity_checking: true
+```
+
+configs/models/medium_models/mistral_7b.yaml:
+```yaml
+name: "mistralai/Mistral-7B-v0.1"
+model_size: "medium"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 2048
+quantization: "8bit"  # Recommended for Lambda GPU efficiency
+device_map: "auto"
+max_memory:
+  "0": "35GiB"  # Lambda Labs A100 40GB optimized
+  "cpu": "50GiB"
+low_cpu_mem_usage: true
+trust_remote_code: false
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+security_mode: true
+```
+
+configs/models/large_models/llama2_13b.yaml:
+```yaml
+name: "meta-llama/Llama-2-13b-hf"
+model_size: "large"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 2048
+quantization: "4bit"  # 4-bit for large models on Lambda GPUs
+device_map: "auto"
+max_memory:
+  "0": "70GiB"  # Lambda Labs A100 80GB optimized
+  "cpu": "100GiB"
+low_cpu_mem_usage: true
+trust_remote_code: false
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
+security_mode: true
+```
+
+configs/experiments/complete_security_pipeline.yaml:
+```yaml
+name: "lambda_complete_cybersecurity_analysis"
+
+# Phase A: Critical Weight Discovery
+discovery:
+  sensitivity_metrics: ["security_gradient", "hessian_diag", "fault_hessian"]
+  vulnerability_threshold: 0.8
+  top_k_critical: 500
+  attack_surface_analysis: true
+
+# Phase B: Attack Simulation  
+attack_simulation:
+  target_critical_weights_only: true  # Only attack discovered critical weights
+  attack_methods: 
+    - "fgsm"
+    - "pgd" 
+    - "fault_injection"
+    - "adversarial_weight"
+  fault_types: ["bit_flip", "stuck_at_zero", "random_noise"]
+  attack_intensities: [0.001, 0.01, 0.1]  # escalating attack severity
+
+# Phase C: Protection & Defense
+protection:
+  defense_methods:
+    - "weight_redundancy"     # backup copies of critical weights
+    - "error_correction"      # ECC for critical parameters  
+    - "adversarial_training"  # robust training
+    - "input_sanitization"    # input validation
+  protection_overhead_limit: 0.05  # max 5% performance overhead
+  retest_with_same_attacks: true   # test protection effectiveness
+
+# Lambda Labs specific settings
+model:
+  name: "mistralai/Mistral-7B-v0.1"
+  model_size: "medium"
+  device: "cuda"
+  torch_dtype: "float16"
+  quantization: "8bit"
+  device_map: "auto"
+  max_memory:
+    "0": "35GiB"
+    "cpu": "50GiB"
+  cache_dir: "/tmp/hf_cache"
+  use_flash_attention_2: true
+  security_mode: true
+
+# Results and Analysis
+analysis:
+  generate_before_after_comparison: true
+  measure_protection_effectiveness: true
+  calculate_residual_risk: true
+  export_vulnerability_report: true
+
+output_format:
+  include_phase_breakdown: true
+  generate_executive_summary: true  
+  create_technical_report: true
+  export_weights_for_hardware: true  # for actual hardware deployment
+
+data_samples: 1000
+random_seeds: [42, 123, 456, 789, 101112]
+output_dir: "outputs/lambda_security_comprehensive"
+```
+
+configs/security/lambda_security.yaml:
+```yaml
+# Lambda Labs Security Configuration
+attack_methods: ["fgsm", "pgd", "textfooler", "deepfool"]
+defense_mechanisms: ["adversarial_training", "input_sanitization", "gradient_masking"]
+fault_injection:
+  enabled: true
+  fault_types: ["bit_flip", "stuck_at_zero", "transient_noise", "radiation_effects"]
+  injection_rates: [0.0001, 0.001, 0.01]
+  target_lambda_gpu_memory: true  # Target GPU memory specifically
+vulnerability_scanning: true
+threat_model: "white_box"  # white_box, black_box, gray_box
+lambda_gpu_optimized: true
+hardware_fault_simulation: true
+cosmic_radiation_effects: true
+temperature_variation_effects: true
+```
+
+TESTING INSTRUCTIONS (Lambda Labs Specific)
+===========================================
+After building, test the system on Lambda Labs VM with:
+
+1. **Lambda Labs Installation Test**:
+   ```bash
+   # Install PyTorch with CUDA 12.6 support
+   uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+   
+   # Install the tool
+   uv sync
+   uv pip install -e ".[dev,security]"
+   
+   # Verify Lambda Labs setup
+   cwa info  # Should show Lambda GPU details and CUDA 12.6
+   ```
+
+2. **Security Checks**:
+   ```bash
+   bandit -r src/
+   safety check
+   ```
+
+3. **Lambda GPU Detection Test**:
+   ```bash
+   cwa info  # Should show Lambda GPU info (A100, H100, etc.)
+   nvidia-smi  # Verify GPU availability
+   python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPUs: {torch.cuda.device_count()}')"
+   ```
+
+4. **Small Model Security Test** (Fast on any Lambda GPU):
+   ```bash
+   cwa create-config --name lambda_security_test --model "microsoft/DialoGPT-small" --model-size small --device cuda --security-enabled
+   cwa run lambda_security_test_config.yaml
+   ```
+
+5. **Complete Security Pipeline Test**:
+   ```bash
+   cwa run-complete-security-analysis "microsoft/DialoGPT-small" --output lambda_complete_test
+   ```
+
+6. **Run Comprehensive Test Suite**:
+   ```bash
+   pytest tests/ -v --cov=src
+   pytest tests/security/ -v  # Security-specific tests
+   ```
+
+ENHANCED SUCCESS CRITERIA FOR LAMBDA LABS
+=========================================
+The completed system should:
+- Install successfully with Lambda Labs CUDA 12.6 PyTorch
+- Detect and display Lambda GPU information (A100, H100, etc.)
+- Run end-to-end security experiments with Lambda GPU optimization
+- Load and analyze Hugging Face models (small to large) efficiently
+- Successfully detect and mitigate common adversarial attacks
+- Demonstrate fault tolerance under various hardware failure scenarios
+- Generate comprehensive security reports and visualizations
+- Support the complete A→B→C cybersecurity research pipeline
+- Achieve >90% GPU utilization during analysis on Lambda Labs
+- Maintain <5% performance overhead with security features enabled
+
+**Security-Specific Success Criteria:**
+- Detect adversarial inputs with >95% accuracy
+- Maintain >90% functionality under 0.1% fault injection rate
+- Successfully defend against FGSM, PGD, and TextFooler attacks
+- Demonstrate super weight protection reduces attack success by >50%
+- Complete Phase A→B→C pipeline in <2 hours for medium models on Lambda A100
+- Support secure model deployment with cryptographic integrity verification
+
+**Lambda Labs Performance Benchmarks:**
+- **Small models (GPT-2)**: <10 seconds load, <5 minutes complete security analysis
+- **Medium models (Mistral-7B)**: <60 seconds load, <30 minutes complete analysis on A100 40GB
+- **Large models (LLaMA-13B)**: <120 seconds load, <60 minutes analysis on A100 80GB
+
+This comprehensive system provides robust Lambda Labs GPU support for the full spectrum of Hugging Face LLMs while implementing a complete cybersecurity research pipeline optimized for Lambda's high-performance computing environment.

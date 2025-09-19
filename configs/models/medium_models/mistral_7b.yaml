@@ -1,0 +1,14 @@
+name: "mistralai/Mistral-7B-v0.1"
+model_size: "medium"
+device: "cuda"
+torch_dtype: "float16"
+max_length: 2048
+quantization: "8bit"  # Recommended for Lambda GPU efficiency
+device_map: "auto"
+max_memory:
+  "0": "35GiB"  # Lambda Labs A100 40GB optimized
+  "cpu": "50GiB"
+low_cpu_mem_usage: true
+trust_remote_code: false
+cache_dir: "/tmp/hf_cache"
+use_flash_attention_2: true
