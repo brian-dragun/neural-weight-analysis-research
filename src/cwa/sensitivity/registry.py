@@ -29,3 +29,19 @@ def list_sensitivity_metrics() -> list[str]:
 # Register the basic metric
 from .basic_sensitivity import compute_basic_gradient_sensitivity
 register_sensitivity_metric("basic_gradient")(compute_basic_gradient_sensitivity)
+
+# Register security-focused metrics
+from .security_analyzer import (
+    compute_security_gradient_sensitivity,
+    compute_vulnerability_scanning_sensitivity
+)
+from .grad_x_weight import (
+    compute_grad_x_weight_sensitivity,
+    compute_security_grad_x_weight_sensitivity
+)
+from .hessian_diag import (
+    compute_hessian_diag_sensitivity,
+    compute_fault_aware_hessian_sensitivity
+)
+
+# Auto-registration happens via decorators in the imported modules

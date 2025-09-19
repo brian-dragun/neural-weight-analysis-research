@@ -26,11 +26,34 @@ class PerturbationResult:
 
 
 @dataclass
-class SecurityResult:
-    """Basic security analysis results."""
-    vulnerability_score: float
-    critical_weights: List[tuple]
-    recommendations: List[str]
+class SecurityAnalysisResult:
+    """Security evaluation results for cybersecurity research."""
+    attack_success_rate: float
+    robustness_score: float
+    critical_vulnerabilities: List[Dict[str, Any]]
+    defense_effectiveness: Dict[str, float]
+    fault_tolerance_metrics: Dict[str, float]
+    vulnerability_map: Dict[str, float]  # per-layer vulnerability scores
+    attack_surface: Dict[str, Any]       # potential attack vectors
+
+
+@dataclass
+class CriticalWeightAnalysis:
+    """Results from critical weight discovery phase."""
+    critical_weights: List[tuple]  # (layer_name, param_idx, vulnerability_score)
+    vulnerability_map: Dict[str, float]  # per-layer vulnerability
+    attack_surface: Dict[str, Any]       # potential attack vectors
+    security_ranking: Dict[str, float]   # weights ranked by security criticality
+    metadata: Dict[str, Any]
+
+
+@dataclass
+class FaultInjectionResult:
+    """Fault injection experiment results."""
+    injected_faults: List[Dict[str, Any]]
+    performance_degradation: float
+    recovery_time: Optional[float]
+    critical_failures: List[str]
 
 
 class SensitivityMetric(Protocol):
@@ -56,4 +79,29 @@ class PerturbationMethod(Protocol):
         **kwargs
     ) -> None:
         """Apply perturbation to model weights."""
+        ...
+
+
+class SecurityAttack(Protocol):
+    """Protocol for adversarial attack methods."""
+
+    def execute(
+        self,
+        model: torch.nn.Module,
+        input_data: Any,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Execute adversarial attack."""
+        ...
+
+
+class DefenseMechanism(Protocol):
+    """Protocol for security defense strategies."""
+
+    def apply(
+        self,
+        model: torch.nn.Module,
+        **kwargs
+    ) -> torch.nn.Module:
+        """Apply defense mechanism to model."""
         ...
