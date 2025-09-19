@@ -1082,6 +1082,191 @@ def research_extract(
         raise
 
 
+@app.command("spectral-analysis")
+def spectral_analysis(
+    model_name: str,
+    target_layers: Optional[str] = typer.Option(None, help="Comma-separated layer names to analyze (None for all)"),
+    analysis_types: str = typer.Option("signatures,transitions,stability,correlations", help="Types of spectral analysis"),
+    top_k: int = typer.Option(10, help="Number of top critical configurations to identify"),
+    output_dir: str = typer.Option("spectral_analysis_results", help="Output directory"),
+    device: str = typer.Option("auto", help="Device to use (cuda/cpu/auto)"),
+    include_pac_bounds: bool = typer.Option(True, help="Include PAC-Bayesian bounds"),
+    confidence_level: float = typer.Option(0.95, help="Confidence level for PAC bounds")
+):
+    """
+    Advanced spectral vulnerability analysis using eigenvalue-based methods.
+
+    Analyzes neural network weight matrices using spectral learning to identify
+    critical configurations, phase transitions, and vulnerability patterns that
+    traditional gradient-based methods might miss.
+
+    Features:
+    - Spectral signature analysis
+    - Phase transition detection
+    - Stability assessment under perturbations
+    - PAC-Bayesian theoretical guarantees
+    - Cross-layer spectral correlations
+    """
+    console.print("[bold blue]🔬 Spectral Vulnerability Analysis[/bold blue]")
+    console.print(f"Model: {model_name}")
+    console.print(f"Analysis Types: {analysis_types}")
+    console.print(f"Device: {device}")
+
+    try:
+        # Setup output directory
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        console.print(f"Output directory: {output_path}")
+
+        # Setup logging
+        setup_logging(output_path)
+
+        # Load model
+        console.print("[yellow]Loading model...[/yellow]")
+        manager = LambdaLabsLLMManager({"model_name": model_name, "device": device})
+        model = manager.load_model()
+
+        # Import the spectral analyzer
+        from ..sensitivity.spectral_analyzer import SpectralVulnerabilityAnalyzer
+
+        # Initialize analyzer
+        console.print("[yellow]Initializing spectral analyzer...[/yellow]")
+        analyzer = SpectralVulnerabilityAnalyzer(model, device=device)
+
+        # Parse target layers
+        target_layer_list = None
+        if target_layers:
+            target_layer_list = [layer.strip() for layer in target_layers.split(",")]
+
+        # Parse analysis types
+        analysis_type_list = [t.strip() for t in analysis_types.split(",")]
+
+        # Run comprehensive spectral analysis
+        console.print("[yellow]Running spectral vulnerability analysis...[/yellow]")
+        results = analyzer.analyze_spectral_vulnerabilities(
+            target_layers=target_layer_list,
+            analysis_types=analysis_type_list
+        )
+
+        # Detect critical configurations
+        console.print("[yellow]Identifying critical eigenvalue configurations...[/yellow]")
+        critical_configs = analyzer.detect_critical_eigenvalue_configurations(
+            target_layers=target_layer_list,
+            top_k=top_k
+        )
+
+        # Compute PAC-Bayesian bounds if requested
+        pac_bounds = None
+        if include_pac_bounds and "spectral_signatures" in results:
+            console.print("[yellow]Computing PAC-Bayesian bounds...[/yellow]")
+            signatures = list(results["spectral_signatures"].values())
+            pac_bounds = analyzer.compute_pac_bayesian_bounds(
+                signatures, confidence=confidence_level
+            )
+            results["pac_bounds"] = pac_bounds
+
+        # Add critical configurations to results
+        results["critical_configurations"] = critical_configs
+
+        # Export results
+        console.print("[yellow]Exporting analysis results...[/yellow]")
+        export_path = analyzer.export_spectral_analysis(
+            results, output_path, include_visualizations=True
+        )
+
+        console.print(f"[bold green]✅ Spectral Analysis Complete![/bold green]")
+        console.print(f"Results saved to: {export_path}")
+
+        # Display summary table
+        table = Table(title="Spectral Vulnerability Analysis Summary")
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="green")
+        table.add_column("Details", style="yellow")
+
+        summary = results.get("vulnerability_summary", {})
+
+        table.add_row(
+            "Parameters Analyzed",
+            f"{summary.get('total_parameters_analyzed', 0)}",
+            "Total neural network parameters"
+        )
+        table.add_row(
+            "High Vulnerability",
+            f"{summary.get('high_vulnerability_count', 0)}",
+            "Parameters with vulnerability > 0.8"
+        )
+        table.add_row(
+            "Medium Vulnerability",
+            f"{summary.get('medium_vulnerability_count', 0)}",
+            "Parameters with vulnerability 0.5-0.8"
+        )
+        table.add_row(
+            "Overall Vulnerability",
+            f"{summary.get('overall_vulnerability_score', 0.0):.3f}",
+            "Average vulnerability score"
+        )
+        table.add_row(
+            "Critical Configurations",
+            f"{len(critical_configs)}",
+            "Eigenvalue configurations requiring attention"
+        )
+
+        if pac_bounds:
+            global_bounds = pac_bounds.get("global_bounds", {})
+            table.add_row(
+                "PAC Upper Bound",
+                f"{global_bounds.get('upper_bound', 0.0):.3f}",
+                f"{confidence_level*100}% confidence interval"
+            )
+            table.add_row(
+                "Vulnerability Certificates",
+                f"{len(pac_bounds.get('vulnerability_certificates', []))}",
+                "Theoretical guarantees issued"
+            )
+
+        console.print(table)
+
+        # Display critical configurations
+        if critical_configs:
+            console.print(f"\n[bold red]🚨 Top {min(5, len(critical_configs))} Critical Configurations:[/bold red]")
+
+            config_table = Table()
+            config_table.add_column("Rank", style="cyan")
+            config_table.add_column("Layer.Parameter", style="yellow")
+            config_table.add_column("Vulnerability", style="red")
+            config_table.add_column("Spectral Gap", style="blue")
+            config_table.add_column("Condition #", style="green")
+
+            for i, config in enumerate(critical_configs[:5]):
+                sig = config["spectral_signature"]
+                config_table.add_row(
+                    f"{i+1}",
+                    f"{sig.layer_name}.{sig.parameter_name}",
+                    f"{sig.vulnerability_score:.3f}",
+                    f"{sig.spectral_gap:.3f}",
+                    f"{sig.condition_number:.1f}"
+                )
+
+            console.print(config_table)
+
+        # Display recommendations
+        console.print(f"\n[bold blue]💡 Recommendations:[/bold blue]")
+        if summary.get('high_vulnerability_count', 0) > 0:
+            console.print("• Consider spectral regularization for high-vulnerability parameters")
+            console.print("• Implement eigenvalue smoothing for phase transition mitigation")
+            console.print("• Monitor spectral properties during training")
+
+        if pac_bounds and len(pac_bounds.get('vulnerability_certificates', [])) > 0:
+            console.print("• Review issued vulnerability certificates for security implications")
+            console.print("• Consider implementing certified defenses for guaranteed robustness")
+
+        console.print("• Integrate spectral analysis into your security monitoring pipeline")
+
+    except Exception as e:
+        console.print(f"[bold red]❌ Spectral analysis failed: {e}[/bold red]")
+        raise
+
+
 def _generate_publication_tables(research_data: Dict[str, Any], output_path: Path):
     """Generate publication-ready tables and figures."""
     import pandas as pd

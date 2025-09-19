@@ -15,6 +15,10 @@ from typing import Dict, List, Tuple, Optional, Any, Union
 from pathlib import Path
 from collections import defaultdict
 import hashlib
+from dataclasses import dataclass
+
+# Import our new information-theoretic analyzer
+from ..theory.information_geometry import InformationGeometricAnalyzer
 
 # Optional visualization imports
 try:
@@ -27,6 +31,18 @@ except ImportError:
     sns = None
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class EnsembleWeightCandidate:
+    """Container for ensemble weight discovery results."""
+    layer_idx: int
+    parameter_name: str
+    coordinates: Tuple[int, ...]
+    scores: Dict[str, float]  # Score from each discovery method
+    ensemble_score: float
+    confidence: float
+    discovery_methods: List[str]
 
 class SuperWeightAnalyzer:
     """
@@ -41,11 +57,22 @@ class SuperWeightAnalyzer:
         self.model_name = model_name
         self.device = next(model.parameters()).device
 
+        # Initialize information-theoretic analyzer for ensemble methods
+        self.info_analyzer = InformationGeometricAnalyzer(model, device=str(self.device))
+
         # Known super weight coordinates from research
         self.known_super_weights = {
             "llama-7b": [(2, 'mlp.down_proj', [3968, 7003])],
             "mistral-7b": [(1, 'mlp.down_proj', [2070, 7310])],
             # Add more models as discovered
+        }
+
+        # Ensemble discovery configuration
+        self.ensemble_config = {
+            "methods": ["activation_outliers", "causal_intervention", "information_bottleneck", "spectral_anomaly"],
+            "weights": {"activation_outliers": 0.3, "causal_intervention": 0.3, "information_bottleneck": 0.2, "spectral_anomaly": 0.2},
+            "confidence_threshold": 0.7,
+            "agreement_threshold": 0.6  # Require 60% of methods to agree
         }
 
         # Research parameters
@@ -97,10 +124,10 @@ class SuperWeightAnalyzer:
         # Step 3: Calculate Hessian-based sensitivity scores
         sensitivity_data = self._calculate_hessian_sensitivity(target_layers)
 
-        # Step 4: Discover new critical weights
+        # Step 4: Discover new critical weights using ensemble methods
         if mode in ["super_weight_discovery", "comprehensive"]:
-            discovered_weights = self._discover_super_weights(
-                activation_data, sensitivity_data, top_k_percent
+            discovered_weights = self._discover_super_weights_ensemble(
+                activation_data, sensitivity_data, top_k_percent, target_layers
             )
         else:
             discovered_weights = []
@@ -395,6 +422,402 @@ class SuperWeightAnalyzer:
             except Exception as e:
                 logger.warning(f"Error computing sample loss: {e}")
                 return 0.0
+
+    def _discover_super_weights_ensemble(
+        self,
+        activation_data: Dict[str, Any],
+        sensitivity_data: Dict[str, Any],
+        top_k_percent: float,
+        target_layers: List[str]
+    ) -> List[EnsembleWeightCandidate]:
+        """
+        Enhanced super weight discovery using ensemble methods.
+
+        Combines multiple discovery approaches:
+        1. Activation outliers (existing method)
+        2. Causal intervention analysis
+        3. Information bottleneck detection
+        4. Spectral anomaly detection
+
+        Returns ensemble candidates with confidence scores.
+        """
+        logger.info(f"Starting ensemble super weight discovery (top {top_k_percent}%)")
+
+        # Generate sample inputs for analysis
+        sample_inputs = self._generate_sample_inputs(batch_size=16)
+
+        # Method 1: Activation outliers (existing approach)
+        logger.info("Running Method 1: Activation outlier detection")
+        activation_candidates = self._method_activation_outliers(
+            activation_data, sensitivity_data, top_k_percent
+        )
+
+        # Method 2: Causal intervention analysis
+        logger.info("Running Method 2: Causal intervention analysis")
+        causal_candidates = self._method_causal_intervention(
+            sample_inputs, target_layers, top_k_percent
+        )
+
+        # Method 3: Information bottleneck detection
+        logger.info("Running Method 3: Information bottleneck detection")
+        bottleneck_candidates = self._method_information_bottleneck(
+            sample_inputs, target_layers, top_k_percent
+        )
+
+        # Method 4: Spectral anomaly detection
+        logger.info("Running Method 4: Spectral anomaly detection")
+        spectral_candidates = self._method_spectral_anomaly(
+            target_layers, top_k_percent
+        )
+
+        # Combine results using ensemble voting
+        ensemble_candidates = self._ensemble_vote_candidates([
+            ("activation_outliers", activation_candidates),
+            ("causal_intervention", causal_candidates),
+            ("information_bottleneck", bottleneck_candidates),
+            ("spectral_anomaly", spectral_candidates)
+        ])
+
+        logger.info(f"Ensemble discovery completed. Found {len(ensemble_candidates)} high-confidence candidates")
+        return ensemble_candidates
+
+    def _method_activation_outliers(
+        self,
+        activation_data: Dict[str, Any],
+        sensitivity_data: Dict[str, Any],
+        top_k_percent: float
+    ) -> List[EnsembleWeightCandidate]:
+        """Method 1: Traditional activation outlier detection."""
+        candidates = []
+
+        for layer_key, layer_sensitivity in sensitivity_data.items():
+            layer_idx = layer_sensitivity["layer_index"]
+            sensitivity_scores = layer_sensitivity["sensitivity_scores"]
+
+            flat_scores = sensitivity_scores.view(-1)
+            total_weights = len(flat_scores)
+            num_top_weights = max(1, int(total_weights * top_k_percent / 100))
+
+            top_values, top_indices = torch.topk(flat_scores, num_top_weights)
+
+            for i, (score, idx) in enumerate(zip(top_values, top_indices)):
+                # Convert flat index to coordinates
+                coords = self._flat_to_coordinates(idx.item(), sensitivity_scores.shape)
+
+                candidate = EnsembleWeightCandidate(
+                    layer_idx=layer_idx,
+                    parameter_name=layer_key,
+                    coordinates=coords,
+                    scores={"activation_outliers": float(score)},
+                    ensemble_score=float(score),
+                    confidence=0.5,  # Will be updated in ensemble voting
+                    discovery_methods=["activation_outliers"]
+                )
+                candidates.append(candidate)
+
+        return candidates
+
+    def _method_causal_intervention(
+        self,
+        sample_inputs: torch.Tensor,
+        target_layers: List[str],
+        top_k_percent: float
+    ) -> List[EnsembleWeightCandidate]:
+        """Method 2: Causal intervention analysis for weight criticality."""
+        candidates = []
+
+        # Get baseline performance
+        baseline_loss = self._compute_sample_loss()
+
+        for layer_name in target_layers:
+            try:
+                layer = dict(self.model.named_modules())[layer_name]
+
+                for param_name, param in layer.named_parameters():
+                    if not param.requires_grad or param.numel() < 10:
+                        continue
+
+                    # Sample random subset for efficiency
+                    total_weights = param.numel()
+                    num_test_weights = min(100, int(total_weights * top_k_percent / 100))
+
+                    # Random sampling of weight positions
+                    flat_param = param.view(-1)
+                    test_indices = torch.randperm(total_weights)[:num_test_weights]
+
+                    intervention_scores = []
+
+                    for idx in test_indices:
+                        # Causal intervention: temporarily zero out the weight
+                        original_value = flat_param[idx].item()
+                        flat_param[idx] = 0.0
+
+                        # Measure causal effect
+                        intervened_loss = self._compute_sample_loss()
+                        causal_effect = abs(intervened_loss - baseline_loss)
+
+                        # Restore original value
+                        flat_param[idx] = original_value
+
+                        intervention_scores.append((idx.item(), causal_effect))
+
+                    # Select top causal interventions
+                    intervention_scores.sort(key=lambda x: x[1], reverse=True)
+                    top_interventions = intervention_scores[:max(1, len(intervention_scores)//4)]
+
+                    for idx, score in top_interventions:
+                        coords = self._flat_to_coordinates(idx, param.shape)
+
+                        candidate = EnsembleWeightCandidate(
+                            layer_idx=0,  # Will be updated
+                            parameter_name=f"{layer_name}.{param_name}",
+                            coordinates=coords,
+                            scores={"causal_intervention": score},
+                            ensemble_score=score,
+                            confidence=0.5,
+                            discovery_methods=["causal_intervention"]
+                        )
+                        candidates.append(candidate)
+
+            except Exception as e:
+                logger.warning(f"Causal intervention failed for {layer_name}: {e}")
+                continue
+
+        return candidates
+
+    def _method_information_bottleneck(
+        self,
+        sample_inputs: torch.Tensor,
+        target_layers: List[str],
+        top_k_percent: float
+    ) -> List[EnsembleWeightCandidate]:
+        """Method 3: Information bottleneck detection using information theory."""
+        candidates = []
+
+        try:
+            # Use our information-theoretic analyzer
+            bottleneck_analysis = self.info_analyzer.analyze_information_bottlenecks(sample_inputs)
+
+            for layer_name, analysis in bottleneck_analysis.items():
+                if layer_name not in target_layers:
+                    continue
+
+                if analysis.get("is_bottleneck", False):
+                    bottleneck_score = analysis["bottleneck_score"]
+
+                    # Get parameters for this layer
+                    try:
+                        layer = dict(self.model.named_modules())[layer_name]
+                        for param_name, param in layer.named_parameters():
+                            if param.requires_grad and param.numel() > 1:
+                                # Sample weights proportional to bottleneck strength
+                                num_weights = max(1, int(param.numel() * top_k_percent / 100 * bottleneck_score))
+
+                                # Use information-theoretic metrics to select weights
+                                info_scores = self._compute_information_scores(param)
+                                top_indices = torch.topk(info_scores, min(num_weights, len(info_scores)))[1]
+
+                                for idx in top_indices:
+                                    coords = self._flat_to_coordinates(idx.item(), param.shape)
+
+                                    candidate = EnsembleWeightCandidate(
+                                        layer_idx=0,
+                                        parameter_name=f"{layer_name}.{param_name}",
+                                        coordinates=coords,
+                                        scores={"information_bottleneck": bottleneck_score},
+                                        ensemble_score=bottleneck_score,
+                                        confidence=0.5,
+                                        discovery_methods=["information_bottleneck"]
+                                    )
+                                    candidates.append(candidate)
+                    except Exception as e:
+                        logger.warning(f"Bottleneck analysis failed for {layer_name}: {e}")
+                        continue
+
+        except Exception as e:
+            logger.warning(f"Information bottleneck method failed: {e}")
+
+        return candidates
+
+    def _method_spectral_anomaly(
+        self,
+        target_layers: List[str],
+        top_k_percent: float
+    ) -> List[EnsembleWeightCandidate]:
+        """Method 4: Spectral anomaly detection using eigenvalue analysis."""
+        candidates = []
+
+        for layer_name in target_layers:
+            try:
+                layer = dict(self.model.named_modules())[layer_name]
+
+                for param_name, param in layer.named_parameters():
+                    if not param.requires_grad or param.dim() < 2:
+                        continue
+
+                    # Reshape to matrix for spectral analysis
+                    if param.dim() > 2:
+                        matrix = param.view(param.size(0), -1)
+                    else:
+                        matrix = param
+
+                    # Compute SVD for spectral analysis
+                    try:
+                        U, S, V = torch.svd(matrix)
+
+                        # Detect spectral anomalies
+                        singular_values = S.detach().cpu().numpy()
+
+                        # Look for gaps in singular value spectrum
+                        if len(singular_values) > 2:
+                            # Compute spectral gaps
+                            gaps = np.diff(singular_values)
+                            gap_threshold = np.std(gaps) * 2  # 2-sigma threshold
+
+                            anomaly_indices = np.where(gaps > gap_threshold)[0]
+
+                            if len(anomaly_indices) > 0:
+                                # Get corresponding weight positions
+                                num_anomalies = min(len(anomaly_indices),
+                                                  max(1, int(param.numel() * top_k_percent / 100)))
+
+                                for i in range(num_anomalies):
+                                    sv_idx = anomaly_indices[i] if i < len(anomaly_indices) else 0
+                                    spectral_score = float(gaps[sv_idx])
+
+                                    # Sample random coordinate (simplified)
+                                    rand_coord = tuple(torch.randint(0, s, (1,)).item() for s in param.shape)
+
+                                    candidate = EnsembleWeightCandidate(
+                                        layer_idx=0,
+                                        parameter_name=f"{layer_name}.{param_name}",
+                                        coordinates=rand_coord,
+                                        scores={"spectral_anomaly": spectral_score},
+                                        ensemble_score=spectral_score,
+                                        confidence=0.5,
+                                        discovery_methods=["spectral_anomaly"]
+                                    )
+                                    candidates.append(candidate)
+
+                    except Exception as e:
+                        logger.warning(f"SVD failed for {layer_name}.{param_name}: {e}")
+                        continue
+
+            except Exception as e:
+                logger.warning(f"Spectral analysis failed for {layer_name}: {e}")
+                continue
+
+        return candidates
+
+    def _ensemble_vote_candidates(
+        self,
+        method_results: List[Tuple[str, List[EnsembleWeightCandidate]]]
+    ) -> List[EnsembleWeightCandidate]:
+        """Combine candidates from multiple methods using weighted voting."""
+
+        # Create candidate lookup by coordinates
+        candidate_map = {}
+
+        for method_name, candidates in method_results:
+            for candidate in candidates:
+                key = (candidate.parameter_name, candidate.coordinates)
+
+                if key not in candidate_map:
+                    candidate_map[key] = {
+                        "candidate": candidate,
+                        "methods": set(),
+                        "scores": {}
+                    }
+
+                candidate_map[key]["methods"].add(method_name)
+                candidate_map[key]["scores"][method_name] = candidate.scores.get(method_name, 0.0)
+
+        # Compute ensemble scores and filter by agreement
+        final_candidates = []
+
+        for key, data in candidate_map.items():
+            candidate = data["candidate"]
+            methods = data["methods"]
+            scores = data["scores"]
+
+            # Require minimum method agreement
+            agreement_ratio = len(methods) / len(self.ensemble_config["methods"])
+
+            if agreement_ratio >= self.ensemble_config["agreement_threshold"]:
+                # Compute weighted ensemble score
+                ensemble_score = 0.0
+                total_weight = 0.0
+
+                for method in methods:
+                    weight = self.ensemble_config["weights"].get(method, 0.25)
+                    score = scores.get(method, 0.0)
+                    ensemble_score += weight * score
+                    total_weight += weight
+
+                if total_weight > 0:
+                    ensemble_score /= total_weight
+
+                # Confidence based on method agreement and score consistency
+                score_std = np.std(list(scores.values())) if len(scores) > 1 else 0.0
+                confidence = agreement_ratio * (1.0 - min(1.0, score_std))
+
+                # Update candidate with ensemble results
+                candidate.scores.update(scores)
+                candidate.ensemble_score = ensemble_score
+                candidate.confidence = confidence
+                candidate.discovery_methods = list(methods)
+
+                if confidence >= self.ensemble_config["confidence_threshold"]:
+                    final_candidates.append(candidate)
+
+        # Sort by ensemble score
+        final_candidates.sort(key=lambda x: x.ensemble_score, reverse=True)
+
+        logger.info(f"Ensemble voting: {len(final_candidates)} high-confidence candidates from {len(candidate_map)} total")
+        return final_candidates
+
+    def _generate_sample_inputs(self, batch_size: int = 8, seq_length: int = 32) -> torch.Tensor:
+        """Generate sample inputs for analysis."""
+        try:
+            if hasattr(self.model, 'config') and hasattr(self.model.config, 'vocab_size'):
+                vocab_size = self.model.config.vocab_size
+            else:
+                vocab_size = 50257  # Default for GPT-2
+
+            return torch.randint(0, vocab_size, (batch_size, seq_length), device=self.device)
+        except:
+            return torch.randint(0, 50257, (batch_size, seq_length), device=self.device)
+
+    def _compute_information_scores(self, param: torch.Tensor) -> torch.Tensor:
+        """Compute information-theoretic scores for parameter selection."""
+        # Simplified information scoring
+        flat_param = param.view(-1)
+
+        # Use magnitude and variance as information proxies
+        magnitude_scores = torch.abs(flat_param)
+
+        # Local variance (information content)
+        if len(flat_param) > 1:
+            padded = torch.cat([flat_param[:1], flat_param, flat_param[-1:]])
+            local_var = torch.var(padded.unfold(0, 3, 1), dim=1)
+            variance_scores = local_var
+        else:
+            variance_scores = torch.ones_like(magnitude_scores)
+
+        # Combine scores
+        info_scores = magnitude_scores * (1.0 + variance_scores)
+        return info_scores
+
+    def _flat_to_coordinates(self, flat_idx: int, shape: Tuple[int, ...]) -> Tuple[int, ...]:
+        """Convert flat index to multi-dimensional coordinates."""
+        coords = []
+        remaining = flat_idx
+
+        for dim_size in reversed(shape):
+            coords.append(remaining % dim_size)
+            remaining //= dim_size
+
+        return tuple(reversed(coords))
 
     def _discover_super_weights(
         self,
