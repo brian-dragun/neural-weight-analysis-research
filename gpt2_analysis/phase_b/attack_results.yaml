@@ -1,0 +1,94 @@
+attack_methods:
+- fgsm
+- pgd
+- bit_flip
+attack_results:
+  attack_results:
+    bit_flip:
+      attack_type: generic_bit_flip
+      success_rate: 1.0
+      successful_attacks: 15
+      total_targets: 15
+    fgsm:
+      attack_type: generic_fgsm
+      success_rate: 1.0
+      successful_attacks: 15
+      total_targets: 15
+    pgd:
+      attack_type: generic_pgd
+      success_rate: 1.0
+      successful_attacks: 15
+      total_targets: 15
+  attack_success_correlation:
+    bit_flip:
+      effectiveness_score: 1.0
+      primary_targets:
+      - unknown
+      success_rate: 1.0
+    fgsm:
+      effectiveness_score: 1.0
+      primary_targets:
+      - unknown
+      success_rate: 1.0
+    pgd:
+      effectiveness_score: 1.0
+      primary_targets:
+      - unknown
+      success_rate: 1.0
+  critical_failures: []
+  fault_injection:
+    critical_failures: []
+    injected_faults: 1
+    performance_degradation: .nan
+  performance_degradation:
+    bit_flip:
+      baseline_performance: 0.7407675335479438
+      current_performance: 0.7477727471885497
+      performance_loss: 0.0
+    fgsm:
+      baseline_performance: 0.7407675335479438
+      current_performance: 0.7504030485123846
+      performance_loss: 0.0
+    pgd:
+      baseline_performance: 0.7407675335479438
+      current_performance: 0.7328943601488691
+      performance_loss: 0.010628399656455931
+  recovery_metrics:
+    critical_weights_compromised: 3
+    estimated_recovery_complexity: medium
+    layer_recovery_priorities:
+      h.10.attn.c_attn.weight: 0.91357421875
+      h.10.ln_2.bias: 1.99560546875
+      h.10.mlp.c_fc.bias: 1.93603515625
+      h.11.attn.c_attn.bias: 1.88916015625
+      h.11.attn.c_proj.bias: 0.90185546875
+      h.11.ln_2.bias: 0.9189453125
+      h.11.mlp.c_fc.weight: 1.16015625
+      h.11.mlp.c_proj.bias: 2.1767578125
+      h.11.mlp.c_proj.weight: 0.95849609375
+      h.4.ln_2.bias: 1.796875
+      h.5.mlp.c_fc.bias: 1.96044921875
+      h.6.mlp.c_fc.bias: 1.0703125
+      h.8.mlp.c_fc.bias: 1.9306640625
+    recommended_recovery_order:
+    - h.11.mlp.c_proj.bias
+    - h.10.ln_2.bias
+    - h.5.mlp.c_fc.bias
+    - h.10.mlp.c_fc.bias
+    - h.8.mlp.c_fc.bias
+    - h.11.attn.c_attn.bias
+    - h.4.ln_2.bias
+    - h.11.mlp.c_fc.weight
+    - h.6.mlp.c_fc.bias
+    - h.11.mlp.c_proj.weight
+    - h.11.ln_2.bias
+    - h.10.attn.c_attn.weight
+    - h.11.attn.c_proj.bias
+  weight_vulnerability_ranking:
+    correlation_strength: 0.0
+    high_vulnerability_success: 3
+    low_vulnerability_success: 0
+    medium_vulnerability_success: 0
+critical_weights_tested: 50
+model: gpt2
+phase: B

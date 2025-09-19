@@ -373,7 +373,7 @@ def run_phase_b(
 
         # Load critical weights
         with open(critical_weights_file, 'r') as f:
-            phase_a_results = yaml.safe_load(f)
+            phase_a_results = yaml.unsafe_load(f)
         critical_weights = phase_a_results["critical_weights"]
 
         console.print(f"Loaded {len(critical_weights)} critical weights")

@@ -117,10 +117,10 @@ class SecurityWeightAnalyzer:
         model.eval()
         all_gradients = {}
 
-        # Initialize gradient storage
+        # Initialize gradient storage on the same device as model
         for name, param in model.named_parameters():
             if param.requires_grad:
-                all_gradients[name] = torch.zeros_like(param)
+                all_gradients[name] = torch.zeros_like(param, device=param.device)
 
         num_batches = 0
         for batch in data_loader:
@@ -347,9 +347,21 @@ class SecurityWeightAnalyzer:
     def _compute_security_aware_loss(self, model: torch.nn.Module, batch: Dict) -> torch.Tensor:
         """Compute loss with security-aware objective."""
         try:
+            # Ensure all tensors are on the same device as model
+            model_device = next(model.parameters()).device
+
+            # Move batch tensors to model device
+            batch_gpu = {}
+            for k, v in batch.items():
+                if torch.is_tensor(v):
+                    batch_gpu[k] = v.to(model_device)
+                else:
+                    batch_gpu[k] = v
+
             if hasattr(model, 'transformer') or hasattr(model, 'bert'):
                 # Transformer-style model
-                outputs = model(**{k: v for k, v in batch.items() if k in ['input_ids', 'attention_mask']})
+                model_inputs = {k: v for k, v in batch_gpu.items() if k in ['input_ids', 'attention_mask']}
+                outputs = model(**model_inputs)
 
                 if hasattr(outputs, 'last_hidden_state'):
                     hidden_states = outputs.last_hidden_state
@@ -359,15 +371,16 @@ class SecurityWeightAnalyzer:
                     loss = outputs[0].mean()
             else:
                 # Fallback for other models
-                outputs = model(**batch)
+                outputs = model(**batch_gpu)
                 loss = outputs.mean() if torch.is_tensor(outputs) else outputs[0].mean()
 
             return loss
 
         except Exception as e:
             logger.warning(f"Fallback loss computation: {e}")
-            # Simple fallback: sum of all parameters
-            return sum(param.sum() for param in model.parameters() if param.requires_grad)
+            # Simple fallback: sum of all parameters on correct device
+            model_device = next(model.parameters()).device
+            return sum(param.sum() for param in model.parameters() if param.requires_grad).to(model_device)
 
     def _get_security_weight(self, layer_name: str) -> float:
         """Get security weighting factor for different layer types."""

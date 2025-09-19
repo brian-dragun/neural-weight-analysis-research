@@ -129,12 +129,15 @@ class LambdaLabsLLMManager:
             logger.info(f"Loading model on Lambda Labs: {self.model_name} (Size: {self.model_size})")
             self._log_lambda_memory_usage("Before loading")
 
-            # Verify GPU availability on Lambda Labs
-            if not torch.cuda.is_available():
+            # Verify GPU availability on Lambda Labs (only if using CUDA)
+            if self.device == "cuda" and not torch.cuda.is_available():
                 logger.error("CUDA not available - Lambda Labs GPU not detected!")
                 raise RuntimeError("Lambda Labs GPU environment required but CUDA not available")
 
-            logger.info(f"Lambda Labs GPU detected: {torch.cuda.get_device_name()}")
+            if self.device == "cuda":
+                logger.info(f"Lambda Labs GPU detected: {torch.cuda.get_device_name()}")
+            else:
+                logger.info(f"Using device: {self.device}")
 
             # Load tokenizer first (lightweight)
             logger.info("Loading tokenizer...")
@@ -203,29 +206,41 @@ class LambdaLabsLLMManager:
             "cache_dir": self.cache_dir
         }
 
-        # Lambda Labs: Default to float16 for GPU efficiency
+        # Lambda Labs: Default to float16 for GPU efficiency, float32 for CPU
         if self.torch_dtype == "auto":
-            load_kwargs["torch_dtype"] = torch.float16  # Lambda default
+            if self.device == "cuda":
+                load_kwargs["torch_dtype"] = torch.float16  # Lambda default for GPU
+            else:
+                load_kwargs["torch_dtype"] = torch.float32  # CPU default
         else:
             dtype_map = {
                 "float16": torch.float16,
                 "float32": torch.float32,
                 "bfloat16": torch.bfloat16
             }
-            load_kwargs["torch_dtype"] = dtype_map.get(self.torch_dtype, torch.float16)
+            desired_dtype = dtype_map.get(self.torch_dtype, torch.float16)
+            # Force float32 for CPU if float16 was requested
+            if self.device == "cpu" and desired_dtype == torch.float16:
+                load_kwargs["torch_dtype"] = torch.float32
+            else:
+                load_kwargs["torch_dtype"] = desired_dtype
 
-        # Lambda Labs: Always use device mapping for optimal GPU utilization
-        load_kwargs["device_map"] = self.device_map
-        if self.max_memory:
-            load_kwargs["max_memory"] = self.max_memory
+        # Lambda Labs: Use device mapping for GPU, none for CPU
+        if self.device == "cuda":
+            load_kwargs["device_map"] = self.device_map
+            if self.max_memory:
+                load_kwargs["max_memory"] = self.max_memory
+        else:
+            # CPU usage - no device mapping
+            pass
 
         # Add quantization for medium/large models on Lambda Labs
         quantization_config = self._get_quantization_config()
         if quantization_config:
             load_kwargs["quantization_config"] = quantization_config
 
-        # Lambda Labs: Enable Flash Attention 2 for supported models
-        if self.use_flash_attention_2:
+        # Lambda Labs: Enable Flash Attention 2 for supported models (GPU only)
+        if self.use_flash_attention_2 and self.device == "cuda":
             load_kwargs["use_flash_attention_2"] = True
 
         return load_kwargs

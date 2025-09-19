@@ -56,6 +56,47 @@ def create_sample_data(num_samples: int = 10) -> List[str]:
     return samples
 
 
+def collate_fn(batch):
+    """Custom collate function to handle variable length sequences."""
+    # Find the maximum length in the batch
+    max_len = max(len(item["input_ids"]) for item in batch)
+
+    # Pad all sequences to the same length
+    input_ids = []
+    attention_masks = []
+    texts = []
+
+    for item in batch:
+        input_id = item["input_ids"]
+        attention_mask = item["attention_mask"]
+
+        # Pad sequences
+        pad_length = max_len - len(input_id)
+        if pad_length > 0:
+            # Use the tokenizer's pad_token_id if available, otherwise use 0
+            pad_token_id = getattr(item.get('tokenizer', None), 'pad_token_id', 0) or 0
+            input_id = torch.cat([input_id, torch.full((pad_length,), pad_token_id, dtype=input_id.dtype)])
+            attention_mask = torch.cat([attention_mask, torch.zeros(pad_length, dtype=attention_mask.dtype)])
+
+        input_ids.append(input_id)
+        attention_masks.append(attention_mask)
+        texts.append(item["text"])
+
+    batch_tensors = {
+        "input_ids": torch.stack(input_ids),
+        "attention_mask": torch.stack(attention_masks),
+        "text": texts
+    }
+
+    # Move tensors to CUDA if available
+    if torch.cuda.is_available():
+        for key in ["input_ids", "attention_mask"]:
+            if key in batch_tensors and torch.is_tensor(batch_tensors[key]):
+                batch_tensors[key] = batch_tensors[key].cuda()
+
+    return batch_tensors
+
+
 def create_data_loader(
     texts: List[str],
     tokenizer: Any,
@@ -64,4 +105,4 @@ def create_data_loader(
 ) -> DataLoader:
     """Create data loader for analysis."""
     dataset = SimpleTextDataset(texts, tokenizer, max_length)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=False)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)

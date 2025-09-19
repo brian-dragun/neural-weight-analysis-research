@@ -47,6 +47,14 @@ class SecurityConfig(BaseModel):
     vulnerability_threshold: float = 0.5
 
 
+class FaultInjectionConfig(BaseModel):
+    """Fault injection configuration."""
+    fault_types: List[str] = ["bit_flip", "stuck_at_zero", "random_noise"]
+    injection_rate: float = 0.01
+    enable_recovery: bool = True
+    recovery_timeout: float = 60.0
+
+
 class ExperimentConfig(BaseModel):
     """Main experiment configuration."""
     name: str
