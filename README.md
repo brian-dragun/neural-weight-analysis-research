@@ -30,55 +30,70 @@ A comprehensive **A→B→C security research pipeline** for analyzing critical 
 
 ## 🚀 Quick Start
 
-### **🎯 Fastest Start - Complete Security Analysis**
+### **🎯 Fastest Start - Traditional Security**
 ```bash
 # 1. Setup on Lambda Labs VM
 git clone <repo-url> critical-weight-analysis
 cd critical-weight-analysis
-source .venv/bin/activate
+pip install -e .
 
-# 2. Verify GPU and run complete pipeline
+# 2. Verify GPU and run original security pipeline
 cwa info  # Verify GPU setup
-cwa run-complete-pipeline "microsoft/DialoGPT-small"
+cwa run-complete-pipeline "gpt2"
 ```
 
-### **🔬 Advanced Research Workflow**
+### **🔬 Phase 1 Information-Theoretic Research**
 ```bash
-# 3. Multi-method ensemble discovery (NEW!)
+# 3. Run complete Phase 1 workflow
+./run_phase1_workflow.sh
+
+# Or individual Phase 1 commands:
 cwa extract-critical-weights "gpt2" \
   --mode "super_weight_discovery" \
   --top-k-percent 0.001 \
   --layer-focus "early"
 
-# 4. Information-theoretic analysis (NEW!)
 cwa spectral-analysis "gpt2" \
   --analysis-types "signatures,transitions,stability" \
   --include-pac-bounds \
   --confidence-level 0.95
+```
 
-# 5. Validate discovered super weights
-cwa validate-super-weights "gpt2" \
-  --coordinates "[(2, 'mlp.down_proj', [3968, 7003])]" \
-  --perplexity-threshold 100
+### **⚡ Phase 2 Advanced Security & Game Theory**
+```bash
+# 4. Run complete Phase 1+2 workflow
+./run_phase1_phase2_workflow.sh
+
+# Or individual Phase 2 commands:
+cwa monitor-realtime "gpt2" --latency-target 1.0
+cwa analyze-game-theory "gpt2" --game-types "nash_equilibrium,cooperative"
+cwa analyze-transfer "gpt2" "distilgpt2"
+```
+
+### **🏆 Complete Integrated Analysis**
+```bash
+# 5. Run everything: Original + Phase 1 + Phase 2
+./run_complete_integrated_workflow.sh
+
+# With custom models:
+./run_complete_integrated_workflow.sh "mistralai/Mistral-7B-v0.1" "meta-llama/Llama-2-7b-hf"
 ```
 
 ### **📊 Publication-Ready Research**
 ```bash
-# 6. Generate publication materials
+# 6. Generate comprehensive publication materials
 cwa research-extract "gpt2" \
-  --focus "mlp-components" \
-  --export-format "publication-ready"
-
-# 7. Create replication package
-cwa research-extract "gpt2" \
-  --export-format "replication-data"
+  --focus "comprehensive" \
+  --export-format "publication-ready" \
+  --include-metadata
 ```
 
-**Results**:
-- Security analysis: `complete_pipeline_results/`
-- Research discoveries: `research_output/`
-- Spectral analysis: `spectral_analysis_results/`
-- Publication materials: `publication_data/`
+**Results Structure**:
+- **Original Security**: `complete_pipeline_results/` - Traditional A→B→C analysis
+- **Phase 1 Research**: `phase1_analysis_*/` - Information-theoretic foundations
+- **Phase 2 Advanced**: `phase1_phase2_analysis_*/` - Game theory + real-time security
+- **Complete Integration**: `complete_analysis_*/` - All capabilities combined
+- **Publication Materials**: `publication_data/` - Research-ready outputs
 
 ## 🧠 Core Concepts
 
@@ -152,80 +167,149 @@ cwa info  # Should show your GPU details
 | **Medium** (Mistral-7B, Llama-7B) | A100 40GB | ~20GB | < 30 min |
 | **Large** (Llama-13B+) | A100 80GB | 40-70GB | < 60 min |
 
-## 📋 Command Reference
+## 📋 Complete Command Reference
 
-### **🔍 Core A→B→C Security Pipeline**
+### **🛠️ System & Setup Commands**
 
 ```bash
-# Complete pipeline (recommended for most users)
-cwa run-complete-pipeline MODEL_NAME [options]
-
-# Individual phases
-cwa phase-a MODEL_NAME [options]                    # Multi-method critical weight discovery
-cwa phase-b MODEL_NAME WEIGHTS_FILE [options]       # Advanced attack simulation
-cwa phase-c MODEL_NAME WEIGHTS_FILE ATTACKS_FILE [options]  # Certified defense implementation
+# System information and setup
+cwa info                          # GPU and system information
+cwa list-models                   # Available transformer models
+cwa list-metrics                  # Sensitivity analysis methods
+cwa model-info MODEL_NAME         # Detailed model information
+cwa create-config NAME MODEL      # Configuration file generation
+cwa run CONFIG_PATH               # Run with configuration file
 ```
 
-### **🔬 Advanced Research Commands**
+### **🔍 Original A→B→C Security Pipeline**
 
 ```bash
-# Enhanced ensemble super weight discovery (Phase 1)
+# Complete traditional security pipeline (recommended starting point)
+cwa run-complete-pipeline MODEL_NAME \
+  --attack-methods "fgsm,pgd,bit_flip,fault_injection" \
+  --protection-methods "weight_redundancy,checksums,adversarial_training" \
+  --output-dir "security_results"
+
+# Individual traditional security phases
+cwa phase-a MODEL_NAME \
+  --metric "security_gradient" \
+  --vulnerability-threshold 0.8 \
+  --top-k 500 \
+  --output-dir "phase_a_results"
+
+cwa phase-b MODEL_NAME WEIGHTS_FILE \
+  --attack-methods "fgsm,pgd,bit_flip" \
+  --output-dir "phase_b_results"
+
+cwa phase-c MODEL_NAME WEIGHTS_FILE ATTACKS_FILE \
+  --protection-methods "weight_redundancy,checksums" \
+  --output-dir "phase_c_results"
+```
+
+### **🔬 Phase 1: Information-Theoretic Research Commands**
+
+```bash
+# Multi-method ensemble super weight discovery
 cwa extract-critical-weights MODEL_NAME \
   --mode "super_weight_discovery" \
   --top-k-percent 0.001 \
-  --layer-focus "early"
+  --layer-focus "early" \
+  --sensitivity-threshold 0.7 \
+  --output-dir "ensemble_discovery"
 
-# Information-theoretic spectral analysis (Phase 1)
+# Information-theoretic spectral analysis with PAC-Bayesian bounds
 cwa spectral-analysis MODEL_NAME \
   --analysis-types "signatures,transitions,stability,correlations" \
   --include-pac-bounds \
-  --confidence-level 0.95
+  --confidence-level 0.95 \
+  --target-layers "layers.0,layers.1,layers.2" \
+  --output-dir "spectral_analysis"
 
-# Real-time security monitoring (Phase 2 - NEW!)
-cwa monitor-realtime MODEL_NAME \
-  --detection-algorithms "statistical,gradient,activation,weight_drift" \
-  --circuit-breaker-config "auto" \
-  --latency-target 1ms
-
-# Game-theoretic weight analysis (Phase 2 - NEW!)
-cwa analyze-game-theory MODEL_NAME \
-  --game-types "nash_equilibrium,cooperative,evolutionary" \
-  --max-players 50 \
-  --convergence-threshold 1e-6
-
-# Cross-architecture transfer analysis (Phase 2 - NEW!)
-cwa analyze-transfer SOURCE_MODEL TARGET_MODEL \
-  --mapping-strategies "geometric,semantic,interpolation" \
-  --transfer-types "architecture,domain,vulnerability"
-
-# Super weight validation with 100× perplexity
+# Super weight validation with 100× perplexity threshold
 cwa validate-super-weights MODEL_NAME COORDINATES \
   --perplexity-threshold 100 \
-  --export-results
+  --export-results \
+  --output-dir "validation_results"
 
 # Publication-ready research extraction
 cwa research-extract MODEL_NAME \
-  --focus "mlp-components" \
-  --export-format "publication-ready"
+  --focus "comprehensive" \
+  --export-format "publication-ready" \
+  --include-metadata \
+  --output-dir "publication_materials"
 ```
 
-### **🛠️ Utility & System Commands**
+### **⚡ Phase 2: Advanced Security & Game Theory Commands**
 
 ```bash
-cwa info                # GPU and system information
-cwa list-models         # Available transformer models
-cwa list-metrics        # Sensitivity analysis methods
-cwa create-config       # Configuration file generation
+# Real-time security monitoring with circuit breakers
+cwa monitor-realtime MODEL_NAME \
+  --detection-algorithms "statistical,gradient,activation,weight_drift" \
+  --circuit-breaker-config "auto" \
+  --latency-target 1.0 \
+  --anomaly-thresholds "adaptive" \
+  --output-dir "monitoring_results"
+
+# Game-theoretic weight analysis (all types)
+cwa analyze-game-theory MODEL_NAME \
+  --game-types "nash_equilibrium,cooperative,evolutionary" \
+  --max-players 50 \
+  --strategy-space-size 10 \
+  --convergence-threshold 1e-6 \
+  --output-dir "game_theory_results"
+
+# Nash equilibrium analysis only
+cwa analyze-game-theory MODEL_NAME \
+  --game-types "nash_equilibrium" \
+  --max-players 30 \
+  --output-dir "nash_results"
+
+# Cooperative coalition analysis with Shapley values
+cwa analyze-game-theory MODEL_NAME \
+  --game-types "cooperative" \
+  --coalition-analysis "shapley_values,core_analysis" \
+  --max-players 20 \
+  --output-dir "cooperative_results"
+
+# Evolutionary stability analysis
+cwa analyze-game-theory MODEL_NAME \
+  --game-types "evolutionary" \
+  --dynamics-type "replicator" \
+  --time-horizon 100.0 \
+  --mutation-rate 0.001 \
+  --output-dir "evolutionary_results"
+
+# Cross-architecture transfer analysis
+cwa analyze-transfer SOURCE_MODEL TARGET_MODEL \
+  --mapping-strategies "geometric,semantic,interpolation" \
+  --transfer-types "architecture,vulnerability" \
+  --similarity-threshold 0.7 \
+  --vulnerability-transfer-analysis \
+  --output-dir "transfer_results"
+
+# Specific mapping strategy analysis
+cwa analyze-transfer "gpt2" "distilgpt2" \
+  --mapping-strategies "geometric" \
+  --similarity-threshold 0.8 \
+  --output-dir "geometric_mapping_results"
 ```
 
-### **🆕 New Capabilities in Phase 1**
+### **📋 Complete Command Capabilities Overview**
 
-| Command | Capability | Enhancement |
-|---------|------------|-------------|
-| `extract-critical-weights` | **4-Method Ensemble** | Activation + Causal + Information + Spectral |
-| `spectral-analysis` | **PAC-Bayesian Bounds** | Theoretical vulnerability guarantees |
-| `validate-super-weights` | **Enhanced Validation** | Bit-level analysis with confidence scoring |
-| `research-extract` | **Publication Ready** | Automated tables, figures, replication packages |
+| Category | Command | Capability | Key Features |
+|----------|---------|------------|--------------|
+| **System** | `cwa info` | System Information | GPU status, CUDA support, performance metrics |
+| **System** | `cwa list-models` | Model Discovery | Recommended models by size category |
+| **System** | `cwa model-info` | Model Details | Architecture info, memory requirements |
+| **Original** | `cwa run-complete-pipeline` | **A→B→C Security** | Traditional attack/defense pipeline |
+| **Original** | `cwa phase-a/b/c` | **Individual Phases** | Granular security analysis control |
+| **Phase 1** | `cwa extract-critical-weights` | **4-Method Ensemble** | Activation + Causal + Information + Spectral |
+| **Phase 1** | `cwa spectral-analysis` | **PAC-Bayesian Bounds** | Theoretical vulnerability guarantees |
+| **Phase 1** | `cwa validate-super-weights` | **100× Perplexity** | Rigorous super weight confirmation |
+| **Phase 1** | `cwa research-extract` | **Publication Ready** | Automated tables, figures, replication packages |
+| **Phase 2** | `cwa monitor-realtime` | **Real-Time Security** | Sub-millisecond monitoring with circuit breakers |
+| **Phase 2** | `cwa analyze-game-theory` | **Strategic Modeling** | Nash equilibrium, cooperative, evolutionary |
+| **Phase 2** | `cwa analyze-transfer` | **Cross-Architecture** | Vulnerability transfer and mapping analysis |
 
 ## 💡 Usage Examples
 
@@ -374,74 +458,114 @@ for threshold in 0.5 0.6 0.7 0.8 0.9; do
 done
 ```
 
-### **🚀 Complete Phase 1+2 Integrated Research Workflow (NEW!)**
+### **🚀 Complete Integrated Workflow: Original + Phase 1 + Phase 2**
 
 ```bash
-# Step 1: Multi-method ensemble discovery with information theory (Phase 1)
-cwa extract-critical-weights "gpt2" \
+# COMPREHENSIVE RESEARCH WORKFLOW: All Capabilities
+MODEL_NAME="gpt2"
+COMPARE_MODEL="distilgpt2"
+OUTPUT_BASE="complete_analysis_$(date +%Y%m%d_%H%M%S)"
+
+# Step 1: System Setup & Information
+cwa info
+cwa list-models
+cwa model-info "$MODEL_NAME"
+
+# Step 2: Original A→B→C Security Pipeline (Baseline)
+cwa run-complete-pipeline "$MODEL_NAME" \
+  --attack-methods "fgsm,pgd,bit_flip,fault_injection" \
+  --protection-methods "weight_redundancy,checksums,adversarial_training" \
+  --output-dir "$OUTPUT_BASE/step2_original_security"
+
+# Step 3: Phase 1 - Multi-Method Ensemble Discovery
+cwa extract-critical-weights "$MODEL_NAME" \
   --mode "super_weight_discovery" \
   --sensitivity-threshold 0.7 \
   --top-k-percent 0.001 \
   --layer-focus "early" \
-  --output-dir "step1_ensemble_discovery"
+  --output-dir "$OUTPUT_BASE/step3_ensemble_discovery"
 
-# Step 2: Information-theoretic spectral analysis (Phase 1)
-cwa spectral-analysis "gpt2" \
+# Step 4: Phase 1 - Information-Theoretic Spectral Analysis
+cwa spectral-analysis "$MODEL_NAME" \
   --analysis-types "signatures,transitions,stability,correlations" \
   --include-pac-bounds \
   --confidence-level 0.95 \
-  --output-dir "step2_spectral_analysis"
+  --output-dir "$OUTPUT_BASE/step4_spectral_analysis"
 
-# Step 3: Real-time security monitoring (Phase 2 - NEW!)
-cwa monitor-realtime "gpt2" \
+# Step 5: Phase 2 - Real-Time Security Monitoring
+cwa monitor-realtime "$MODEL_NAME" \
   --detection-algorithms "statistical,gradient,activation,weight_drift" \
-  --circuit-breaker-config "production" \
-  --latency-target 1ms \
-  --output-dir "step3_realtime_monitoring"
+  --circuit-breaker-config "auto" \
+  --latency-target 1.0 \
+  --output-dir "$OUTPUT_BASE/step5_realtime_monitoring"
 
-# Step 4: Game-theoretic vulnerability analysis (Phase 2 - NEW!)
-cwa analyze-game-theory "gpt2" \
+# Step 6: Phase 2 - Game-Theoretic Vulnerability Analysis
+cwa analyze-game-theory "$MODEL_NAME" \
   --game-types "nash_equilibrium,cooperative,evolutionary" \
   --max-players 50 \
-  --include-vulnerability-assessment \
-  --output-dir "step4_game_theory"
+  --strategy-space-size 10 \
+  --convergence-threshold 1e-6 \
+  --output-dir "$OUTPUT_BASE/step6_game_theory"
 
-# Step 5: Cross-architecture transfer analysis (Phase 2 - NEW!)
-cwa analyze-transfer "gpt2" "distilgpt2" \
+# Step 7: Phase 2 - Cross-Architecture Transfer Analysis
+cwa analyze-transfer "$MODEL_NAME" "$COMPARE_MODEL" \
   --mapping-strategies "geometric,semantic,interpolation" \
-  --vulnerability-transfer-analysis \
-  --output-dir "step5_transfer_analysis"
+  --transfer-types "architecture,vulnerability" \
+  --similarity-threshold 0.7 \
+  --output-dir "$OUTPUT_BASE/step7_transfer_analysis"
 
-# Step 6: Traditional security pipeline for comparison
-cwa run-complete-pipeline "gpt2" \
-  --attack-methods "fgsm,pgd,bit_flip,fault_injection" \
-  --protection-methods "weight_redundancy,layer11_attention_fortress" \
-  --output-dir "step6_security_pipeline"
-
-# Step 7: Cross-validate ensemble discoveries with perplexity
-cwa validate-super-weights "gpt2" \
-  --coordinates "$(cat step1_ensemble_discovery/discovered_coordinates.txt)" \
+# Step 8: Super Weight Validation
+cwa validate-super-weights "$MODEL_NAME" \
+  --coordinates "$(cat $OUTPUT_BASE/step3_ensemble_discovery/discovered_coordinates.txt)" \
   --perplexity-threshold 100 \
   --export-results \
-  --output-dir "step7_validation"
+  --output-dir "$OUTPUT_BASE/step8_validation"
 
-# Step 8: Generate comprehensive publication package
-cwa research-extract "gpt2" \
+# Step 9: Comprehensive Publication Package
+cwa research-extract "$MODEL_NAME" \
   --focus "comprehensive" \
   --export-format "publication-ready" \
-  --include-phase2-analysis \
-  --output-dir "step8_publication_ready"
+  --include-metadata \
+  --output-dir "$OUTPUT_BASE/step9_publication"
 ```
 
-**Comprehensive Phase 1+2 Results**:
-- **Phase 1 Ensemble Discovery**: `step1_ensemble_discovery/` - 4-method voting results
-- **Phase 1 Spectral Analysis**: `step2_spectral_analysis/` - PAC-Bayesian certificates
-- **Phase 2 Real-time Monitoring**: `step3_realtime_monitoring/` - Circuit breaker & anomaly detection
-- **Phase 2 Game Theory**: `step4_game_theory/` - Nash equilibrium & evolutionary stability
-- **Phase 2 Transfer Analysis**: `step5_transfer_analysis/` - Cross-architecture vulnerability patterns
-- **Traditional Security**: `step6_security_pipeline/` - Attack/defense baseline comparison
-- **Validation**: `step7_validation/` - 100× perplexity confirmation
-- **Publication**: `step8_publication_ready/` - Complete research package with Phase 1+2 analysis
+### **📋 Quick Start Workflows**
+
+#### **🚀 Traditional Security Analysis**
+```bash
+# Just run the original A→B→C pipeline
+cwa run-complete-pipeline "gpt2"
+```
+
+#### **🔬 Phase 1 Information-Theoretic Research**
+```bash
+# Run Phase 1 workflow script
+./run_phase1_workflow.sh
+```
+
+#### **⚡ Phase 2 Advanced Security**
+```bash
+# Real-time monitoring + game theory
+cwa monitor-realtime "gpt2" --latency-target 1.0
+cwa analyze-game-theory "gpt2" --game-types "nash_equilibrium,cooperative"
+cwa analyze-transfer "gpt2" "distilgpt2"
+```
+
+#### **🎯 Complete Integration**
+```bash
+# Full Phase 1 + 2 workflow
+./run_phase1_phase2_workflow.sh
+```
+
+**Complete Analysis Results Structure**:
+- **Original Security**: `step2_original_security/` - Traditional A→B→C pipeline results
+- **Phase 1 Discovery**: `step3_ensemble_discovery/` - 4-method ensemble super weight discovery
+- **Phase 1 Spectral**: `step4_spectral_analysis/` - Information-theoretic analysis with PAC-Bayesian bounds
+- **Phase 2 Monitoring**: `step5_realtime_monitoring/` - Real-time security with circuit breakers
+- **Phase 2 Game Theory**: `step6_game_theory/` - Nash equilibrium, cooperative, evolutionary analysis
+- **Phase 2 Transfer**: `step7_transfer_analysis/` - Cross-architecture vulnerability patterns
+- **Validation**: `step8_validation/` - 100× perplexity super weight confirmation
+- **Publication**: `step9_publication/` - Research-ready materials with all analyses
 
 ## 📊 Detailed Command Options
 
