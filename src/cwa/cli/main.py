@@ -1346,5 +1346,434 @@ def _generate_replication_package(research_data: Dict[str, Any], output_path: Pa
             f.write(str(coordinates))
 
 
+# ============================================================================
+# PHASE 2 COMMANDS: Advanced Security & Game-Theoretic Analysis
+# ============================================================================
+
+@app.command("monitor-realtime")
+def monitor_realtime(
+    model_name: str,
+    detection_algorithms: str = "statistical,gradient,activation,weight_drift",
+    circuit_breaker_config: str = "auto",
+    latency_target: float = 1.0,
+    anomaly_thresholds: str = "adaptive",
+    output_dir: Optional[str] = None,
+    device: str = "auto"
+):
+    """Real-time security monitoring with circuit breakers (Phase 2)."""
+    try:
+        from ..monitoring.realtime_monitor import RealtimeSecurityMonitor, MonitoringConfig
+        from ..monitoring.circuit_breaker import CircuitBreakerConfig
+        from ..monitoring.anomaly_detector import DetectionConfig
+
+        console.print(f"[bold green]🕰️ Starting real-time monitoring for {model_name}[/bold green]")
+
+        # Setup output directory
+        if not output_dir:
+            output_dir = f"realtime_monitoring_results_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        # Load model
+        model_manager = LambdaLabsLLMManager()
+        model, tokenizer = model_manager.load_model(model_name, device=device)
+
+        # Configure monitoring
+        algorithms = [alg.strip() for alg in detection_algorithms.split(",")]
+
+        # Setup monitoring configuration
+        monitoring_config = MonitoringConfig()
+        monitoring_config.enable_circuit_breaker = True
+        monitoring_config.target_latency_ms = latency_target
+
+        # Initialize monitor
+        monitor = RealtimeSecurityMonitor(config=monitoring_config)
+
+        # Create sample inputs for monitoring
+        sample_inputs = create_sample_data(tokenizer, num_samples=100)
+
+        console.print(f"[blue]Detection algorithms: {', '.join(algorithms)}[/blue]")
+        console.print(f"[blue]Target latency: {latency_target}ms[/blue]")
+        console.print(f"[blue]Circuit breaker: {circuit_breaker_config}[/blue]")
+
+        # Run monitoring session
+        with console.status("[bold green]Running real-time monitoring..."):
+            monitoring_results = []
+
+            for i, input_batch in enumerate(sample_inputs):
+                if i >= 50:  # Limit for demo
+                    break
+
+                # Monitor inference
+                response = monitor.monitor_inference(model, input_batch)
+                monitoring_results.append(response)
+
+                if response.alerts:
+                    console.print(f"[red]⚠️  Alert detected at batch {i}: {len(response.alerts)} anomalies[/red]")
+
+        # Save results
+        results = {
+            "monitoring_session": {
+                "model_name": model_name,
+                "timestamp": pd.Timestamp.now().isoformat(),
+                "algorithms": algorithms,
+                "total_batches": len(monitoring_results),
+                "total_alerts": sum(len(r.alerts) for r in monitoring_results)
+            },
+            "performance_metrics": monitor.get_performance_summary(),
+            "anomaly_summary": monitor.get_anomaly_summary()
+        }
+
+        # Export results
+        with open(output_path / "monitoring_session.json", 'w') as f:
+            import json
+            json.dump(results, f, indent=2, default=str)
+
+        # Display summary
+        table = Table(title="Real-Time Monitoring Summary")
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="green")
+        table.add_column("Description")
+
+        table.add_row("Batches Processed", str(len(monitoring_results)), "Total inference batches monitored")
+        table.add_row("Total Alerts", str(results["monitoring_session"]["total_alerts"]), "Anomalies detected")
+        table.add_row("Average Latency", f"{results['performance_metrics'].get('avg_latency_ms', 0):.2f}ms", "Per-batch processing time")
+        table.add_row("Circuit Breaker Trips", str(results['performance_metrics'].get('circuit_breaker_trips', 0)), "Fail-safe activations")
+
+        console.print(table)
+        console.print(f"[bold green]✅ Monitoring results saved to: {output_path}[/bold green]")
+
+    except Exception as e:
+        console.print(f"[red]❌ Real-time monitoring failed: {e}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command("analyze-game-theory")
+def analyze_game_theory(
+    model_name: str,
+    game_types: str = "nash_equilibrium,cooperative,evolutionary",
+    max_players: int = 50,
+    strategy_space_size: int = 10,
+    convergence_threshold: float = 1e-6,
+    coalition_analysis: str = "shapley_values,core_analysis",
+    dynamics_type: str = "replicator",
+    output_dir: Optional[str] = None,
+    device: str = "auto"
+):
+    """Game-theoretic weight analysis (Phase 2)."""
+    try:
+        from ..game_theory.neurogame_analyzer import NeuroGameAnalyzer, GameConfig
+        from ..game_theory.game_theoretic_analyzer import GameTheoreticWeightAnalyzer, GameConfiguration
+        from ..game_theory.cooperative_analyzer import CooperativeGameAnalyzer, CooperativeGameConfig
+        from ..game_theory.evolutionary_analyzer import EvolutionaryStabilityAnalyzer, EvolutionaryConfig
+
+        console.print(f"[bold green]🎮 Starting game-theoretic analysis for {model_name}[/bold green]")
+
+        # Setup output directory
+        if not output_dir:
+            output_dir = f"game_theory_results_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        # Load model
+        model_manager = LambdaLabsLLMManager()
+        model, tokenizer = model_manager.load_model(model_name, device=device)
+
+        # Create sample inputs
+        sample_inputs = create_sample_data(tokenizer, num_samples=10)
+        inputs = sample_inputs[0]  # Use first batch
+
+        game_types_list = [gt.strip() for gt in game_types.split(",")]
+        results = {}
+
+        # Nash Equilibrium Analysis
+        if "nash_equilibrium" in game_types_list:
+            console.print("[blue]🎯 Running Nash equilibrium analysis...[/blue]")
+            config = GameConfiguration(
+                max_players=max_players,
+                strategy_space_size=strategy_space_size,
+                convergence_threshold=convergence_threshold
+            )
+            analyzer = GameTheoreticWeightAnalyzer(config)
+
+            with console.status("[bold green]Computing Nash equilibrium..."):
+                equilibrium = analyzer.analyze_weight_game(model, inputs)
+
+            if equilibrium:
+                results["nash_equilibrium"] = {
+                    "vulnerability_score": equilibrium.vulnerability_score,
+                    "stability_score": equilibrium.stability_score,
+                    "convergence_iterations": equilibrium.convergence_iterations,
+                    "critical_weights": equilibrium.critical_weights
+                }
+                console.print(f"[green]✅ Nash equilibrium found (vulnerability: {equilibrium.vulnerability_score:.3f})[/green]")
+            else:
+                console.print("[yellow]⚠️  No Nash equilibrium found[/yellow]")
+
+        # Cooperative Game Analysis
+        if "cooperative" in game_types_list:
+            console.print("[blue]🤝 Running cooperative game analysis...[/blue]")
+            config = CooperativeGameConfig(
+                max_coalition_size=min(max_players, 10),
+                compute_shapley_values=True
+            )
+            analyzer = CooperativeGameAnalyzer(config)
+
+            with console.status("[bold green]Analyzing coalition structures..."):
+                coalition_structure = analyzer.analyze_cooperative_structure(model, inputs)
+
+            if coalition_structure:
+                results["cooperative"] = {
+                    "stability_score": coalition_structure.stability_score,
+                    "efficiency_score": coalition_structure.efficiency_score,
+                    "num_coalitions": len(coalition_structure.coalitions),
+                    "shapley_values": dict(list(coalition_structure.shapley_values.items())[:10])  # Top 10
+                }
+                console.print(f"[green]✅ Coalition analysis complete (stability: {coalition_structure.stability_score:.3f})[/green]")
+
+        # Evolutionary Stability Analysis
+        if "evolutionary" in game_types_list:
+            console.print("[blue]🧬 Running evolutionary stability analysis...[/blue]")
+            config = EvolutionaryConfig(
+                dynamics_type=getattr(__import__('src.cwa.game_theory.evolutionary_analyzer', fromlist=['EvolutionaryDynamics']).EvolutionaryDynamics, dynamics_type.upper()),
+                time_horizon=100.0
+            )
+            analyzer = EvolutionaryStabilityAnalyzer(config)
+
+            with console.status("[bold green]Computing evolutionary stable strategies..."):
+                ess_strategies = analyzer.analyze_evolutionary_stability(model, inputs)
+
+            if ess_strategies:
+                results["evolutionary"] = {
+                    "num_ess": len(ess_strategies),
+                    "average_stability": np.mean([ess.stability_score for ess in ess_strategies]),
+                    "average_basin_size": np.mean([ess.basin_size for ess in ess_strategies]),
+                    "strategies": [
+                        {
+                            "stability_type": ess.stability_type.value,
+                            "basin_size": ess.basin_size,
+                            "convergence_rate": ess.convergence_rate
+                        } for ess in ess_strategies[:5]  # Top 5
+                    ]
+                }
+                console.print(f"[green]✅ Found {len(ess_strategies)} evolutionarily stable strategies[/green]")
+
+        # Save results
+        analysis_summary = {
+            "model_name": model_name,
+            "timestamp": pd.Timestamp.now().isoformat(),
+            "game_types": game_types_list,
+            "configuration": {
+                "max_players": max_players,
+                "strategy_space_size": strategy_space_size,
+                "convergence_threshold": convergence_threshold
+            },
+            "results": results
+        }
+
+        with open(output_path / "game_theory_analysis.json", 'w') as f:
+            import json
+            json.dump(analysis_summary, f, indent=2, default=str)
+
+        # Display summary table
+        table = Table(title="Game-Theoretic Analysis Summary")
+        table.add_column("Analysis Type", style="cyan")
+        table.add_column("Status", style="green")
+        table.add_column("Key Metric")
+
+        for game_type in game_types_list:
+            if game_type in results:
+                if game_type == "nash_equilibrium":
+                    status = "✅ Complete"
+                    metric = f"Vulnerability: {results[game_type]['vulnerability_score']:.3f}"
+                elif game_type == "cooperative":
+                    status = "✅ Complete"
+                    metric = f"Stability: {results[game_type]['stability_score']:.3f}"
+                elif game_type == "evolutionary":
+                    status = "✅ Complete"
+                    metric = f"ESS Found: {results[game_type]['num_ess']}"
+                else:
+                    status = "✅ Complete"
+                    metric = "Analysis successful"
+            else:
+                status = "❌ Failed"
+                metric = "No results"
+
+            table.add_row(game_type.replace("_", " ").title(), status, metric)
+
+        console.print(table)
+        console.print(f"[bold green]✅ Game theory analysis saved to: {output_path}[/bold green]")
+
+    except Exception as e:
+        console.print(f"[red]❌ Game-theoretic analysis failed: {e}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command("analyze-transfer")
+def analyze_transfer(
+    source_model: str,
+    target_model: str,
+    mapping_strategies: str = "geometric,semantic,interpolation",
+    transfer_types: str = "architecture,vulnerability",
+    similarity_threshold: float = 0.7,
+    vulnerability_transfer_analysis: bool = True,
+    output_dir: Optional[str] = None,
+    device: str = "auto"
+):
+    """Cross-architecture transfer analysis (Phase 2)."""
+    try:
+        from ..transfer.transfer_analyzer import TransferAnalyzer, TransferConfig
+        from ..transfer.architecture_mapper import ArchitectureMapper, MappingConfig, MappingStrategy
+
+        console.print(f"[bold green]🔄 Analyzing transfer: {source_model} → {target_model}[/bold green]")
+
+        # Setup output directory
+        if not output_dir:
+            output_dir = f"transfer_analysis_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}"
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        # Load models
+        model_manager = LambdaLabsLLMManager()
+
+        console.print(f"[blue]Loading source model: {source_model}[/blue]")
+        source_model_obj, source_tokenizer = model_manager.load_model(source_model, device=device)
+
+        console.print(f"[blue]Loading target model: {target_model}[/blue]")
+        target_model_obj, target_tokenizer = model_manager.load_model(target_model, device=device)
+
+        # Configure transfer analysis
+        transfer_config = TransferConfig(
+            similarity_threshold=similarity_threshold
+        )
+        mapping_config = MappingConfig(
+            compatibility_threshold=similarity_threshold
+        )
+
+        # Initialize analyzers
+        transfer_analyzer = TransferAnalyzer(transfer_config)
+        architecture_mapper = ArchitectureMapper(mapping_config)
+
+        # Parse mapping strategies
+        strategies_list = [s.strip() for s in mapping_strategies.split(",")]
+
+        results = {}
+
+        # Transfer Pattern Analysis
+        console.print("[blue]🔍 Analyzing transfer patterns...[/blue]")
+        with console.status("[bold green]Extracting and matching patterns..."):
+            transfer_patterns = transfer_analyzer.analyze_transfer_potential(
+                source_model_obj, target_model_obj, source_model, target_model
+            )
+
+        if transfer_patterns:
+            results["transfer_patterns"] = {
+                "num_patterns": len(transfer_patterns),
+                "average_transferability": np.mean([p.transferability_score for p in transfer_patterns]),
+                "high_quality_patterns": len([p for p in transfer_patterns if p.transferability_score > 0.8]),
+                "patterns": [
+                    {
+                        "pattern_id": p.pattern_id,
+                        "transfer_type": p.transfer_type.value,
+                        "transferability_score": p.transferability_score,
+                        "pattern_similarity": p.pattern_similarity,
+                        "semantic_alignment": p.semantic_alignment
+                    } for p in transfer_patterns[:10]  # Top 10
+                ]
+            }
+
+        # Architecture Mapping Analysis
+        for strategy_name in strategies_list:
+            console.print(f"[blue]🗺️ Analyzing {strategy_name} mapping...[/blue]")
+
+            try:
+                strategy = getattr(MappingStrategy, strategy_name.upper() + "_MAPPING")
+
+                with console.status(f"[bold green]Creating {strategy_name} mappings..."):
+                    mappings = architecture_mapper.create_architecture_mapping(
+                        source_model_obj, target_model_obj, strategy
+                    )
+
+                if mappings:
+                    mapping_quality = architecture_mapper.evaluate_mapping_quality(mappings)
+                    results[f"{strategy_name}_mapping"] = {
+                        "num_mappings": len(mappings),
+                        "quality_distribution": mapping_quality.get("quality_distribution", {}),
+                        "average_compatibility": mapping_quality.get("average_compatibility", 0.0),
+                        "high_quality_mappings": mapping_quality.get("high_quality_mappings", 0)
+                    }
+
+            except AttributeError:
+                console.print(f"[yellow]⚠️  Strategy {strategy_name} not recognized[/yellow]")
+
+        # Transfer Success Prediction
+        console.print("[blue]📊 Predicting transfer success...[/blue]")
+        success_prediction = transfer_analyzer.predict_transfer_success(source_model_obj, target_model_obj)
+        results["success_prediction"] = success_prediction
+
+        # Save results
+        analysis_summary = {
+            "source_model": source_model,
+            "target_model": target_model,
+            "timestamp": pd.Timestamp.now().isoformat(),
+            "configuration": {
+                "mapping_strategies": strategies_list,
+                "similarity_threshold": similarity_threshold,
+                "vulnerability_transfer_analysis": vulnerability_transfer_analysis
+            },
+            "results": results
+        }
+
+        with open(output_path / "transfer_analysis.json", 'w') as f:
+            import json
+            json.dump(analysis_summary, f, indent=2, default=str)
+
+        # Display summary
+        table = Table(title="Transfer Analysis Summary")
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="green")
+        table.add_column("Description")
+
+        if "transfer_patterns" in results:
+            table.add_row(
+                "Transfer Patterns",
+                str(results["transfer_patterns"]["num_patterns"]),
+                "Transferable patterns found"
+            )
+            table.add_row(
+                "Average Transferability",
+                f"{results['transfer_patterns']['average_transferability']:.3f}",
+                "Mean transferability score"
+            )
+
+        if "success_prediction" in results:
+            table.add_row(
+                "Transfer Success Probability",
+                f"{results['success_prediction']['transfer_success_probability']:.3f}",
+                "Predicted likelihood of successful transfer"
+            )
+            table.add_row(
+                "Performance Retention",
+                f"{results['success_prediction']['expected_performance_retention']:.3f}",
+                "Expected performance after transfer"
+            )
+
+        for strategy in strategies_list:
+            strategy_key = f"{strategy}_mapping"
+            if strategy_key in results:
+                table.add_row(
+                    f"{strategy.title()} Mappings",
+                    str(results[strategy_key]["num_mappings"]),
+                    f"Successful {strategy} mappings created"
+                )
+
+        console.print(table)
+        console.print(f"[bold green]✅ Transfer analysis saved to: {output_path}[/bold green]")
+
+    except Exception as e:
+        console.print(f"[red]❌ Transfer analysis failed: {e}[/red]")
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()
