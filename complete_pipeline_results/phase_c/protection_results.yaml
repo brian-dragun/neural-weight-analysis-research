@@ -1,0 +1,974 @@
+model: microsoft/DialoGPT-small
+phase: C
+protection_methods:
+- weight_redundancy
+- checksums
+- adversarial_training
+- input_sanitization
+protection_results:
+  critical_weight_protection_map:
+    h.10.attn.c_attn.bias[1358]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.bias[1906]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.bias[2082]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[147940]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[148515]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[148708]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[149362]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[201579]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[319669]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[319858]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_attn.weight[320034]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_proj.bias[142]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_proj.bias[481]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_proj.bias[77]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_proj.weight[372618]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_proj.weight[372622]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_proj.weight[512333]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.attn.c_proj.weight[535009]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.ln_2.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.ln_2.bias[481]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_fc.bias[1793]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_fc.bias[379]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_fc.bias[609]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_fc.bias[900]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_fc.weight[424836]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_fc.weight[885636]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.10.mlp.c_proj.weight[691338]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[1442]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[1567]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[2059]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[2078]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[2245]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[2274]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[2288]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[736]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[746]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[760]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.bias[859]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[319519]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[319765]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[319771]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320005]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320007]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320013]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320032]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320033]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320049]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320194]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320197]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320201]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320205]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320226]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320240]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320242]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320243]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_attn.weight[320249]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.bias[266]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.bias[393]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.bias[480]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.bias[496]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.bias[640]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.bias[64]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.bias[87]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[394377]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[395967]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[399039]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[403647]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[412095]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[415167]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[418239]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[422793]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[423040]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[429759]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[431295]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[564105]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.attn.c_proj.weight[567177]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.ln_1.weight[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_fc.bias[1611]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_fc.weight[1208907]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_fc.weight[1209223]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_fc.weight[20043]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_fc.weight[20430]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_fc.weight[21465]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_fc.weight[886859]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.bias[314]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.bias[374]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.bias[430]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.bias[480]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.bias[496]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.bias[6]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.bias[703]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.weight[1849658]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.11.mlp.c_proj.weight[2204474]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.2.attn.c_proj.bias[411]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.3.ln_2.weight[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.3.mlp.c_fc.weight[424963]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.4.mlp.c_fc.bias[2883]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.4.mlp.c_fc.bias[787]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.5.mlp.c_fc.bias[1888]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.attn.c_attn.weight[147829]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.attn.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.attn.c_proj.bias[413]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.attn.c_proj.bias[496]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.attn.c_proj.bias[651]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.attn.c_proj.bias[745]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.attn.c_proj.bias[98]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.mlp.c_fc.bias[2538]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.6.mlp.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.attn.c_attn.weight[148074]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.attn.c_proj.bias[130]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.attn.c_proj.bias[496]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.attn.c_proj.bias[703]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.attn.c_proj.bias[745]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.attn.c_proj.bias[77]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.mlp.c_fc.bias[2611]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.7.mlp.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.attn.c_attn.bias[1589]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.attn.c_attn.weight[148099]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.attn.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.attn.c_proj.weight[3978]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.ln_2.bias[480]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.ln_2.bias[481]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.mlp.c_fc.bias[841]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.8.mlp.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_attn.bias[1925]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_attn.bias[2245]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_attn.weight[147688]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_attn.weight[149701]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_proj.bias[481]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_proj.bias[77]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_proj.weight[149837]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_proj.weight[150074]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_proj.weight[150256]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.attn.c_proj.weight[152909]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.ln_2.bias[373]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.ln_2.bias[480]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.mlp.c_fc.bias[1889]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.mlp.c_fc.bias[2007]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.mlp.c_fc.bias[840]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.mlp.c_fc.bias[978]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.mlp.c_proj.bias[314]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.mlp.c_proj.bias[481]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    h.9.mlp.c_proj.bias[77]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+    ln_f.weight[36]:
+    - weight_redundancy
+    - adversarial_training
+    - input_sanitization
+  defense_effectiveness:
+    adversarial_training: 0.0
+    input_sanitization: 0.0
+    weight_redundancy: 0.0
+  performance_overhead: 0.0
+  protection_applied:
+    adversarial_training:
+      method: adversarial_training
+      overhead_estimate: 0.0
+      protected_weight_list: &id001
+      - h.11.mlp.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[1889]
+      - h.10.mlp.c_fc.bias[900]
+      - h.11.mlp.c_proj.bias[430]
+      - h.6.attn.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[840]
+      - h.3.mlp.c_fc.weight[424963]
+      - h.10.mlp.c_fc.bias[609]
+      - h.11.attn.c_attn.weight[320226]
+      - h.4.mlp.c_fc.bias[787]
+      success: true
+      trained_weights: *id001
+      training_simulation_applied: true
+      weights_protected: 10
+    checksums:
+      error: 'Unknown protection method: checksums'
+    input_sanitization:
+      method: input_sanitization
+      overhead_estimate: 0.034
+      protected_layers:
+      - h.5.mlp.c_fc
+      - h.10.mlp.c_proj
+      - h.10.attn.c_proj
+      - h.9.attn.c_proj
+      - h.7.mlp.c_proj
+      - h.4.mlp.c_fc
+      - h.7.attn.c_attn
+      - h.10.attn.c_attn
+      - h.3.ln_2
+      - h.9.mlp.c_fc
+      - h.6.attn.c_attn
+      - h.9.ln_2
+      - h.11.attn.c_proj
+      - h.10.ln_2
+      - h.10.mlp.c_fc
+      - h.9.attn.c_attn
+      - h.6.mlp.c_fc
+      - h.8.attn.c_attn
+      - h.9.mlp.c_proj
+      - h.6.mlp.c_proj
+      - h.11.mlp.c_fc
+      - h.11.mlp.c_proj
+      - h.11.attn.c_attn
+      - ln_f
+      - h.7.attn.c_proj
+      - h.2.attn.c_proj
+      - h.8.mlp.c_proj
+      - h.8.attn.c_proj
+      - h.8.mlp.c_fc
+      - h.11.ln_1
+      - h.7.mlp.c_fc
+      - h.6.attn.c_proj
+      - h.8.ln_2
+      - h.3.mlp.c_fc
+      protected_weight_list:
+      - h.5.mlp.c_fc[*]
+      - h.10.mlp.c_proj[*]
+      - h.10.attn.c_proj[*]
+      - h.9.attn.c_proj[*]
+      - h.7.mlp.c_proj[*]
+      - h.4.mlp.c_fc[*]
+      - h.7.attn.c_attn[*]
+      - h.10.attn.c_attn[*]
+      - h.3.ln_2[*]
+      - h.9.mlp.c_fc[*]
+      - h.6.attn.c_attn[*]
+      - h.9.ln_2[*]
+      - h.11.attn.c_proj[*]
+      - h.10.ln_2[*]
+      - h.10.mlp.c_fc[*]
+      - h.9.attn.c_attn[*]
+      - h.6.mlp.c_fc[*]
+      - h.8.attn.c_attn[*]
+      - h.9.mlp.c_proj[*]
+      - h.6.mlp.c_proj[*]
+      - h.11.mlp.c_fc[*]
+      - h.11.mlp.c_proj[*]
+      - h.11.attn.c_attn[*]
+      - ln_f[*]
+      - h.7.attn.c_proj[*]
+      - h.2.attn.c_proj[*]
+      - h.8.mlp.c_proj[*]
+      - h.8.attn.c_proj[*]
+      - h.8.mlp.c_fc[*]
+      - h.11.ln_1[*]
+      - h.7.mlp.c_fc[*]
+      - h.6.attn.c_proj[*]
+      - h.8.ln_2[*]
+      - h.3.mlp.c_fc[*]
+      sanitization_hooks: 34
+      success: true
+      weights_protected: 146
+    weight_redundancy:
+      backup_count: 146
+      checksum_count: 146
+      method: weight_redundancy
+      overhead_estimate: 0.001168
+      protected_weight_list:
+      - h.11.mlp.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[1889]
+      - h.10.mlp.c_fc.bias[900]
+      - h.11.mlp.c_proj.bias[430]
+      - h.6.attn.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[840]
+      - h.3.mlp.c_fc.weight[424963]
+      - h.10.mlp.c_fc.bias[609]
+      - h.11.attn.c_attn.weight[320226]
+      - h.4.mlp.c_fc.bias[787]
+      - h.10.mlp.c_fc.bias[1793]
+      - h.11.attn.c_attn.weight[320240]
+      - h.11.attn.c_attn.weight[320197]
+      - h.11.attn.c_proj.bias[393]
+      - h.11.mlp.c_fc.weight[20430]
+      - h.11.attn.c_proj.bias[64]
+      - h.10.mlp.c_fc.weight[885636]
+      - h.11.attn.c_attn.weight[320249]
+      - h.6.attn.c_proj.bias[98]
+      - h.11.attn.c_attn.bias[746]
+      - h.11.attn.c_proj.bias[480]
+      - h.11.mlp.c_proj.bias[314]
+      - h.11.mlp.c_proj.bias[6]
+      - h.11.ln_1.weight[138]
+      - h.11.attn.c_proj.weight[422793]
+      - h.10.attn.c_attn.weight[148708]
+      - h.10.ln_2.bias[138]
+      - h.10.mlp.c_proj.bias[138]
+      - h.8.ln_2.bias[480]
+      - h.2.attn.c_proj.bias[411]
+      - h.9.mlp.c_fc.bias[2007]
+      - h.11.attn.c_proj.bias[87]
+      - h.6.mlp.c_fc.bias[2538]
+      - h.7.attn.c_proj.bias[496]
+      - h.9.ln_2.bias[373]
+      - h.9.ln_2.bias[480]
+      - h.11.attn.c_proj.bias[266]
+      - h.10.attn.c_proj.weight[372622]
+      - h.11.mlp.c_fc.weight[1208907]
+      - h.11.attn.c_attn.bias[2078]
+      - h.10.attn.c_proj.bias[481]
+      - h.10.attn.c_proj.bias[77]
+      - ln_f.weight[36]
+      - h.10.attn.c_proj.weight[535009]
+      - h.11.attn.c_attn.weight[319519]
+      - h.9.attn.c_attn.weight[147688]
+      - h.10.attn.c_attn.weight[319858]
+      - h.11.mlp.c_proj.bias[374]
+      - h.9.attn.c_proj.bias[138]
+      - h.10.attn.c_attn.bias[2082]
+      - h.10.attn.c_attn.weight[147940]
+      - h.6.attn.c_proj.bias[651]
+      - h.10.mlp.c_fc.bias[379]
+      - h.11.attn.c_attn.bias[2059]
+      - h.11.attn.c_attn.weight[320242]
+      - h.9.mlp.c_fc.bias[978]
+      - h.5.mlp.c_fc.bias[1888]
+      - h.11.mlp.c_fc.bias[1611]
+      - h.8.attn.c_attn.weight[148099]
+      - h.11.attn.c_attn.weight[320205]
+      - h.9.attn.c_proj.weight[149837]
+      - h.11.attn.c_proj.weight[399039]
+      - h.4.mlp.c_fc.bias[2883]
+      - h.8.mlp.c_proj.bias[138]
+      - h.11.attn.c_attn.weight[319765]
+      - h.11.attn.c_proj.weight[418239]
+      - h.11.attn.c_proj.weight[431295]
+      - h.11.attn.c_proj.weight[403647]
+      - h.11.attn.c_proj.weight[395967]
+      - h.11.attn.c_attn.weight[319771]
+      - h.11.attn.c_attn.weight[320007]
+      - h.10.attn.c_attn.bias[1906]
+      - h.10.attn.c_proj.weight[372618]
+      - h.10.ln_2.bias[481]
+      - h.10.mlp.c_fc.weight[424836]
+      - h.9.attn.c_attn.weight[149701]
+      - h.9.attn.c_attn.bias[2245]
+      - h.6.attn.c_proj.bias[745]
+      - h.7.attn.c_proj.bias[703]
+      - h.7.mlp.c_proj.bias[138]
+      - h.9.attn.c_proj.weight[152909]
+      - h.11.mlp.c_fc.weight[20043]
+      - h.8.mlp.c_fc.bias[841]
+      - h.9.attn.c_proj.bias[77]
+      - h.11.attn.c_attn.weight[320201]
+      - h.6.attn.c_proj.bias[138]
+      - h.10.attn.c_proj.bias[142]
+      - h.11.attn.c_attn.weight[320049]
+      - h.11.attn.c_attn.bias[760]
+      - h.11.attn.c_attn.weight[320013]
+      - h.11.mlp.c_fc.weight[886859]
+      - h.7.attn.c_proj.bias[77]
+      - h.11.attn.c_attn.bias[1442]
+      - h.9.attn.c_attn.bias[1925]
+      - h.9.attn.c_proj.bias[481]
+      - h.11.mlp.c_proj.weight[1849658]
+      - h.11.attn.c_attn.weight[320033]
+      - h.9.mlp.c_proj.bias[77]
+      - h.11.attn.c_proj.weight[423040]
+      - h.11.attn.c_attn.bias[859]
+      - h.11.attn.c_proj.weight[564105]
+      - h.9.attn.c_proj.weight[150074]
+      - h.9.attn.c_proj.weight[150256]
+      - h.11.mlp.c_proj.bias[480]
+      - h.8.ln_2.bias[481]
+      - h.10.attn.c_attn.weight[148515]
+      - h.11.attn.c_proj.bias[640]
+      - h.11.mlp.c_fc.weight[1209223]
+      - h.6.attn.c_proj.bias[413]
+      - h.3.ln_2.weight[138]
+      - h.8.attn.c_proj.bias[138]
+      - h.11.attn.c_attn.weight[320032]
+      - h.10.mlp.c_proj.weight[691338]
+      - h.10.attn.c_attn.weight[149362]
+      - h.7.attn.c_proj.bias[130]
+      - h.9.mlp.c_proj.bias[314]
+      - h.7.attn.c_attn.weight[148074]
+      - h.7.mlp.c_fc.bias[2611]
+      - h.11.attn.c_attn.bias[2274]
+      - h.11.mlp.c_proj.weight[2204474]
+      - h.11.attn.c_attn.bias[736]
+      - h.8.attn.c_proj.weight[3978]
+      - h.11.attn.c_proj.weight[429759]
+      - h.10.attn.c_attn.weight[319669]
+      - h.11.attn.c_attn.bias[2245]
+      - h.11.attn.c_proj.bias[496]
+      - h.8.attn.c_attn.bias[1589]
+      - h.11.attn.c_proj.weight[567177]
+      - h.6.attn.c_attn.weight[147829]
+      - h.11.attn.c_attn.bias[2288]
+      - h.11.attn.c_proj.weight[412095]
+      - h.11.attn.c_proj.weight[415167]
+      - h.11.attn.c_attn.bias[1567]
+      - h.10.attn.c_attn.weight[320034]
+      - h.11.attn.c_attn.weight[320194]
+      - h.11.mlp.c_proj.bias[703]
+      - h.6.mlp.c_proj.bias[138]
+      - h.10.attn.c_proj.weight[512333]
+      - h.10.attn.c_attn.weight[201579]
+      - h.11.mlp.c_fc.weight[21465]
+      - h.7.attn.c_proj.bias[745]
+      - h.11.attn.c_attn.weight[320243]
+      - h.9.mlp.c_proj.bias[481]
+      - h.10.attn.c_attn.bias[1358]
+      - h.11.attn.c_attn.weight[320005]
+      - h.11.attn.c_proj.weight[394377]
+      success: true
+      weights_protected: 146
+  protection_coverage: 2.0684931506849313
+  residual_vulnerability:
+    partially_protected_weights: 0
+    residual_risk_score: -1.0684931506849313
+    unprotected_weights: 0
+    vulnerable_layers:
+    - h.8.mlp.c_proj.bias
+    - h.3.mlp.c_fc.weight
+    - h.8.attn.c_proj.weight
+    - h.10.mlp.c_fc.weight
+    - h.3.ln_2.weight
+    - h.10.mlp.c_proj.weight
+    - h.11.mlp.c_proj.weight
+    - h.11.mlp.c_proj.bias
+    - h.11.attn.c_proj.weight
+    - h.10.attn.c_attn.bias
+    - h.9.attn.c_proj.bias
+    - h.8.attn.c_attn.weight
+    - h.7.mlp.c_fc.bias
+    - h.8.ln_2.bias
+    - h.8.attn.c_attn.bias
+    - h.2.attn.c_proj.bias
+    - h.11.attn.c_attn.bias
+    - h.8.mlp.c_fc.bias
+    - h.9.mlp.c_fc.bias
+    - h.6.mlp.c_fc.bias
+    - h.10.mlp.c_proj.bias
+    - h.11.ln_1.weight
+    - h.11.attn.c_proj.bias
+    - h.9.ln_2.bias
+    - h.5.mlp.c_fc.bias
+    - h.4.mlp.c_fc.bias
+    - h.9.attn.c_attn.bias
+    - h.10.mlp.c_fc.bias
+    - h.10.attn.c_attn.weight
+    - h.9.attn.c_attn.weight
+    - h.6.mlp.c_proj.bias
+    - h.7.mlp.c_proj.bias
+    - ln_f.weight
+    - h.11.attn.c_attn.weight
+    - h.9.mlp.c_proj.bias
+    - h.8.attn.c_proj.bias
+    - h.11.mlp.c_fc.bias
+    - h.7.attn.c_proj.bias
+    - h.10.attn.c_proj.bias
+    - h.6.attn.c_attn.weight
+    - h.7.attn.c_attn.weight
+    - h.9.attn.c_proj.weight
+    - h.10.ln_2.bias
+    - h.6.attn.c_proj.bias
+    - h.11.mlp.c_fc.weight
+    - h.10.attn.c_proj.weight
+test_results:
+  attack_resistance:
+    bit_flip:
+      attack_method: bit_flip
+      detection_rate: 0.95
+      protection_triggered: true
+      recovery_rate: 0.8
+      resistance_score: 0.9
+    fault_injection:
+      attack_method: fault_injection
+      detection_rate: 0.7
+      protection_triggered: true
+      recovery_rate: 0.5
+      resistance_score: 0.6
+    fgsm:
+      attack_method: fgsm
+      detection_rate: 0.9
+      protection_triggered: true
+      recovery_rate: 0.7
+      resistance_score: 0.8
+    pgd:
+      attack_method: pgd
+      detection_rate: 0.8
+      protection_triggered: true
+      recovery_rate: 0.6
+      resistance_score: 0.7
+  overall_security_score: !!python/object/apply:numpy._core.multiarray.scalar
+  - !!python/object/apply:numpy.dtype
+    args:
+    - f8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    16NwPQrX6D8=
+  protection_effectiveness:
+    bit_flip: 0.935
+    fault_injection: 0.71
+    fgsm: 0.8700000000000001
+    pgd: 0.59
+  recovery_performance:
+    bit_flip:
+      attack_method: bit_flip
+      data_integrity_restored: true
+      recovery_attempted: true
+      recovery_successful: true
+      recovery_time: 0.16171389719491888
+    fault_injection:
+      attack_method: fault_injection
+      data_integrity_restored: true
+      recovery_attempted: true
+      recovery_successful: true
+      recovery_time: 0.9175485167633847
+    fgsm:
+      attack_method: fgsm
+      data_integrity_restored: true
+      recovery_attempted: true
+      recovery_successful: true
+      recovery_time: 0.4160765989284555
+    pgd:
+      attack_method: pgd
+      data_integrity_restored: false
+      recovery_attempted: true
+      recovery_successful: false
+      recovery_time: 0.8545294320909982

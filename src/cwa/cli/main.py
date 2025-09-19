@@ -6,8 +6,9 @@ from rich.table import Table
 from pathlib import Path
 import yaml
 import logging
-from typing import Optional
+from typing import Optional, Dict, Any
 import torch
+import pandas as pd
 
 from ..core.config import ExperimentConfig
 from ..core.models import LambdaLabsLLMManager
@@ -18,6 +19,7 @@ from ..security.adversarial import AdversarialAttackSimulator
 from ..security.targeted_attacks import TargetedAttackSimulator
 from ..security.fault_injection import FaultInjector
 from ..security.defense_mechanisms import DefenseManager
+from ..research.super_weight_analyzer import SuperWeightAnalyzer
 from ..security.weight_protection import CriticalWeightProtector
 from ..utils.logging import setup_logging
 
@@ -741,6 +743,422 @@ def run_complete_pipeline(
     except Exception as e:
         console.print(f"[bold red]❌ Complete pipeline failed: {e}[/bold red]")
         raise
+
+
+@app.command("extract-critical-weights")
+def extract_critical_weights(
+    model_name: str,
+    mode: str = "super_weight_discovery",
+    sensitivity_threshold: float = 0.7,
+    top_k_percent: float = 0.001,
+    layer_focus: str = "early",
+    output_format: str = "csv,json,plots",
+    output_dir: str = "research_output",
+    research_mode: bool = True,
+    device: str = "cuda"
+):
+    """
+    🔬 Research-focused critical weight extraction for PhD-level super weight investigation.
+
+    Implements methodologies for discovering "super weights" in transformer models based on:
+    - Activation magnitude monitoring (>1e3 threshold)
+    - Hessian-based sensitivity scoring with FKeras integration
+    - Focus on early layers (2-4) and mlp.down_proj components
+    - Extract top 0.001% of weights by sensitivity
+
+    Args:
+        model_name: Model to analyze (e.g., "gpt2", "microsoft/DialoGPT-small")
+        mode: Analysis mode ("super_weight_discovery", "validation", "comprehensive")
+        sensitivity_threshold: Minimum sensitivity score for weight inclusion
+        top_k_percent: Percentage of top weights to extract (0.001 = 0.001%)
+        layer_focus: Layer range focus ("early", "middle", "late", "all")
+        output_format: Export formats ("csv", "json", "plots" or combinations)
+        output_dir: Directory for research outputs
+        research_mode: Enable PhD research-specific analysis
+        device: Device to use ("cuda" or "cpu")
+    """
+    console = Console()
+
+    try:
+        console.print(f"[bold blue]🔬 Research Mode: Critical Weight Extraction[/bold blue]")
+        console.print(f"Model: {model_name}")
+        console.print(f"Mode: {mode}")
+        console.print(f"Sensitivity Threshold: {sensitivity_threshold}")
+        console.print(f"Top-K Percentage: {top_k_percent}%")
+        console.print(f"Layer Focus: {layer_focus}")
+
+        # Setup output directory
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        setup_logging(output_path)
+
+        # Load model
+        console.print("[yellow]Loading model for research analysis...[/yellow]")
+        config = {"name": model_name, "device": device}
+        model_manager = LambdaLabsLLMManager(config)
+        model = model_manager.load_model(model_name)
+
+        # Initialize SuperWeightAnalyzer
+        analyzer = SuperWeightAnalyzer(model, model_name)
+
+        # Extract critical weights
+        console.print(f"[yellow]Extracting critical weights in {mode} mode...[/yellow]")
+        research_data = analyzer.extract_critical_weights(
+            mode=mode,
+            sensitivity_threshold=sensitivity_threshold,
+            top_k_percent=top_k_percent,
+            layer_focus=layer_focus,
+            output_dir=output_dir
+        )
+
+        # Display results
+        console.print(f"[bold green]✅ Critical Weight Extraction Complete![/bold green]")
+        console.print(f"Results saved to: {output_path}")
+
+        # Display summary table
+        table = Table(title="Research Extraction Results")
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="green")
+
+        stats = research_data["statistics"]
+        table.add_row("Total Weights Analyzed", f"{stats['total_weights_analyzed']:,}")
+        table.add_row("Critical Weights Found", f"{stats['critical_weights_found']}")
+        table.add_row("Discovery Rate", f"{stats['discovery_rate']:.6f}%")
+        table.add_row("Average Sensitivity", f"{stats['avg_sensitivity']:.6f}")
+        table.add_row("Layer Coverage", f"{stats['layer_coverage']} layers")
+        table.add_row("Component Diversity", f"{stats['component_diversity']}")
+
+        console.print(table)
+
+        # Research findings
+        analysis = research_data["analysis_results"]
+        console.print(f"\n[bold yellow]🔍 Key Research Findings:[/bold yellow]")
+        console.print(f"• Early Layer Concentration: {analysis['architectural']['early_layer_concentration']:.1%}")
+        console.print(f"• Avg Perplexity Impact: {analysis['behavioral']['avg_perplexity_impact']:.1f}x")
+        console.print(f"• Max Perplexity Impact: {analysis['behavioral']['max_perplexity_impact']:.1f}x")
+        console.print(f"• Significant Weights: {analysis['behavioral']['significant_weights']}/{analysis['behavioral']['tested_weights']}")
+
+    except Exception as e:
+        console.print(f"[bold red]❌ Critical weight extraction failed: {e}[/bold red]")
+        raise
+
+
+@app.command("validate-super-weights")
+def validate_super_weights(
+    model_name: str,
+    coordinates: str,
+    perplexity_threshold: float = 100,
+    output_dir: str = "validation_output",
+    export_results: bool = True,
+    device: str = "cuda"
+):
+    """
+    🧪 Validate specific super weight coordinates using 100× perplexity methodology.
+
+    Validates known super weight coordinates like:
+    - [(2, 'mlp.down_proj', [3968, 7003])] for Llama-7B
+    - [(1, 'mlp.down_proj', [2070, 7310])] for Mistral-7B
+
+    Uses bit-level analysis and perplexity impact measurement to confirm super weight status.
+
+    Args:
+        model_name: Model to validate against
+        coordinates: Weight coordinates as string, e.g., "[(2, 'mlp.down_proj', [3968, 7003])]"
+        perplexity_threshold: Minimum perplexity increase to confirm super weight (default: 100x)
+        output_dir: Directory for validation outputs
+        export_results: Export detailed validation results
+        device: Device to use ("cuda" or "cpu")
+    """
+    console = Console()
+
+    try:
+        console.print(f"[bold blue]🧪 Super Weight Validation[/bold blue]")
+        console.print(f"Model: {model_name}")
+        console.print(f"Perplexity Threshold: {perplexity_threshold}x")
+
+        # Parse coordinates
+        import ast
+        try:
+            coord_list = ast.literal_eval(coordinates)
+            if not isinstance(coord_list, list):
+                coord_list = [coord_list]
+        except Exception as e:
+            raise ValueError(f"Invalid coordinates format: {e}. Expected: [(layer, 'component', [row, col])]")
+
+        console.print(f"Validating {len(coord_list)} coordinate(s)")
+
+        # Setup output directory
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        setup_logging(output_path)
+
+        # Load model
+        console.print("[yellow]Loading model for validation...[/yellow]")
+        config = {"name": model_name, "device": device}
+        model_manager = LambdaLabsLLMManager(config)
+        model = model_manager.load_model(model_name)
+
+        # Initialize SuperWeightAnalyzer
+        analyzer = SuperWeightAnalyzer(model, model_name)
+
+        # Validate coordinates
+        console.print("[yellow]Validating super weight coordinates...[/yellow]")
+        validation_report = analyzer.validate_super_weights(
+            coordinates=coord_list,
+            perplexity_threshold=perplexity_threshold,
+            output_dir=output_dir
+        )
+
+        # Display results
+        console.print(f"[bold green]✅ Super Weight Validation Complete![/bold green]")
+        console.print(f"Results saved to: {output_path}")
+
+        # Display validation table
+        table = Table(title="Super Weight Validation Results")
+        table.add_column("Coordinate", style="cyan")
+        table.add_column("Perplexity Impact", style="yellow")
+        table.add_column("Super Weight?", style="green")
+        table.add_column("Baseline", style="blue")
+
+        for coord_key, result in validation_report["results"].items():
+            coord = result["coordinates"]
+            coord_str = f"L{coord[0]}.{coord[1]}[{coord[2][0]},{coord[2][1]}]"
+
+            impact = result["perplexity_impact"]["multiplier"]
+            is_super = "✅ YES" if result["is_super_weight"] else "❌ NO"
+            baseline = f"{result['perplexity_impact']['baseline_perplexity']:.2f}"
+
+            table.add_row(coord_str, f"{impact:.1f}x", is_super, baseline)
+
+        console.print(table)
+
+        # Summary
+        summary = validation_report["summary"]
+        console.print(f"\n[bold yellow]📊 Validation Summary:[/bold yellow]")
+        console.print(f"• Coordinates Tested: {summary['total_tested']}")
+        console.print(f"• Confirmed Super Weights: {summary['confirmed_super_weights']}")
+        console.print(f"• Confirmation Rate: {summary['confirmation_rate']:.1%}")
+        console.print(f"• Average Impact: {summary['avg_perplexity_impact']:.1f}x")
+        console.print(f"• Maximum Impact: {summary['max_perplexity_impact']:.1f}x")
+
+    except Exception as e:
+        console.print(f"[bold red]❌ Super weight validation failed: {e}[/bold red]")
+        raise
+
+
+@app.command("research-extract")
+def research_extract(
+    model_name: str,
+    focus: str = "attention-mechanisms",
+    threshold: float = 0.7,
+    export_format: str = "research-csv",
+    include_metadata: bool = True,
+    analysis_types: str = "statistical,behavioral,architectural",
+    output_dir: str = "research_extract_output",
+    device: str = "cuda"
+):
+    """
+    🎓 Specialized research extraction for PhD-level analysis.
+
+    Focused extraction modes for specific research areas:
+    - attention-mechanisms: Focus on attention layers and components
+    - mlp-components: Focus on MLP layers (down_proj, up_proj, gate_proj)
+    - early-layers: Focus on layers 0-3 for super weight discovery
+    - layer-norms: Focus on normalization components
+    - comprehensive: Full model analysis
+
+    Args:
+        model_name: Model to analyze
+        focus: Research focus area
+        threshold: Sensitivity threshold for inclusion
+        export_format: Output format ("research-csv", "publication-ready", "replication-data")
+        include_metadata: Include detailed metadata for replication
+        analysis_types: Types of analysis to perform (comma-separated)
+        output_dir: Output directory for research data
+        device: Device to use
+    """
+    console = Console()
+
+    try:
+        console.print(f"[bold blue]🎓 PhD Research Extraction Mode[/bold blue]")
+        console.print(f"Model: {model_name}")
+        console.print(f"Research Focus: {focus}")
+        console.print(f"Analysis Types: {analysis_types}")
+
+        # Map focus to extraction parameters
+        focus_mapping = {
+            "attention-mechanisms": {
+                "mode": "comprehensive",
+                "layer_focus": "all",
+                "component_filter": "attn"
+            },
+            "mlp-components": {
+                "mode": "super_weight_discovery",
+                "layer_focus": "early",
+                "component_filter": "mlp"
+            },
+            "early-layers": {
+                "mode": "super_weight_discovery",
+                "layer_focus": "early",
+                "component_filter": "all"
+            },
+            "layer-norms": {
+                "mode": "comprehensive",
+                "layer_focus": "all",
+                "component_filter": "norm"
+            },
+            "comprehensive": {
+                "mode": "comprehensive",
+                "layer_focus": "all",
+                "component_filter": "all"
+            }
+        }
+
+        if focus not in focus_mapping:
+            raise ValueError(f"Unknown focus: {focus}. Available: {list(focus_mapping.keys())}")
+
+        params = focus_mapping[focus]
+
+        # Setup output directory
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        setup_logging(output_path)
+
+        # Load model
+        console.print("[yellow]Loading model for research extraction...[/yellow]")
+        config = {"name": model_name, "device": device}
+        model_manager = LambdaLabsLLMManager(config)
+        model = model_manager.load_model(model_name)
+
+        # Initialize analyzer
+        analyzer = SuperWeightAnalyzer(model, model_name)
+
+        # Perform extraction
+        console.print(f"[yellow]Performing {focus} analysis...[/yellow]")
+        research_data = analyzer.extract_critical_weights(
+            mode=params["mode"],
+            sensitivity_threshold=threshold,
+            top_k_percent=0.001,  # PhD research precision
+            layer_focus=params["layer_focus"],
+            output_dir=output_dir
+        )
+
+        # Generate specialized research outputs
+        console.print("[yellow]Generating research-specific outputs...[/yellow]")
+
+        if export_format == "publication-ready":
+            _generate_publication_tables(research_data, output_path)
+        elif export_format == "replication-data":
+            _generate_replication_package(research_data, output_path, model_name)
+
+        console.print(f"[bold green]✅ Research Extraction Complete![/bold green]")
+        console.print(f"Research data saved to: {output_path}")
+
+        # Display focused results
+        table = Table(title=f"Research Results: {focus.title()}")
+        table.add_column("Research Metric", style="cyan")
+        table.add_column("Value", style="green")
+
+        stats = research_data["statistics"]
+        analysis = research_data["analysis_results"]
+
+        table.add_row("Focus Area", focus)
+        table.add_row("Critical Weights", f"{stats['critical_weights_found']}")
+        table.add_row("Discovery Rate", f"{stats['discovery_rate']:.6f}%")
+
+        if focus == "attention-mechanisms":
+            attn_weights = sum(1 for w in research_data["discovered_weights"] if "attn" in w["component"])
+            table.add_row("Attention Weights", f"{attn_weights}")
+        elif focus == "mlp-components":
+            mlp_weights = sum(1 for w in research_data["discovered_weights"] if "mlp" in w["component"])
+            table.add_row("MLP Weights", f"{mlp_weights}")
+
+        table.add_row("Early Layer %", f"{analysis['architectural']['early_layer_concentration']:.1%}")
+
+        console.print(table)
+
+    except Exception as e:
+        console.print(f"[bold red]❌ Research extraction failed: {e}[/bold red]")
+        raise
+
+
+def _generate_publication_tables(research_data: Dict[str, Any], output_path: Path):
+    """Generate publication-ready tables and figures."""
+    import pandas as pd
+
+    # Table 1: Discovery Statistics
+    stats = research_data["statistics"]
+    table1_data = {
+        "Metric": ["Total Weights Analyzed", "Critical Weights Found", "Discovery Rate (%)",
+                  "Average Sensitivity", "Layer Coverage", "Component Diversity"],
+        "Value": [f"{stats['total_weights_analyzed']:,}", stats['critical_weights_found'],
+                 f"{stats['discovery_rate']:.6f}", f"{stats['avg_sensitivity']:.6f}",
+                 stats['layer_coverage'], stats['component_diversity']]
+    }
+
+    pd.DataFrame(table1_data).to_csv(output_path / "table1_discovery_statistics.csv", index=False)
+
+    # Table 2: Layer Distribution
+    layer_dist = research_data["analysis_results"]["summary"]["layer_distribution"]
+    table2_data = {
+        "Layer": list(layer_dist.keys()),
+        "Critical_Weights": list(layer_dist.values())
+    }
+
+    pd.DataFrame(table2_data).to_csv(output_path / "table2_layer_distribution.csv", index=False)
+
+    # Table 3: Top Critical Weights
+    if research_data["discovered_weights"]:
+        top_weights = research_data["discovered_weights"][:20]  # Top 20 for publication
+        table3_data = []
+
+        for i, weight in enumerate(top_weights):
+            table3_data.append({
+                "Rank": i + 1,
+                "Layer": weight["layer_index"],
+                "Component": weight["component"],
+                "Row": weight["coordinates"][0],
+                "Col": weight["coordinates"][1],
+                "Sensitivity": f"{weight['sensitivity_score']:.6f}"
+            })
+
+        pd.DataFrame(table3_data).to_csv(output_path / "table3_top_critical_weights.csv", index=False)
+
+
+def _generate_replication_package(research_data: Dict[str, Any], output_path: Path, model_name: str):
+    """Generate complete replication package for research."""
+    import json
+
+    # Replication metadata
+    replication_data = {
+        "model_name": model_name,
+        "extraction_timestamp": pd.Timestamp.now().isoformat(),
+        "methodology": {
+            "activation_threshold": 1e3,
+            "sensitivity_calculation": "hessian_approximation",
+            "top_k_percentage": 0.001,
+            "layer_focus": "early_layers_0_to_3",
+            "perplexity_validation": "100x_threshold"
+        },
+        "full_results": research_data,
+        "replication_commands": [
+            f"cwa extract-critical-weights {model_name} --mode super_weight_discovery --top-k-percent 0.001 --layer-focus early",
+            f"cwa validate-super-weights {model_name} --coordinates 'DISCOVERED_COORDINATES' --perplexity-threshold 100"
+        ]
+    }
+
+    with open(output_path / "replication_package.json", 'w') as f:
+        json.dump(replication_data, f, indent=2, default=str)
+
+    # Generate coordinate files for replication
+    if research_data["discovered_weights"]:
+        coordinates = []
+        for weight in research_data["discovered_weights"]:
+            coord = (weight["layer_index"], weight["component"], weight["coordinates"])
+            coordinates.append(coord)
+
+        with open(output_path / "discovered_coordinates.txt", 'w') as f:
+            f.write(str(coordinates))
 
 
 if __name__ == "__main__":
