@@ -5,6 +5,9 @@ Complete guide to running Critical Weight Analysis commands individually and in 
 ## 🚀 Quick Start
 
 ```bash
+cd ~/nova/neural-weight-analysis-research
+source .venv/bin/activate
+
 # Show available commands
 cwa --help
 
