@@ -99,12 +99,22 @@ def extract_critical_weights(
         console.print(table)
 
         # Research findings
-        analysis = research_data["analysis_results"]
+        analysis = research_data.get("analysis_results", {})
         console.print(f"\n[bold yellow]🔍 Key Research Findings:[/bold yellow]")
-        console.print(f"• Early Layer Concentration: {analysis['architectural']['early_layer_concentration']:.1%}")
-        console.print(f"• Avg Perplexity Impact: {analysis['behavioral']['avg_perplexity_impact']:.1f}x")
-        console.print(f"• Max Perplexity Impact: {analysis['behavioral']['max_perplexity_impact']:.1f}x")
-        console.print(f"• Significant Weights: {analysis['behavioral']['significant_weights']}/{analysis['behavioral']['tested_weights']}")
+
+        # Safely access nested analysis results
+        architectural = analysis.get('architectural', {})
+        behavioral = analysis.get('behavioral', {})
+
+        if architectural and behavioral:
+            console.print(f"• Early Layer Concentration: {architectural.get('early_layer_concentration', 0):.1%}")
+            console.print(f"• Avg Perplexity Impact: {behavioral.get('avg_perplexity_impact', 0):.1f}x")
+            console.print(f"• Max Perplexity Impact: {behavioral.get('max_perplexity_impact', 0):.1f}x")
+            console.print(f"• Significant Weights: {behavioral.get('significant_weights', 0)}/{behavioral.get('tested_weights', 0)}")
+        else:
+            console.print("❌ Critical weight extraction failed: No analysis results available")
+            if stats.get('critical_weights_found', 0) == 0:
+                console.print("💡 Suggestion: Try lowering sensitivity threshold or increasing top-k percentage")
 
     except Exception as e:
         console.print(f"[bold red]❌ Critical weight extraction failed: {e}[/bold red]")
@@ -326,7 +336,7 @@ def spectral_analysis(
     analysis_types: str = typer.Option("signatures,transitions,stability,correlations", help="Types of spectral analysis"),
     top_k: int = typer.Option(10, help="Number of top critical configurations to identify"),
     output_dir: str = typer.Option("spectral_analysis_results", help="Output directory"),
-    device: str = typer.Option("auto", help="Device to use (cuda/cpu/auto)"),
+    device: str = typer.Option("cuda", help="Device to use (cuda/cpu/auto)"),
     include_pac_bounds: bool = typer.Option(True, help="Include PAC-Bayesian bounds"),
     confidence_level: float = typer.Option(0.95, help="Confidence level for PAC bounds")
 ):

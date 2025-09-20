@@ -34,13 +34,16 @@ Pre-built automation scripts are available in the `scripts/` directory:
 
 ```bash
 # Phase 1: Information-theoretic research workflow
-./scripts/run_phase1_workflow.sh
+./scripts/run_phase1_workflow.sh "your-model-name"
 
 # Phase 2: Game theory and real-time monitoring workflow
-./scripts/run_phase1_phase2_workflow.sh
+./scripts/run_phase1_phase2_workflow.sh "your-model-name"
 
 # Complete integrated analysis (all capabilities)
-./scripts/run_complete_integrated_workflow.sh
+./scripts/run_complete_integrated_workflow.sh "your-model-name"
+
+# Example with your tested model:
+./scripts/run_complete_integrated_workflow.sh "microsoft/DialoGPT-small"
 
 # Test with small models for development
 ./scripts/run_small_model_test.sh

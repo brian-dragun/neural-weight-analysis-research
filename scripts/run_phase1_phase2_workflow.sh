@@ -4,8 +4,8 @@
 
 set -e  # Exit on error
 
-MODEL_NAME="gpt2"  # Change this to your preferred model
-COMPARE_MODEL="distilgpt2"  # For transfer analysis
+MODEL_NAME="${1:-gpt2}"  # Use provided model or default to gpt2
+COMPARE_MODEL="${2:-distilgpt2}"  # For transfer analysis
 OUTPUT_BASE="phase1_phase2_analysis_$(date +%Y%m%d_%H%M%S)"
 
 echo "🚀 Starting Complete Phase 1 + Phase 2 Research Workflow"

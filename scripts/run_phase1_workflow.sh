@@ -4,7 +4,7 @@
 
 set -e  # Exit on error
 
-MODEL_NAME="gpt2"  # Change this to your preferred model
+MODEL_NAME="${1:-gpt2}"  # Use provided model or default to gpt2
 OUTPUT_BASE="phase1_analysis_$(date +%Y%m%d_%H%M%S)"
 
 echo "🚀 Starting Phase 1 Advanced Research Workflow"
@@ -22,7 +22,8 @@ echo ""
 echo "🔍 Step 2: Multi-Method Ensemble Discovery"
 cwa research extract-critical-weights "$MODEL_NAME" \
   --mode "super_weight_discovery" \
-  --top-k-percent 0.001 \
+  --sensitivity-threshold 0.3 \
+  --top-k-percent 0.01 \
   --layer-focus "early" \
   --output-dir "$OUTPUT_BASE/step2_ensemble_discovery"
 
@@ -32,6 +33,7 @@ cwa research spectral-analysis "$MODEL_NAME" \
   --analysis-types "signatures,transitions,stability,correlations" \
   --include-pac-bounds \
   --confidence-level 0.95 \
+  --device cuda \
   --output-dir "$OUTPUT_BASE/step3_spectral_analysis"
 
 echo ""

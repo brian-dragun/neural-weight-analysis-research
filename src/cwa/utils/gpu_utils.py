@@ -35,7 +35,7 @@ def move_to_device(
     Returns:
         Tensor or model on target device
     """
-    if device is None:
+    if device is None or device == "auto":
         device = get_available_device()
 
     return tensor_or_model.to(device)

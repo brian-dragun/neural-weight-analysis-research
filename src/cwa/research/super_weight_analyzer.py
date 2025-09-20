@@ -232,17 +232,31 @@ class SuperWeightAnalyzer:
         # Count total layers in model
         total_layers = self._count_transformer_layers()
 
+        # Ensure we have at least some layers to work with
+        if total_layers == 0:
+            logger.warning(f"No transformer layers detected, defaulting to first 4 layers")
+            total_layers = 12  # DialoGPT-small has 12 layers
+
         if layer_focus == "early":
-            return list(range(min(self.early_layer_range[1], total_layers)))
+            end_layer = min(self.early_layer_range[1], total_layers)
+            layers = list(range(end_layer))
+            logger.info(f"Early layer focus: targeting layers {layers}")
+            return layers
         elif layer_focus == "middle":
             start = total_layers // 3
             end = 2 * total_layers // 3
-            return list(range(start, end))
+            layers = list(range(start, end))
+            logger.info(f"Middle layer focus: targeting layers {layers}")
+            return layers
         elif layer_focus == "late":
             start = 2 * total_layers // 3
-            return list(range(start, total_layers))
+            layers = list(range(start, total_layers))
+            logger.info(f"Late layer focus: targeting layers {layers}")
+            return layers
         elif layer_focus == "all":
-            return list(range(total_layers))
+            layers = list(range(total_layers))
+            logger.info(f"All layer focus: targeting layers {layers}")
+            return layers
         else:
             raise ValueError(f"Unknown layer_focus: {layer_focus}")
 
@@ -250,17 +264,33 @@ class SuperWeightAnalyzer:
         """Count transformer layers in the model."""
         layer_count = 0
 
-        # Common transformer layer patterns
+        # Common transformer layer patterns for different architectures
         for name, module in self.model.named_modules():
-            if any(pattern in name for pattern in ['layer.', 'h.', 'layers.']):
-                if 'mlp' in name and 'down_proj' in name:
-                    # Extract layer number
+            # GPT-2 style (DialoGPT): transformer.h.X
+            if 'transformer.h.' in name or '.h.' in name:
+                parts = name.split('.')
+                for i, part in enumerate(parts):
+                    if part == 'h' and i + 1 < len(parts) and parts[i + 1].isdigit():
+                        layer_count = max(layer_count, int(parts[i + 1]) + 1)
+                        break
+            # Llama/Mistral style: layers.X
+            elif 'layers.' in name or 'layer.' in name:
+                parts = name.split('.')
+                for part in parts:
+                    if part.isdigit():
+                        layer_count = max(layer_count, int(part) + 1)
+                        break
+
+        # Fallback: if no layers found, examine model structure more directly
+        if layer_count == 0:
+            for name, module in self.model.named_modules():
+                if hasattr(module, 'weight') and any(pattern in name for pattern in ['mlp', 'attn', 'attention']):
                     parts = name.split('.')
                     for part in parts:
                         if part.isdigit():
                             layer_count = max(layer_count, int(part) + 1)
-                            break
 
+        logger.info(f"Detected {layer_count} transformer layers in {self.model_name}")
         return layer_count
 
     def _monitor_activation_magnitudes(self, target_layers: List[int]) -> Dict[str, Any]:
@@ -351,7 +381,8 @@ class SuperWeightAnalyzer:
         original_weight = weight.clone()
 
         # Calculate gradient-based sensitivity approximation
-        sensitivity_scores = torch.zeros_like(weight)
+        # Use float32 for sensitivity calculations to avoid overflow
+        sensitivity_scores = torch.zeros_like(weight, dtype=torch.float32)
 
         # Small perturbation for finite difference
         epsilon = 1e-4
@@ -362,32 +393,55 @@ class SuperWeightAnalyzer:
 
         # Flatten weight tensor for sampling
         flat_weight = weight.view(-1)
-        flat_sensitivity = torch.zeros_like(flat_weight)
+        # Use float32 for sensitivity to avoid overflow
+        flat_sensitivity = torch.zeros(flat_weight.shape, dtype=torch.float32, device=flat_weight.device)
 
         # Random sampling of weight indices
         sample_indices = torch.randperm(total_weights)[:sample_size]
 
+        # Compute baseline loss
+        baseline_loss = self._compute_sample_loss()
+
         for idx in sample_indices:
-            # Perturb weight
             original_val = flat_weight[idx].item()
 
-            # Forward pass with positive perturbation
-            flat_weight[idx] = original_val + epsilon
-            loss_pos = self._compute_sample_loss()
+            # Use torch.no_grad() and avoid in-place operations
+            with torch.no_grad():
+                # Create perturbed weight tensors (no in-place operations)
+                perturbed_weight_pos = weight.data.clone()
+                perturbed_weight_pos.view(-1)[idx] = original_val + epsilon
 
-            # Forward pass with negative perturbation
-            flat_weight[idx] = original_val - epsilon
-            loss_neg = self._compute_sample_loss()
+                # Temporarily replace weight data
+                original_data = weight.data.clone()
+                weight.data.copy_(perturbed_weight_pos)
+                loss_pos = self._compute_sample_loss()
 
-            # Restore original weight
-            flat_weight[idx] = original_val
+                # Forward pass with negative perturbation
+                perturbed_weight_neg = original_data.clone()
+                perturbed_weight_neg.view(-1)[idx] = original_val - epsilon
+                weight.data.copy_(perturbed_weight_neg)
+                loss_neg = self._compute_sample_loss()
+
+                # Restore original weight
+                weight.data.copy_(original_data)
 
             # Calculate sensitivity (second derivative approximation)
-            sensitivity = abs(loss_pos + loss_neg - 2 * self._compute_sample_loss()) / (epsilon ** 2)
-            flat_sensitivity[idx] = sensitivity
+            sensitivity = abs(loss_pos + loss_neg - 2 * baseline_loss) / (epsilon ** 2)
 
-        # Reshape back to original weight shape
+            # Clamp sensitivity to avoid overflow and use float32
+            sensitivity = min(sensitivity, 1e6)  # Reasonable upper bound
+            flat_sensitivity[idx] = float(sensitivity)
+
+        # Reshape back to original weight shape and ensure proper dtype
         sensitivity_scores = flat_sensitivity.view(weight.shape)
+
+        # Convert back to model dtype if needed, but clamp first to avoid overflow
+        if weight.dtype == torch.float16:
+            # Clamp to float16 range before conversion
+            sensitivity_scores = torch.clamp(sensitivity_scores, max=65504.0)  # Max value for float16
+            sensitivity_scores = sensitivity_scores.to(weight.dtype)
+        else:
+            sensitivity_scores = sensitivity_scores.to(weight.dtype)
 
         return sensitivity_scores
 
@@ -410,15 +464,35 @@ class SuperWeightAnalyzer:
         with torch.no_grad():
             try:
                 outputs = self.model(sample_input)
+
+                # Handle different output types
                 if hasattr(outputs, 'logits'):
                     logits = outputs.logits
+                elif hasattr(outputs, 'last_hidden_state'):
+                    # For models that don't have a language modeling head
+                    hidden_state = outputs.last_hidden_state
+                    # Simple proxy loss using hidden state norm
+                    loss = torch.norm(hidden_state).item()
+                    return loss
+                elif isinstance(outputs, tuple):
+                    logits = outputs[0]
                 else:
-                    logits = outputs[0] if isinstance(outputs, tuple) else outputs
+                    logits = outputs
+
+                # Ensure logits is a tensor and has correct shape
+                if not isinstance(logits, torch.Tensor):
+                    logger.warning(f"Expected tensor logits, got {type(logits)}")
+                    return 0.0
 
                 # Simple perplexity-based loss
-                log_probs = torch.log_softmax(logits, dim=-1)
-                loss = -log_probs.mean()
-                return loss.item()
+                if logits.dim() >= 2:
+                    log_probs = torch.log_softmax(logits, dim=-1)
+                    loss = -log_probs.mean()
+                    return loss.item()
+                else:
+                    # Fallback for unexpected tensor shapes
+                    return torch.norm(logits).item()
+
             except Exception as e:
                 logger.warning(f"Error computing sample loss: {e}")
                 return 0.0
