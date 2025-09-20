@@ -20,13 +20,13 @@ mkdir -p "$OUTPUT_BASE"
 echo "📊 Step 1: System Setup & Information"
 echo "========================================"
 cwa info
-cwa list-models > "$OUTPUT_BASE/available_models.txt"
-cwa model-info "$MODEL_NAME" > "$OUTPUT_BASE/model_info.txt"
+cwa basic list-models > "$OUTPUT_BASE/available_models.txt"
+cwa basic model-info "$MODEL_NAME" > "$OUTPUT_BASE/model_info.txt"
 echo ""
 
 echo "🛡️ Step 2: Original A→B→C Security Pipeline (Baseline)"
 echo "======================================================="
-cwa run-complete-pipeline "$MODEL_NAME" \
+cwa security run-complete-pipeline "$MODEL_NAME" \
   --attack-methods "fgsm,pgd,bit_flip,fault_injection" \
   --protection-methods "weight_redundancy,checksums,adversarial_training" \
   --output-dir "$OUTPUT_BASE/step2_original_security"
@@ -35,7 +35,7 @@ echo ""
 
 echo "🔍 Step 3: Phase 1 - Multi-Method Ensemble Discovery"
 echo "===================================================="
-cwa extract-critical-weights "$MODEL_NAME" \
+cwa research extract-critical-weights "$MODEL_NAME" \
   --mode "super_weight_discovery" \
   --sensitivity-threshold 0.7 \
   --top-k-percent 0.001 \
@@ -46,7 +46,7 @@ echo ""
 
 echo "🌊 Step 4: Phase 1 - Information-Theoretic Spectral Analysis"
 echo "============================================================="
-cwa spectral-analysis "$MODEL_NAME" \
+cwa research spectral-analysis "$MODEL_NAME" \
   --analysis-types "signatures,transitions,stability,correlations" \
   --include-pac-bounds \
   --confidence-level 0.95 \
@@ -56,7 +56,7 @@ echo ""
 
 echo "🕰️ Step 5: Phase 2 - Real-Time Security Monitoring"
 echo "=================================================="
-cwa monitor-realtime "$MODEL_NAME" \
+cwa monitor monitor-realtime "$MODEL_NAME" \
   --detection-algorithms "statistical,gradient,activation,weight_drift" \
   --circuit-breaker-config "auto" \
   --latency-target 1.0 \
@@ -67,7 +67,7 @@ echo ""
 
 echo "🎮 Step 6: Phase 2 - Game-Theoretic Vulnerability Analysis"
 echo "=========================================================="
-cwa analyze-game-theory "$MODEL_NAME" \
+cwa advanced analyze-game-theory "$MODEL_NAME" \
   --game-types "nash_equilibrium,cooperative,evolutionary" \
   --max-players 50 \
   --strategy-space-size 10 \
@@ -80,7 +80,7 @@ echo ""
 
 echo "🔄 Step 7: Phase 2 - Cross-Architecture Transfer Analysis"
 echo "========================================================="
-cwa analyze-transfer "$MODEL_NAME" "$COMPARE_MODEL" \
+cwa advanced analyze-transfer "$MODEL_NAME" "$COMPARE_MODEL" \
   --mapping-strategies "geometric,semantic,interpolation" \
   --transfer-types "architecture,vulnerability" \
   --similarity-threshold 0.7 \
@@ -95,7 +95,7 @@ echo "=================================="
 COORDS_FILE="$OUTPUT_BASE/step3_ensemble_discovery/discovered_coordinates.txt"
 if [ -f "$COORDS_FILE" ]; then
     echo "Using discovered coordinates from ensemble analysis"
-    cwa validate-super-weights "$MODEL_NAME" \
+    cwa research validate-super-weights "$MODEL_NAME" \
       --coordinates "$(cat $COORDS_FILE)" \
       --perplexity-threshold 100 \
       --export-results \
@@ -103,7 +103,7 @@ if [ -f "$COORDS_FILE" ]; then
 else
     echo "⚠️  Coordinates file not found, using example coordinates"
     # Use example coordinates for validation
-    cwa validate-super-weights "$MODEL_NAME" \
+    cwa research validate-super-weights "$MODEL_NAME" \
       --coordinates "[(0, 'transformer.h.0.mlp.c_fc', [100, 200])]" \
       --perplexity-threshold 100 \
       --export-results \
@@ -114,7 +114,7 @@ echo ""
 
 echo "📚 Step 9: Comprehensive Publication Package"
 echo "============================================"
-cwa research-extract "$MODEL_NAME" \
+cwa research research-extract "$MODEL_NAME" \
   --focus "comprehensive" \
   --export-format "publication-ready" \
   --include-metadata \
