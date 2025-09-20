@@ -1326,6 +1326,24 @@ class SuperWeightAnalyzer:
         # Generate visualizations
         self._generate_visualizations(research_data, output_path)
 
+    def _format_findings_section(self, research_data: Dict[str, Any]) -> str:
+        """Format the findings section handling both success and error cases."""
+        if 'error' in research_data['statistics']:
+            return f"**Analysis Status**: {research_data['statistics']['error']}\n- **Total Critical Weights Discovered**: 0\n- **Discovery Rate**: 0.000000%\n- **Average Sensitivity Score**: 0.000000\n- **Layer Coverage**: 0 layers"
+
+        stats = research_data['statistics']
+        arch_results = research_data['analysis_results'].get('architectural', {})
+
+        findings = f"""- **Total Critical Weights Discovered**: {stats.get('critical_weights_found', 0)}
+- **Discovery Rate**: {stats.get('discovery_rate', 0):.6f}%
+- **Average Sensitivity Score**: {stats.get('avg_sensitivity', 0):.6f}
+- **Layer Coverage**: {stats.get('layer_coverage', 0)} layers"""
+
+        if 'early_layer_concentration' in arch_results:
+            findings += f"\n- **Early Layer Concentration**: {arch_results['early_layer_concentration']:.2%}"
+
+        return findings
+
     def _export_validation_data(self, validation_report: Dict[str, Any], output_path: Path):
         """Export validation data in research formats."""
         logger.info(f"Exporting validation data to {output_path}")
@@ -1362,11 +1380,7 @@ class SuperWeightAnalyzer:
 
 ## Key Findings
 
-- **Total Critical Weights Discovered**: {research_data['statistics']['critical_weights_found']}
-- **Discovery Rate**: {research_data['statistics']['discovery_rate']:.6f}%
-- **Average Sensitivity Score**: {research_data['statistics']['avg_sensitivity']:.6f}
-- **Layer Coverage**: {research_data['statistics']['layer_coverage']} layers
-- **Early Layer Concentration**: {research_data['analysis_results']['architectural']['early_layer_concentration']:.2%}
+{self._format_findings_section(research_data)}
 
 ## Layer Distribution
 """

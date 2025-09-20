@@ -10,7 +10,11 @@
       "Bash(pip install:*)",
       "Bash(uv pip install:*)",
       "Bash(uv pip uninstall:*)",
-      "Bash(htop:*)"
+      "Bash(htop:*)",
+      "Bash(tree:*)",
+      "Bash(ps:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

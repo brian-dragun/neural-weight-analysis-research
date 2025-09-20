@@ -105,3 +105,38 @@ class DefenseMechanism(Protocol):
     ) -> torch.nn.Module:
         """Apply defense mechanism to model."""
         ...
+
+
+class SecurityAnalyzer(Protocol):
+    """Protocol for security analysis components."""
+
+    def analyze(
+        self,
+        model: torch.nn.Module,
+        data_loader: Any,
+        **kwargs
+    ) -> SecurityAnalysisResult:
+        """Perform security analysis on the model."""
+        ...
+
+
+@dataclass
+class CriticalWeight:
+    """Represents a critical weight in a neural network."""
+    layer_name: str
+    parameter_index: tuple
+    vulnerability_score: float
+    coordinate: tuple
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class WeightAnalyzer(Protocol):
+    """Protocol for weight analysis components."""
+
+    def analyze_weights(
+        self,
+        model: torch.nn.Module,
+        **kwargs
+    ) -> List[CriticalWeight]:
+        """Analyze weights and return critical weight information."""
+        ...

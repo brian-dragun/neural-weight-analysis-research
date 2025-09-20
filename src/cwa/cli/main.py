@@ -796,7 +796,7 @@ def extract_critical_weights(
         console.print("[yellow]Loading model for research analysis...[/yellow]")
         config = {"name": model_name, "device": device}
         model_manager = LambdaLabsLLMManager(config)
-        model = model_manager.load_model(model_name)
+        model = model_manager.load_model()
 
         # Initialize SuperWeightAnalyzer
         analyzer = SuperWeightAnalyzer(model, model_name)
@@ -821,12 +821,20 @@ def extract_critical_weights(
         table.add_column("Value", style="green")
 
         stats = research_data["statistics"]
-        table.add_row("Total Weights Analyzed", f"{stats['total_weights_analyzed']:,}")
-        table.add_row("Critical Weights Found", f"{stats['critical_weights_found']}")
-        table.add_row("Discovery Rate", f"{stats['discovery_rate']:.6f}%")
-        table.add_row("Average Sensitivity", f"{stats['avg_sensitivity']:.6f}")
-        table.add_row("Layer Coverage", f"{stats['layer_coverage']} layers")
-        table.add_row("Component Diversity", f"{stats['component_diversity']}")
+        if 'error' in stats:
+            table.add_row("Analysis Status", stats['error'])
+            table.add_row("Total Weights Analyzed", "0")
+            table.add_row("Critical Weights Found", "0")
+            table.add_row("Discovery Rate", "0.000000%")
+            table.add_row("Average Sensitivity", "0.000000")
+            table.add_row("Layer Coverage", "0 layers")
+        else:
+            table.add_row("Total Weights Analyzed", f"{stats.get('total_weights_analyzed', 0):,}")
+            table.add_row("Critical Weights Found", f"{stats.get('critical_weights_found', 0)}")
+            table.add_row("Discovery Rate", f"{stats.get('discovery_rate', 0):.6f}%")
+            table.add_row("Average Sensitivity", f"{stats.get('avg_sensitivity', 0):.6f}")
+            table.add_row("Layer Coverage", f"{stats.get('layer_coverage', 0)} layers")
+            table.add_row("Component Diversity", f"{stats.get('component_diversity', 'N/A')}")
 
         console.print(table)
 
@@ -896,7 +904,7 @@ def validate_super_weights(
         console.print("[yellow]Loading model for validation...[/yellow]")
         config = {"name": model_name, "device": device}
         model_manager = LambdaLabsLLMManager(config)
-        model = model_manager.load_model(model_name)
+        model = model_manager.load_model()
 
         # Initialize SuperWeightAnalyzer
         analyzer = SuperWeightAnalyzer(model, model_name)
@@ -1028,7 +1036,7 @@ def research_extract(
         console.print("[yellow]Loading model for research extraction...[/yellow]")
         config = {"name": model_name, "device": device}
         model_manager = LambdaLabsLLMManager(config)
-        model = model_manager.load_model(model_name)
+        model = model_manager.load_model()
 
         # Initialize analyzer
         analyzer = SuperWeightAnalyzer(model, model_name)
@@ -1375,8 +1383,10 @@ def monitor_realtime(
         output_path.mkdir(parents=True, exist_ok=True)
 
         # Load model
-        model_manager = LambdaLabsLLMManager()
-        model, tokenizer = model_manager.load_model(model_name, device=device)
+        config = {"name": model_name, "device": device}
+        model_manager = LambdaLabsLLMManager(config)
+        model = model_manager.load_model()
+        tokenizer = model_manager.tokenizer
 
         # Configure monitoring
         algorithms = [alg.strip() for alg in detection_algorithms.split(",")]
@@ -1476,8 +1486,10 @@ def analyze_game_theory(
         output_path.mkdir(parents=True, exist_ok=True)
 
         # Load model
-        model_manager = LambdaLabsLLMManager()
-        model, tokenizer = model_manager.load_model(model_name, device=device)
+        config = {"name": model_name, "device": device}
+        model_manager = LambdaLabsLLMManager(config)
+        model = model_manager.load_model()
+        tokenizer = model_manager.tokenizer
 
         # Create sample inputs
         sample_inputs = create_sample_data(tokenizer, num_samples=10)
@@ -1634,13 +1646,17 @@ def analyze_transfer(
         output_path.mkdir(parents=True, exist_ok=True)
 
         # Load models
-        model_manager = LambdaLabsLLMManager()
-
         console.print(f"[blue]Loading source model: {source_model}[/blue]")
-        source_model_obj, source_tokenizer = model_manager.load_model(source_model, device=device)
+        source_config = {"name": source_model, "device": device}
+        source_model_manager = LambdaLabsLLMManager(source_config)
+        source_model_obj = source_model_manager.load_model()
+        source_tokenizer = source_model_manager.tokenizer
 
         console.print(f"[blue]Loading target model: {target_model}[/blue]")
-        target_model_obj, target_tokenizer = model_manager.load_model(target_model, device=device)
+        target_config = {"name": target_model, "device": device}
+        target_model_manager = LambdaLabsLLMManager(target_config)
+        target_model_obj = target_model_manager.load_model()
+        target_tokenizer = target_model_manager.tokenizer
 
         # Configure transfer analysis
         transfer_config = TransferConfig(

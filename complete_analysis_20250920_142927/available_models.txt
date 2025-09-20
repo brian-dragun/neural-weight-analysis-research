@@ -1,0 +1,30 @@
+                          Small Models                           
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Model Name               ┃ Description                        ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ microsoft/DialoGPT-small │ 124M parameters - Good for testing │
+│ gpt2                     │ 124M parameters - Classic GPT-2    │
+│ distilgpt2               │ 82M parameters - Distilled GPT-2   │
+│ microsoft/phi-2          │ 2.7B parameters - Microsoft Phi-2  │
+└──────────────────────────┴────────────────────────────────────┘
+
+                            Medium Models                            
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Model Name                       ┃ Description                    ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ gpt2-medium                      │ 355M parameters - GPT-2 Medium │
+│ microsoft/phi-3-mini-4k-instruct │ 3.8B parameters - Phi-3 Mini   │
+│ mistralai/Mistral-7B-v0.1        │ 7B parameters - Mistral 7B     │
+│ meta-llama/Llama-2-7b-hf         │ 7B parameters - LLaMA 2 7B     │
+└──────────────────────────────────┴────────────────────────────────┘
+
+                              Large Models                              
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Model Name                         ┃ Description                     ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ meta-llama/Llama-2-13b-hf          │ 13B parameters - LLaMA 2 13B    │
+│ mistralai/Mixtral-8x7B-v0.1        │ 46.7B parameters - Mixtral 8x7B │
+│ meta-llama/Llama-2-70b-hf          │ 70B parameters - LLaMA 2 70B    │
+│ microsoft/phi-3-medium-4k-instruct │ 14B parameters - Phi-3 Medium   │
+└────────────────────────────────────┴─────────────────────────────────┘
+

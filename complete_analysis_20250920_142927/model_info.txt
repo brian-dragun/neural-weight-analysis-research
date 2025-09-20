@@ -1,0 +1,13 @@
+Loading model info for Lambda Labs: microsoft/DialoGPT-small
+     Lambda Labs Model Information:     
+        microsoft/DialoGPT-small        
+┏━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓
+┃ Property               ┃ Value       ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩
+│ Architecture           │ gpt2        │
+│ Vocabulary Size        │ 50257       │
+│ Hidden Size            │ 768         │
+│ Number of Layers       │ 12          │
+│ Max Position           │ 1024        │
+│ Lambda GPU Recommended │ ✓ CUDA FP16 │
+└────────────────────────┴─────────────┘
