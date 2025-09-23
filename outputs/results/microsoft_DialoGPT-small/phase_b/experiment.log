@@ -1,0 +1,27 @@
+2025-09-23 20:43:58,920 - cwa.core.models - INFO - Loading model on Lambda Labs: microsoft/DialoGPT-small (Size: small)
+2025-09-23 20:43:58,973 - cwa.core.models - INFO - Before loading - Lambda GPU 0: Allocated 0.00GB, Reserved 0.00GB
+2025-09-23 20:43:58,974 - cwa.core.models - INFO - Before loading - Lambda GPU 1: Allocated 0.00GB, Reserved 0.00GB
+2025-09-23 20:43:58,975 - cwa.core.models - INFO - Before loading - Lambda VM CPU Memory: 7.6% used (33.4GB / 442.7GB)
+2025-09-23 20:43:58,979 - cwa.core.models - INFO - Lambda Labs GPU detected: NVIDIA H100 80GB HBM3
+2025-09-23 20:43:58,980 - cwa.core.models - INFO - Loading tokenizer...
+2025-09-23 20:43:59,395 - cwa.core.models - INFO - Multi-GPU Lambda setup detected - using auto device mapping
+2025-09-23 20:43:59,396 - cwa.core.models - INFO - Loading model with Lambda Labs optimization: {'low_cpu_mem_usage': True, 'trust_remote_code': False, 'cache_dir': '/tmp/hf_cache', 'torch_dtype': torch.float16, 'device_map': 'auto', 'use_flash_attention_2': True}
+2025-09-23 20:43:59,487 - cwa.core.models - WARNING - Failed to load as CausalLM, trying base model: GPT2LMHeadModel.__init__() got an unexpected keyword argument 'use_flash_attention_2'
+2025-09-23 20:43:59,971 - cwa.core.models - INFO - After loading - Lambda GPU 0: Allocated 0.12GB, Reserved 0.19GB
+2025-09-23 20:43:59,972 - cwa.core.models - INFO - After loading - Lambda GPU 1: Allocated 0.13GB, Reserved 0.15GB
+2025-09-23 20:43:59,973 - cwa.core.models - INFO - After loading - Lambda VM CPU Memory: 7.6% used (33.6GB / 442.7GB)
+2025-09-23 20:43:59,983 - cwa.core.models - INFO - Lambda Labs model loaded successfully: {'model_type': 'BaseModel', 'model_name': 'microsoft/DialoGPT-small', 'model_size_category': 'small', 'total_parameters': 124439808, 'trainable_parameters': 124439808, 'parameters_in_millions': 124.44, 'architecture': 'gpt2', 'hidden_size': 768, 'num_layers': 12, 'vocab_size': 50257, 'max_position_embeddings': 1024, 'device_placement': 'cuda:0', 'dtype': 'torch.float16', 'quantized': False}
+2025-09-23 20:43:59,984 - cwa.core.data - INFO - Created 50 sample texts for analysis
+2025-09-23 20:43:59,985 - cwa.security.targeted_attacks - INFO - Simulating targeted attacks on 50 critical weights
+2025-09-23 20:44:00,383 - cwa.security.targeted_attacks - INFO - Weight groups: critical=5, high=10, medium=16, monitoring=19
+2025-09-23 20:44:00,384 - cwa.security.targeted_attacks - INFO - Executing targeted fgsm attack
+2025-09-23 20:44:00,452 - cwa.security.targeted_attacks - INFO - Executing targeted pgd attack
+2025-09-23 20:44:00,519 - cwa.security.targeted_attacks - INFO - Executing targeted bit_flip attack
+2025-09-23 20:44:00,585 - cwa.security.targeted_attacks - INFO - Executing targeted fault_injection attack
+2025-09-23 20:44:00,652 - cwa.security.targeted_attacks - INFO - Targeted attack simulation completed
+2025-09-23 20:44:00,654 - cwa.security.fault_injection - INFO - Injecting faults on 50 critical weights
+2025-09-23 20:44:00,655 - cwa.security.fault_injection - INFO - Fault types: ['bit_flip', 'stuck_at_zero', 'random_noise'], injection rate: 0.01
+2025-09-23 20:44:00,678 - cwa.security.fault_injection - INFO - Injecting bit_flip faults
+2025-09-23 20:44:00,684 - cwa.security.fault_injection - INFO - Injecting stuck_at_zero faults
+2025-09-23 20:44:00,690 - cwa.security.fault_injection - INFO - Injecting random_noise faults
+2025-09-23 20:44:00,700 - cwa.security.fault_injection - INFO - Fault injection complete. Degradation: nan

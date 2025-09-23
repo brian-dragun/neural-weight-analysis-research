@@ -1,0 +1,325 @@
+model: microsoft/DialoGPT-small
+phase: C
+protected_weights: 50
+protection_methods:
+- weight_redundancy
+- checksums
+- adversarial_training
+protection_results:
+  critical_weight_protection_map:
+    h.10.attn.c_attn.bias[2082]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.attn.c_attn.weight[148708]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.attn.c_attn.weight[319858]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.attn.c_proj.bias[481]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.attn.c_proj.bias[77]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.attn.c_proj.weight[372622]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.attn.c_proj.weight[535009]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.ln_2.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.mlp.c_fc.bias[1793]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.mlp.c_fc.bias[609]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.mlp.c_fc.bias[900]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.mlp.c_fc.weight[885636]:
+    - weight_redundancy
+    - adversarial_training
+    h.10.mlp.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_attn.bias[2078]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_attn.bias[746]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_attn.weight[319519]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_attn.weight[320197]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_attn.weight[320226]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_attn.weight[320240]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_attn.weight[320249]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_proj.bias[266]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_proj.bias[393]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_proj.bias[480]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_proj.bias[64]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_proj.bias[87]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.attn.c_proj.weight[422793]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.ln_1.weight[138]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.mlp.c_fc.weight[1208907]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.mlp.c_fc.weight[20430]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.mlp.c_proj.bias[314]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.mlp.c_proj.bias[374]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.mlp.c_proj.bias[430]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.mlp.c_proj.bias[496]:
+    - weight_redundancy
+    - adversarial_training
+    h.11.mlp.c_proj.bias[6]:
+    - weight_redundancy
+    - adversarial_training
+    h.2.attn.c_proj.bias[411]:
+    - weight_redundancy
+    - adversarial_training
+    h.3.mlp.c_fc.weight[424963]:
+    - weight_redundancy
+    - adversarial_training
+    h.4.mlp.c_fc.bias[787]:
+    - weight_redundancy
+    - adversarial_training
+    h.6.attn.c_proj.bias[496]:
+    - weight_redundancy
+    - adversarial_training
+    h.6.attn.c_proj.bias[98]:
+    - weight_redundancy
+    - adversarial_training
+    h.6.mlp.c_fc.bias[2538]:
+    - weight_redundancy
+    - adversarial_training
+    h.7.attn.c_proj.bias[496]:
+    - weight_redundancy
+    - adversarial_training
+    h.8.ln_2.bias[480]:
+    - weight_redundancy
+    - adversarial_training
+    h.9.attn.c_attn.weight[147688]:
+    - weight_redundancy
+    - adversarial_training
+    h.9.attn.c_proj.bias[138]:
+    - weight_redundancy
+    - adversarial_training
+    h.9.ln_2.bias[373]:
+    - weight_redundancy
+    - adversarial_training
+    h.9.ln_2.bias[480]:
+    - weight_redundancy
+    - adversarial_training
+    h.9.mlp.c_fc.bias[1889]:
+    - weight_redundancy
+    - adversarial_training
+    h.9.mlp.c_fc.bias[2007]:
+    - weight_redundancy
+    - adversarial_training
+    h.9.mlp.c_fc.bias[840]:
+    - weight_redundancy
+    - adversarial_training
+    ln_f.weight[36]:
+    - weight_redundancy
+    - adversarial_training
+  defense_effectiveness:
+    adversarial_training: 0.0
+    weight_redundancy: 0.0
+  performance_overhead: 0.0
+  protection_applied:
+    adversarial_training:
+      method: adversarial_training
+      overhead_estimate: 0.0
+      protected_weight_list: &id001
+      - h.11.mlp.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[1889]
+      - h.10.mlp.c_fc.bias[900]
+      - h.11.mlp.c_proj.bias[430]
+      - h.6.attn.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[840]
+      - h.3.mlp.c_fc.weight[424963]
+      - h.10.mlp.c_fc.bias[609]
+      - h.11.attn.c_attn.weight[320226]
+      - h.4.mlp.c_fc.bias[787]
+      success: true
+      trained_weights: *id001
+      training_simulation_applied: true
+      weights_protected: 10
+    checksums:
+      error: 'Unknown protection method: checksums'
+    weight_redundancy:
+      backup_count: 50
+      checksum_count: 50
+      method: weight_redundancy
+      overhead_estimate: 0.0004
+      protected_weight_list:
+      - h.11.mlp.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[1889]
+      - h.10.mlp.c_fc.bias[900]
+      - h.11.mlp.c_proj.bias[430]
+      - h.6.attn.c_proj.bias[496]
+      - h.9.mlp.c_fc.bias[840]
+      - h.3.mlp.c_fc.weight[424963]
+      - h.10.mlp.c_fc.bias[609]
+      - h.11.attn.c_attn.weight[320226]
+      - h.4.mlp.c_fc.bias[787]
+      - h.10.mlp.c_fc.bias[1793]
+      - h.11.attn.c_attn.weight[320240]
+      - h.11.attn.c_attn.weight[320197]
+      - h.11.attn.c_proj.bias[393]
+      - h.11.mlp.c_fc.weight[20430]
+      - h.11.attn.c_proj.bias[64]
+      - h.10.mlp.c_fc.weight[885636]
+      - h.11.attn.c_attn.weight[320249]
+      - h.6.attn.c_proj.bias[98]
+      - h.11.attn.c_attn.bias[746]
+      - h.11.attn.c_proj.bias[480]
+      - h.11.mlp.c_proj.bias[314]
+      - h.11.mlp.c_proj.bias[6]
+      - h.11.ln_1.weight[138]
+      - h.11.attn.c_proj.weight[422793]
+      - h.10.attn.c_attn.weight[148708]
+      - h.10.ln_2.bias[138]
+      - h.10.mlp.c_proj.bias[138]
+      - h.8.ln_2.bias[480]
+      - h.2.attn.c_proj.bias[411]
+      - h.9.mlp.c_fc.bias[2007]
+      - h.11.attn.c_proj.bias[87]
+      - h.6.mlp.c_fc.bias[2538]
+      - h.7.attn.c_proj.bias[496]
+      - h.9.ln_2.bias[373]
+      - h.9.ln_2.bias[480]
+      - h.11.attn.c_proj.bias[266]
+      - h.10.attn.c_proj.weight[372622]
+      - h.11.mlp.c_fc.weight[1208907]
+      - h.11.attn.c_attn.bias[2078]
+      - h.10.attn.c_proj.bias[481]
+      - h.10.attn.c_proj.bias[77]
+      - ln_f.weight[36]
+      - h.10.attn.c_proj.weight[535009]
+      - h.11.attn.c_attn.weight[319519]
+      - h.9.attn.c_attn.weight[147688]
+      - h.10.attn.c_attn.weight[319858]
+      - h.11.mlp.c_proj.bias[374]
+      - h.9.attn.c_proj.bias[138]
+      - h.10.attn.c_attn.bias[2082]
+      success: true
+      weights_protected: 50
+  protection_coverage: 1.2
+  residual_vulnerability:
+    partially_protected_weights: 0
+    residual_risk_score: -0.19999999999999996
+    unprotected_weights: 0
+    vulnerable_layers:
+    - h.6.attn.c_proj.bias
+    - h.10.ln_2.bias
+    - h.11.attn.c_proj.bias
+    - h.11.mlp.c_proj.bias
+    - h.11.attn.c_proj.weight
+    - h.9.attn.c_proj.bias
+    - ln_f.weight
+    - h.10.mlp.c_proj.bias
+    - h.11.mlp.c_fc.weight
+    - h.10.attn.c_attn.weight
+    - h.6.mlp.c_fc.bias
+    - h.9.attn.c_attn.weight
+    - h.2.attn.c_proj.bias
+    - h.11.attn.c_attn.bias
+    - h.3.mlp.c_fc.weight
+    - h.10.mlp.c_fc.weight
+    - h.11.ln_1.weight
+    - h.11.attn.c_attn.weight
+    - h.9.ln_2.bias
+    - h.10.attn.c_proj.bias
+    - h.7.attn.c_proj.bias
+    - h.8.ln_2.bias
+    - h.10.attn.c_proj.weight
+    - h.10.mlp.c_fc.bias
+    - h.10.attn.c_attn.bias
+    - h.9.mlp.c_fc.bias
+    - h.4.mlp.c_fc.bias
+test_results:
+  attack_resistance:
+    bit_flip:
+      attack_method: bit_flip
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 1
+      performance_impact: .nan
+    fgsm:
+      attack_method: fgsm
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 3
+      performance_impact: .nan
+    pgd:
+      attack_method: pgd
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 2
+      performance_impact: .nan
+    random_noise:
+      attack_method: random_noise
+      attack_success: true
+      attacks_blocked: 0
+      attacks_detected: 5
+      performance_impact: .nan
+  defense_success_rate: 0.75
+  overall_robustness_score: !!python/object/apply:numpy._core.multiarray.scalar
+  - !!python/object/apply:numpy.dtype
+    args:
+    - f8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    AAAAAAAA7D8=
+  overall_security_score: 1.0
+  protection_effectiveness:
+    bit_flip: 0.5
+    fgsm: 1.0
+    pgd: 1.0
+    random_noise: 1.0

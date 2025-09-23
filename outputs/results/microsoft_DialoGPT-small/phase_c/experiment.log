@@ -1,0 +1,29 @@
+2025-09-23 20:44:19,834 - cwa.core.models - INFO - Loading model on Lambda Labs: microsoft/DialoGPT-small (Size: small)
+2025-09-23 20:44:19,887 - cwa.core.models - INFO - Before loading - Lambda GPU 0: Allocated 0.00GB, Reserved 0.00GB
+2025-09-23 20:44:19,888 - cwa.core.models - INFO - Before loading - Lambda GPU 1: Allocated 0.00GB, Reserved 0.00GB
+2025-09-23 20:44:19,891 - cwa.core.models - INFO - Before loading - Lambda VM CPU Memory: 7.6% used (33.4GB / 442.7GB)
+2025-09-23 20:44:19,896 - cwa.core.models - INFO - Lambda Labs GPU detected: NVIDIA H100 80GB HBM3
+2025-09-23 20:44:19,896 - cwa.core.models - INFO - Loading tokenizer...
+2025-09-23 20:44:20,173 - cwa.core.models - INFO - Multi-GPU Lambda setup detected - using auto device mapping
+2025-09-23 20:44:20,173 - cwa.core.models - INFO - Loading model with Lambda Labs optimization: {'low_cpu_mem_usage': True, 'trust_remote_code': False, 'cache_dir': '/tmp/hf_cache', 'torch_dtype': torch.float16, 'device_map': 'auto', 'use_flash_attention_2': True}
+2025-09-23 20:44:20,269 - cwa.core.models - WARNING - Failed to load as CausalLM, trying base model: GPT2LMHeadModel.__init__() got an unexpected keyword argument 'use_flash_attention_2'
+2025-09-23 20:44:20,757 - cwa.core.models - INFO - After loading - Lambda GPU 0: Allocated 0.12GB, Reserved 0.19GB
+2025-09-23 20:44:20,758 - cwa.core.models - INFO - After loading - Lambda GPU 1: Allocated 0.13GB, Reserved 0.15GB
+2025-09-23 20:44:20,759 - cwa.core.models - INFO - After loading - Lambda VM CPU Memory: 7.6% used (33.7GB / 442.7GB)
+2025-09-23 20:44:20,770 - cwa.core.models - INFO - Lambda Labs model loaded successfully: {'model_type': 'BaseModel', 'model_name': 'microsoft/DialoGPT-small', 'model_size_category': 'small', 'total_parameters': 124439808, 'trainable_parameters': 124439808, 'parameters_in_millions': 124.44, 'architecture': 'gpt2', 'hidden_size': 768, 'num_layers': 12, 'vocab_size': 50257, 'max_position_embeddings': 1024, 'device_placement': 'cuda:0', 'dtype': 'torch.float16', 'quantized': False}
+2025-09-23 20:44:20,771 - cwa.security.defense_mechanisms - INFO - Implementing 3 protection mechanisms on 50 critical weights
+2025-09-23 20:44:20,802 - cwa.security.defense_mechanisms - INFO - Applying protection method: weight_redundancy
+2025-09-23 20:44:20,803 - cwa.security.defense_mechanisms - INFO - Implementing weight redundancy protection
+2025-09-23 20:44:20,810 - cwa.security.defense_mechanisms - WARNING - Invalid overhead calculation for weight_redundancy, using 0.0
+2025-09-23 20:44:20,823 - cwa.security.defense_mechanisms - INFO - Applying protection method: checksums
+2025-09-23 20:44:20,824 - cwa.security.defense_mechanisms - ERROR - Protection method checksums failed: Unknown protection method: checksums
+2025-09-23 20:44:20,824 - cwa.security.defense_mechanisms - INFO - Applying protection method: adversarial_training
+2025-09-23 20:44:20,825 - cwa.security.defense_mechanisms - INFO - Implementing adversarial training protection
+2025-09-23 20:44:20,861 - cwa.security.defense_mechanisms - WARNING - Invalid overhead calculation for adversarial_training, using 0.0
+2025-09-23 20:44:20,863 - cwa.security.defense_mechanisms - INFO - Protection implementation complete. Coverage: 1.200, Overhead: 0.000
+2025-09-23 20:44:20,864 - cwa.security.defense_mechanisms - INFO - Testing protected model against 4 attack methods
+2025-09-23 20:44:20,865 - cwa.security.defense_mechanisms - INFO - Testing defense against fgsm
+2025-09-23 20:44:20,878 - cwa.security.defense_mechanisms - INFO - Testing defense against pgd
+2025-09-23 20:44:20,890 - cwa.security.defense_mechanisms - INFO - Testing defense against bit_flip
+2025-09-23 20:44:20,924 - cwa.security.defense_mechanisms - INFO - Testing defense against random_noise
+2025-09-23 20:44:20,936 - cwa.security.defense_mechanisms - INFO - Protection testing complete. Success rate: 0.750
