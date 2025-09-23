@@ -28,7 +28,7 @@ def analyze_game_theory(
 ):
     """Game-theoretic weight analysis (Phase 2)."""
     try:
-        from ...game_theory.neurogame_analyzer import NeuroGameAnalyzer, GameConfig
+        from ...game_theory.neurogame_analyzer import NeuroGameAnalyzer
         from ...game_theory.game_theoretic_analyzer import GameTheoreticWeightAnalyzer, GameConfiguration
         from ...game_theory.cooperative_analyzer import CooperativeGameAnalyzer, CooperativeGameConfig
         from ...game_theory.evolutionary_analyzer import EvolutionaryStabilityAnalyzer, EvolutionaryConfig
@@ -48,8 +48,9 @@ def analyze_game_theory(
         tokenizer = model_manager.tokenizer
 
         # Create sample inputs
-        sample_inputs = create_sample_data(tokenizer, num_samples=10)
-        inputs = sample_inputs[0]  # Use first batch
+        sample_texts = create_sample_data(num_samples=10)
+        # Tokenize the first sample for analysis
+        inputs = tokenizer(sample_texts[0], return_tensors="pt", padding=True, truncation=True)
 
         game_types_list = [gt.strip() for gt in game_types.split(",")]
         results = {}

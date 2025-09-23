@@ -1472,7 +1472,7 @@ def analyze_game_theory(
 ):
     """Game-theoretic weight analysis (Phase 2)."""
     try:
-        from ..game_theory.neurogame_analyzer import NeuroGameAnalyzer, GameConfig
+        from ..game_theory.neurogame_analyzer import NeuroGameAnalyzer
         from ..game_theory.game_theoretic_analyzer import GameTheoreticWeightAnalyzer, GameConfiguration
         from ..game_theory.cooperative_analyzer import CooperativeGameAnalyzer, CooperativeGameConfig
         from ..game_theory.evolutionary_analyzer import EvolutionaryStabilityAnalyzer, EvolutionaryConfig

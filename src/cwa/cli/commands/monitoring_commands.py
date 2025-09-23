@@ -55,7 +55,7 @@ def monitor_realtime(
         monitor = RealtimeSecurityMonitor(config=monitoring_config)
 
         # Create sample inputs for monitoring
-        sample_inputs = create_sample_data(tokenizer, num_samples=100)
+        sample_inputs = create_sample_data(num_samples=100)
 
         console.print(f"[blue]Detection algorithms: {', '.join(algorithms)}[/blue]")
         console.print(f"[blue]Target latency: {latency_target}ms[/blue]")

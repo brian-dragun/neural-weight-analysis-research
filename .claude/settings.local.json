@@ -22,7 +22,9 @@
       "Bash(git check-ignore:*)",
       "Bash(cat:*)",
       "Bash(git push:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(CUDA_VISIBLE_DEVICES=0 cwa advanced analyze-game-theory microsoft/DialoGPT-small --output-dir outputs/results/microsoft_DialoGPT-small/game_theory/)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []
