@@ -1,0 +1,15 @@
+2025-09-23 19:51:52,223 - cwa.core.models - INFO - Loading model on Lambda Labs: microsoft/DialoGPT-small (Size: small)
+2025-09-23 19:51:57,303 - cwa.core.models - INFO - Before loading - Lambda GPU 0: Allocated 0.00GB, Reserved 0.00GB
+2025-09-23 19:51:57,304 - cwa.core.models - INFO - Before loading - Lambda GPU 1: Allocated 0.00GB, Reserved 0.00GB
+2025-09-23 19:51:57,305 - cwa.core.models - INFO - Before loading - Lambda VM CPU Memory: 1.4% used (6.2GB / 442.7GB)
+2025-09-23 19:51:57,311 - cwa.core.models - INFO - Lambda Labs GPU detected: NVIDIA H100 80GB HBM3
+2025-09-23 19:51:57,311 - cwa.core.models - INFO - Loading tokenizer...
+2025-09-23 19:51:58,412 - cwa.core.models - INFO - Multi-GPU Lambda setup detected - using auto device mapping
+2025-09-23 19:51:58,413 - cwa.core.models - INFO - Loading model with Lambda Labs optimization: {'low_cpu_mem_usage': True, 'trust_remote_code': False, 'cache_dir': '/tmp/hf_cache', 'torch_dtype': torch.float16, 'device_map': 'auto', 'use_flash_attention_2': True}
+2025-09-23 19:51:59,960 - cwa.core.models - WARNING - Failed to load as CausalLM, trying base model: GPT2LMHeadModel.__init__() got an unexpected keyword argument 'use_flash_attention_2'
+2025-09-23 19:52:00,465 - cwa.core.models - INFO - After loading - Lambda GPU 0: Allocated 0.12GB, Reserved 0.19GB
+2025-09-23 19:52:00,466 - cwa.core.models - INFO - After loading - Lambda GPU 1: Allocated 0.13GB, Reserved 0.15GB
+2025-09-23 19:52:00,467 - cwa.core.models - INFO - After loading - Lambda VM CPU Memory: 1.5% used (6.8GB / 442.7GB)
+2025-09-23 19:52:00,478 - cwa.core.models - INFO - Lambda Labs model loaded successfully: {'model_type': 'BaseModel', 'model_name': 'microsoft/DialoGPT-small', 'model_size_category': 'small', 'total_parameters': 124439808, 'trainable_parameters': 124439808, 'parameters_in_millions': 124.44, 'architecture': 'gpt2', 'hidden_size': 768, 'num_layers': 12, 'vocab_size': 50257, 'max_position_embeddings': 1024, 'device_placement': 'cuda:0', 'dtype': 'torch.float16', 'quantized': False}
+2025-09-23 19:52:00,479 - cwa.core.data - INFO - Created 100 sample texts for analysis
+2025-09-23 19:52:00,480 - cwa.sensitivity.security_analyzer - INFO - Starting critical weight discovery with threshold 0.8
