@@ -18,7 +18,11 @@
       "Bash(rm:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(cat:*)",
+      "Bash(git push:*)",
+      "Bash(xargs cat:*)"
     ],
     "deny": [],
     "ask": []

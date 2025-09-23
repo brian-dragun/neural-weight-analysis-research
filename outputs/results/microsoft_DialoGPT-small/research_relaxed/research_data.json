@@ -1,0 +1,46 @@
+{
+  "model_name": "microsoft/DialoGPT-small",
+  "extraction_mode": "super_weight_discovery",
+  "parameters": {
+    "sensitivity_threshold": 0.3,
+    "top_k_percent": 0.01,
+    "layer_focus": "all",
+    "activation_threshold": 1000.0
+  },
+  "target_layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "discovered_weights": [],
+  "validation_results": {},
+  "analysis_results": {
+    "statistical": {
+      "error": "No weights to analyze"
+    },
+    "behavioral": {
+      "error": "No weights to analyze"
+    },
+    "architectural": {
+      "error": "No weights to analyze"
+    },
+    "summary": {
+      "total_discovered": 0,
+      "validated_super_weights": 0,
+      "avg_sensitivity": 0,
+      "layer_distribution": {}
+    }
+  },
+  "statistics": {
+    "error": "No weights to analyze"
+  }
+}

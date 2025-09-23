@@ -1,0 +1,55 @@
+2025-09-23 21:02:41,451 - cwa.core.models - INFO - Loading model on Lambda Labs: microsoft/DialoGPT-small (Size: small)
+2025-09-23 21:02:41,502 - cwa.core.models - INFO - Before loading - Lambda GPU 0: Allocated 0.00GB, Reserved 0.00GB
+2025-09-23 21:02:41,503 - cwa.core.models - INFO - Before loading - Lambda VM CPU Memory: 7.6% used (33.5GB / 442.7GB)
+2025-09-23 21:02:41,506 - cwa.core.models - INFO - Lambda Labs GPU detected: NVIDIA H100 80GB HBM3
+2025-09-23 21:02:41,507 - cwa.core.models - INFO - Loading tokenizer...
+2025-09-23 21:02:41,774 - cwa.core.models - INFO - Loading model with Lambda Labs optimization: {'low_cpu_mem_usage': True, 'trust_remote_code': False, 'cache_dir': '/tmp/hf_cache', 'torch_dtype': torch.float16, 'device_map': 'auto', 'use_flash_attention_2': True}
+2025-09-23 21:02:41,864 - cwa.core.models - WARNING - Failed to load as CausalLM, trying base model: GPT2LMHeadModel.__init__() got an unexpected keyword argument 'use_flash_attention_2'
+2025-09-23 21:02:42,083 - accelerate.utils.modeling - INFO - We will use 90% of the memory on device 0 for storing the model, and 10% for the buffer to avoid OOM. You can set `max_memory` in to a higher value to use more memory (at your own risk).
+2025-09-23 21:02:42,165 - cwa.core.models - INFO - After loading - Lambda GPU 0: Allocated 0.24GB, Reserved 0.32GB
+2025-09-23 21:02:42,166 - cwa.core.models - INFO - After loading - Lambda VM CPU Memory: 7.6% used (33.6GB / 442.7GB)
+2025-09-23 21:02:42,176 - cwa.core.models - INFO - Lambda Labs model loaded successfully: {'model_type': 'BaseModel', 'model_name': 'microsoft/DialoGPT-small', 'model_size_category': 'small', 'total_parameters': 124439808, 'trainable_parameters': 124439808, 'parameters_in_millions': 124.44, 'architecture': 'gpt2', 'hidden_size': 768, 'num_layers': 12, 'vocab_size': 50257, 'max_position_embeddings': 1024, 'device_placement': 'cuda:0', 'dtype': 'torch.float16', 'quantized': False}
+2025-09-23 21:02:42,178 - cwa.theory.information_geometry - INFO - Initialized InformationGeometricAnalyzer on cuda:0
+2025-09-23 21:02:42,179 - cwa.research.super_weight_analyzer - INFO - Starting super weight extraction in super_weight_discovery mode
+2025-09-23 21:02:42,180 - cwa.research.super_weight_analyzer - INFO - Detected 12 transformer layers in microsoft/DialoGPT-small
+2025-09-23 21:02:42,181 - cwa.research.super_weight_analyzer - INFO - All layer focus: targeting layers [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+2025-09-23 21:02:42,182 - cwa.research.super_weight_analyzer - INFO - Analyzing 12 target layers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+2025-09-23 21:02:42,182 - cwa.research.super_weight_analyzer - INFO - Monitoring activation magnitudes in target layers
+2025-09-23 21:02:43,037 - cwa.research.super_weight_analyzer - INFO - Calculating Hessian-based sensitivity scores
+2025-09-23 21:04:38,924 - cwa.research.super_weight_analyzer - INFO - Starting ensemble super weight discovery (top 0.01%)
+2025-09-23 21:04:38,926 - cwa.research.super_weight_analyzer - INFO - Running Method 1: Activation outlier detection
+2025-09-23 21:04:39,014 - cwa.research.super_weight_analyzer - INFO - Running Method 2: Causal intervention analysis
+2025-09-23 21:04:39,020 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 0: 0
+2025-09-23 21:04:39,021 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 1: 1
+2025-09-23 21:04:39,021 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 2: 2
+2025-09-23 21:04:39,022 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 3: 3
+2025-09-23 21:04:39,023 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 4: 4
+2025-09-23 21:04:39,024 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 5: 5
+2025-09-23 21:04:39,025 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 6: 6
+2025-09-23 21:04:39,026 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 7: 7
+2025-09-23 21:04:39,026 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 8: 8
+2025-09-23 21:04:39,027 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 9: 9
+2025-09-23 21:04:39,028 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 10: 10
+2025-09-23 21:04:39,029 - cwa.research.super_weight_analyzer - WARNING - Causal intervention failed for 11: 11
+2025-09-23 21:04:39,030 - cwa.research.super_weight_analyzer - INFO - Running Method 3: Information bottleneck detection
+2025-09-23 21:04:39,030 - cwa.theory.information_geometry - INFO - Analyzing information bottlenecks using mutual information
+2025-09-23 21:04:44,263 - cwa.theory.information_geometry - INFO - Analyzed information bottlenecks for 112 layers
+2025-09-23 21:04:44,264 - cwa.research.super_weight_analyzer - INFO - Running Method 4: Spectral anomaly detection
+2025-09-23 21:04:44,265 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 0: 0
+2025-09-23 21:04:44,266 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 1: 1
+2025-09-23 21:04:44,267 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 2: 2
+2025-09-23 21:04:44,268 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 3: 3
+2025-09-23 21:04:44,269 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 4: 4
+2025-09-23 21:04:44,270 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 5: 5
+2025-09-23 21:04:44,270 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 6: 6
+2025-09-23 21:04:44,271 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 7: 7
+2025-09-23 21:04:44,272 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 8: 8
+2025-09-23 21:04:44,273 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 9: 9
+2025-09-23 21:04:44,274 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 10: 10
+2025-09-23 21:04:44,274 - cwa.research.super_weight_analyzer - WARNING - Spectral analysis failed for 11: 11
+2025-09-23 21:04:44,277 - cwa.research.super_weight_analyzer - INFO - Ensemble voting: 0 high-confidence candidates from 2820 total
+2025-09-23 21:04:44,278 - cwa.research.super_weight_analyzer - INFO - Ensemble discovery completed. Found 0 high-confidence candidates
+2025-09-23 21:04:44,279 - cwa.research.super_weight_analyzer - INFO - Performing research-level analysis
+2025-09-23 21:04:44,280 - cwa.research.super_weight_analyzer - INFO - Exporting research data to outputs/results/microsoft_DialoGPT-small/research_relaxed
+2025-09-23 21:04:44,286 - cwa.research.super_weight_analyzer - WARNING - Matplotlib/Seaborn not available, skipping visualizations
+2025-09-23 21:04:44,286 - cwa.research.super_weight_analyzer - INFO - Super weight extraction complete. Found 0 critical weights
