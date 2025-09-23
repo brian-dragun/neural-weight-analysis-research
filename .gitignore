@@ -115,9 +115,7 @@ cython_debug/
 
 # Project specific
 /tmp/hf_cache/
-*.log
 experiments/
-results/
 models_cache/
 wandb/
 .DS_Store
